@@ -1,0 +1,2 @@
+.. autoclass:: mcpq.Vec3
+    

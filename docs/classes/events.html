@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Events &#8212; MCPQ 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="vec3.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="world.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="world.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |
+          <a href="vec3.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="events">
+<h1>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="mcpq.events._EventHandler">
+<span class="sig-name descname"><span class="pre">_EventHandler</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Minecraft</span></em><a class="headerlink" href="#mcpq.events._EventHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Certain events that happen on the server can be captured and reacted to.</p>
+<p>These events are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a> triggers whenever a player connects to the server</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a> triggers whenever a player disconnects from the server</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a> triggers whenever a player dies</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChatEvent</span></code></a> triggers whenever someone writes in the chat.
+This does <em>not</em> trigger for <code class="docutils literal notranslate"><span class="pre">/</span></code>-commands, <code class="xref py py-func docutils literal notranslate"><span class="pre">postToChat()</span></code>, direct console messages or other server logs.</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockHitEvent</span></code></a> triggers whenever a player clicks on a block with either the left or right mouse button.
+It does <em>not</em> matter whether the click had any in game effect as long as the block was reachable for the player.</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectileHitEvent</span></code></a> triggers whenever a player hits <em>anything</em> with a projectile.
+This does <em>not</em> trigger for projectiles that were not fired by the player, such as by dispensers or skeletons.</p></li>
+</ul>
+<p>There are two mutually exclusive ways how to receive events:</p>
+<ul>
+<li><p><strong>Polling:</strong></p>
+<p>The corresponding poll*EventName* function can be called to receive the events of that type since the last call to that poll function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">mc</span><span class="o">.</span><span class="n">pollProjectileHitEvents</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="p">:</span>
+        <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">projectile_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Register Callback:</strong></p>
+<p>The corresponding registerCallback*EventName* function can register another function as a callback.
+That function is then called for each event as it arrives with the event as the argument to the callback function.
+Multiple functions can be registered for the same event, in which case the functions are called in order they were registered in.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="p">:</span>
+        <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">projectile_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">registerCallbackProjectileHitEvent</span><span class="p">(</span><span class="n">myfunc</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>These methods of receiving events are mutually exclusive <em>for the same event type</em> because registering a function will also consume the events.
+Calling the poll-function for an event type where a function is registered as callback will raise a RuntimeException.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In both cases, events will only be captured <em>after the first call</em> of either poll*EventName* or registerCallback*EventName*
+and indefinitly afterwards until <code class="xref py py-func docutils literal notranslate"><span class="pre">stopEventPollingAndClearCallbacks()</span></code> is called.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.PlayerJoinEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PlayerJoinEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.PlayerJoinEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerJoinEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.PlayerJoinEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> who connected to the server</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerJoinEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerJoinEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.PlayerLeaveEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PlayerLeaveEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.PlayerLeaveEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerLeaveEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.PlayerLeaveEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> who disconnected from the server</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerLeaveEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerLeaveEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.PlayerDeathEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PlayerDeathEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deathMessage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.PlayerDeathEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerDeathEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.PlayerDeathEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> who died</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerDeathEvent.deathMessage">
+<span class="sig-name descname"><span class="pre">deathMessage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.events.PlayerDeathEvent.deathMessage" title="Link to this definition">¶</a></dt>
+<dd><p>The death message the player received</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.PlayerDeathEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerDeathEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.ChatEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ChatEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.ChatEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ChatEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.ChatEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> who sent the chat message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ChatEvent.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.events.ChatEvent.message" title="Link to this definition">¶</a></dt>
+<dd><p>The message sent in chat</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ChatEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.ChatEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockHitEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_hand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">held_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Vec3'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">face</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'DIRECTION'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.BlockHitEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> who clicked on a block</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.right_hand">
+<span class="sig-name descname"><span class="pre">right_hand</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.right_hand" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the player used their right hand instead of their left</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.held_item">
+<span class="sig-name descname"><span class="pre">held_item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.held_item" title="Link to this definition">¶</a></dt>
+<dd><p>The item held in that players hand that clicked the block</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.pos" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code> position of the block that was clicked</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.face">
+<span class="sig-name descname"><span class="pre">face</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'up'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'down'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.face" title="Link to this definition">¶</a></dt>
+<dd><p>The face/side of the block that was clicked</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ProjectileHitEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player</span> <span class="pre">|</span> <span class="pre">Entity</span> <span class="pre">|</span> <span class="pre">str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectile_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Vec3'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">face</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'DIRECTION</span> <span class="pre">|</span> <span class="pre">None'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.ProjectileHitEvent" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.player" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> that shot/used the projectile</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.target" title="Link to this definition">¶</a></dt>
+<dd><p>The target hit, use <cite>target_block</cite>, <cite>target_entity</cite> and <cite>target_player</cite> for details what was hit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.projectile_type">
+<span class="sig-name descname"><span class="pre">projectile_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.projectile_type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of projectile that was used</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.pos" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code> position where the projectile hit something. In case a block was hit, this is the block position that was hit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.face">
+<span class="sig-name descname"><span class="pre">face</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'up'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'down'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.face" title="Link to this definition">¶</a></dt>
+<dd><p>The face/side of the block hit, None if an entity or player was hit instead</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.target_player">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.target_player" title="Link to this definition">¶</a></dt>
+<dd><p>The target <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> if a player was hit, None otherwise</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.target_entity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_entity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.target_entity" title="Link to this definition">¶</a></dt>
+<dd><p>The target <code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code> if a <em>non-player</em> entity was hit, None otherwise</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.target_block">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.target_block" title="Link to this definition">¶</a></dt>
+<dd><p>The target block id if a block was hit, None otherwise</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events._EventHandler"><code class="docutils literal notranslate"><span class="pre">_EventHandler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerJoinEvent"><code class="docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent"><code class="docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerDeathEvent"><code class="docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.ChatEvent"><code class="docutils literal notranslate"><span class="pre">ChatEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.BlockHitEvent"><code class="docutils literal notranslate"><span class="pre">BlockHitEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.ProjectileHitEvent"><code class="docutils literal notranslate"><span class="pre">ProjectileHitEvent</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="world.html" title="&lt;no title&gt;"
+              >previous</a> |
+            <a href="vec3.html" title="&lt;no title&gt;"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/events.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

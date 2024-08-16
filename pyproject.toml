@@ -1,0 +1,74 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=64",
+  "setuptools_scm>=8",
+]
+
+[project]
+name = "mcpq"
+description = "Library for communicating with and controlling Minecraft servers via MCPQ plugin"
+readme = "README.md"
+license = { text = "LGPL-3.0-or-later" }
+authors = [{ name = "Felix Wallner", email = "felix.wallner@protonmail.com" }]
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+  "Operating System :: OS Independent",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "grpcio",
+  "protobuf",
+]
+[project.optional-dependencies]
+dev = [
+  "black",
+  "build",
+  "grpcio-tools",
+  "isort",
+  "mypy",
+  "pre-commit",
+  "pytest",
+  "pytest-mock",
+  "pytest-timeout",
+  "types-protobuf",
+  "types-setuptools",
+]
+docs = [
+  "myst-parser",
+  "sphinx",
+]
+imagequantizer = [
+  "imageio",
+  "numpy",
+  "Pillow",
+  "scipy",
+]
+[project.urls]
+Documentation = "https://mcpq.github.io/mcpq-python/"
+Homepage = "https://github.com/mcpq/mcpq-python"
+Issues = "https://github.com/mcpq/mcpq-python/issues"
+
+[tool.setuptools]
+packages = ["mcpq"]
+
+[tool.setuptools_scm]
+# enables setuptools_scm for versioning based on git tags
+
+[tool.black]
+include = '\.pyi?$'
+line-length = 99
+
+[tool.isort]
+default_section = "THIRDPARTY"
+include_trailing_comma = true
+line_length = 99
+multi_line_output = 3
+profile = "black"

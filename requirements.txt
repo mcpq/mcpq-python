@@ -1,0 +1,7 @@
+grpcio
+protobuf
+# optional only for imagequantizer
+imageio
+numpy
+Pillow
+scipy

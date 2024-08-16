@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="player.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="minecraft.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="minecraft.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |
+          <a href="player.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <dl class="py class">
+<dt class="sig sig-object py" id="mcpq.entity.Entity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Entity</span></span><a class="headerlink" href="#mcpq.entity.Entity" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#mcpq.entity.Entity" title="mcpq.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> class represents an entity on the server.
+It can be used to query information about the entity or manipulate them, such as
+getting or setting their position, orientation, world and more.</p>
+<p>Do not instantiate the <a class="reference internal" href="#mcpq.entity.Entity" title="mcpq.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> class directly but use one of the following methods instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># `world` can be `mc` for default world or a specific world, like `mc.nether`</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntities</span><span class="p">()</span>  <span class="c1"># get all spawnable entities in world</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntities</span><span class="p">(</span><span class="n">only_spawnable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># get all entities in world, even non-spawnable ones (usually not needed)</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntities</span><span class="p">(</span><span class="s2">&quot;pig&quot;</span><span class="p">)</span>  <span class="c1"># get all pigs in world</span>
+<span class="c1"># get all falling_block in world, which are not spawnable, therefore requires the second argument to be False</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntities</span><span class="p">(</span><span class="s2">&quot;falling_block&quot;</span><span class="p">,</span> <span class="n">only_spawnable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntitiesAround</span><span class="p">(</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># get all entities in world in 20 block radius around origin</span>
+<span class="n">mycreeper</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;creeper&quot;</span><span class="p">,</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># spawn a creeper at origin and get it as entity</span>
+</pre></div>
+</div>
+<p>Once you have your entitiy you can use it in a multitude of ways:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># location / movement</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">pos</span>  <span class="c1"># get the current position of entity</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># teleport entity to origin</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">world</span>  <span class="c1"># get current world the entity is in</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">end</span>  <span class="c1"># teleport entity into end</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">facing</span>  <span class="c1"># get direction entity is currently looking at as directional vector</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">facing</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">()</span>  <span class="c1"># make entity face straight east</span>
+<span class="c1"># use teleport if you want to set position, facing direction and/or world at once:</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c1"># teleport entity into origin in the end</span>
+
+<span class="c1"># other modifiers</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>  <span class="c1"># kill entity</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">giveEffect</span><span class="p">(</span><span class="s2">&quot;glowing&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># give entity glowing for 5 seconds</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;data merge entity @s </span><span class="si">{NoAI:1b}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># run command as entity and disable its ai, @s refers to itself</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whether or not exceptions from operations on <em>unloaded or dead</em> entities are ignored is controlled by the global variable <code class="docutils literal notranslate"><span class="pre">mcpq.entity.ALLOW_UNLOADED_ENTITY_OPS</span></code>, which is True by default.
+Entities can get unloaded or die at any time and checking with <a class="reference internal" href="#mcpq.entity.Entity.loaded" title="mcpq.entity.Entity.loaded"><code class="xref py py-attr docutils literal notranslate"><span class="pre">loaded</span></code></a> before every operation will still not guarantee that the entity exists by the time the operation is received by the server.
+To make life easier all EntityNotFound exceptions will be cought and ignored if <code class="docutils literal notranslate"><span class="pre">mcpq.entity.ALLOW_UNLOADED_ENTITY_OPS</span></code> is True.
+Note that this will make it look like the operation succeeded, even if the entity was (already) unloaded or offline.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The number of times the entity data will be updated is controlled by the global variable <code class="docutils literal notranslate"><span class="pre">mcpq.entity.CACHE_ENTITY_TIME</span></code>, which is 0.2 by default.
+This means, using an entities’s position will initially query the position from the server but then use this position for 0.2 seconds before updating the position again (as long as the position is not set in the mean time). The same holds true for all other properties of the entity.
+This improves performance but may also cause bugs or problems if the interval in which the up-to-date position is requred is lower than <code class="docutils literal notranslate"><span class="pre">mcpq.entity.CACHE_ENTITY_TIME</span></code>.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.entity.Entity.id" title="Link to this definition">¶</a></dt>
+<dd><p>The unique id of the entity on the server</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.entity.Entity.type" title="Link to this definition">¶</a></dt>
+<dd><p>The entity type, such as <code class="docutils literal notranslate"><span class="pre">&quot;sheep&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;creeper&quot;</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.loaded">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loaded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mcpq.entity.Entity.loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Whether or not the entity exists, i.e., is loaded and not dead.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This does not give any guarantees as the entity could be killed or unloaded after the check with the server was made.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><a class="headerlink" href="#mcpq.entity.Entity.pos" title="Link to this definition">¶</a></dt>
+<dd><p>Get the position as <code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code> the entity is at.
+When assigned to is equivalent to <code class="docutils literal notranslate"><span class="pre">self.teleport(pos=pos)</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.facing">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">facing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><a class="headerlink" href="#mcpq.entity.Entity.facing" title="Link to this definition">¶</a></dt>
+<dd><p>Get the directional <code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code> unit-vector the entity is facing in.
+When assigned to is equivalent to <code class="docutils literal notranslate"><span class="pre">self.teleport(facing=facing)</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.world">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">world</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><span class="pre">World</span></a></em><a class="headerlink" href="#mcpq.entity.Entity.world" title="Link to this definition">¶</a></dt>
+<dd><p>Get the world/dimension as <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> the entity is in.
+When assigned to is equivalent to <code class="docutils literal notranslate"><span class="pre">self.teleport(world=world)</span></code> and can also be used with the <cite>key</cite> of the world instead of the world object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.getEntitiesAround">
+<span class="sig-name descname"><span class="pre">getEntitiesAround</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_spawnable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.entity.Entity.getEntitiesAround" title="Link to this definition">¶</a></dt>
+<dd><p>Get all other entities in a certain radius around <cite>self</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distance</strong> (<em>float</em>) – the radius around <cite>self</cite> in which to get other entities</p></li>
+<li><p><strong>type</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the type of entitiy to get, get all types if None, defaults to None</p></li>
+<li><p><strong>only_spawnable</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True get only entities that can spawn, otherwise also get things like projectiles and drops, defaults to True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of filtered entities with distance from <cite>self</cite> less or equal to <cite>distance</cite></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#mcpq.entity.Entity" title="mcpq.entity.Entity">Entity</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.giveEffect">
+<span class="sig-name descname"><span class="pre">giveEffect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.giveEffect" title="Link to this definition">¶</a></dt>
+<dd><p>Give <cite>self</cite> a (potion) effect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>effect</strong> (<em>str</em>) – the name of the effect, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;glowing&quot;</span></code></p></li>
+<li><p><strong>seconds</strong> (<em>int</em><em>, </em><em>optional</em>) – the number of seconds the effect should persist, defaults to 30</p></li>
+<li><p><strong>amplifier</strong> (<em>int</em><em>, </em><em>optional</em>) – the strength of the effect, <cite>amplifier</cite> + 1 is the level of the effect, defaults to 0</p></li>
+<li><p><strong>particles</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether or not to show particles for the effect, defaults to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.kill" title="Link to this definition">¶</a></dt>
+<dd><p>Kill this entity</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove the entity from world without dropping any drops</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.replaceHelmet">
+<span class="sig-name descname"><span class="pre">replaceHelmet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">armortype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'leather_helmet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unbreakable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanishing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'white'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'orange'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'magenta'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'light_blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yellow'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lime'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pink'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'light_gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cyan'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'purple'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'brown'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'green'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'red'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'black'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NBT</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.replaceHelmet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.replaceItem">
+<span class="sig-name descname"><span class="pre">replaceItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NBT</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.replaceItem" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.runCommand">
+<span class="sig-name descname"><span class="pre">runCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.runCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <cite>command</cite> as if it was typed in chat as <code class="docutils literal notranslate"><span class="pre">/</span></code>-command by and at the location of the given entity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">entity</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;kill&quot;</span><span class="p">)</span>  <span class="c1"># kill this entity</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;effect give @s glowing&quot;</span><span class="p">)</span>  <span class="c1"># @s refers to this entity</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> (<em>str</em>) – the command without the slash <code class="docutils literal notranslate"><span class="pre">/</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.teleport">
+<span class="sig-name descname"><span class="pre">teleport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><span class="pre">World</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.teleport" title="Link to this definition">¶</a></dt>
+<dd><p>Change the entity’s position, facing direction and/or world by teleporting it.
+Any of the arguments not set will not be changed.
+For example, it is possible to only change the world the entity is in without changing its (relative) coordinates or facing direction and vice versa.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># teleport entity to origin in same world</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c1"># teleport entity to end at same relative coordinates</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">())</span>  <span class="c1"># make entity face straigth east without changing world or position</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(),</span> <span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">(),</span> <span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c1"># teleport entity into origin at end facing east</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – New position the entity should be teleported to, or None if position should not change, defaults to None</p></li>
+<li><p><strong>facing</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – New direction (directional vector) the entity should face, or None if facing direction should not change, defaults to None</p></li>
+<li><p><strong>world</strong> (<a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><em>World</em></a><em> | </em><em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – New world the entity should be teleported to, or None if world should not change, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.id"><code class="docutils literal notranslate"><span class="pre">Entity.id</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.type"><code class="docutils literal notranslate"><span class="pre">Entity.type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.loaded"><code class="docutils literal notranslate"><span class="pre">Entity.loaded</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.pos"><code class="docutils literal notranslate"><span class="pre">Entity.pos</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.facing"><code class="docutils literal notranslate"><span class="pre">Entity.facing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.world"><code class="docutils literal notranslate"><span class="pre">Entity.world</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">Entity.getEntitiesAround()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.giveEffect"><code class="docutils literal notranslate"><span class="pre">Entity.giveEffect()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.kill"><code class="docutils literal notranslate"><span class="pre">Entity.kill()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.remove"><code class="docutils literal notranslate"><span class="pre">Entity.remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.replaceHelmet"><code class="docutils literal notranslate"><span class="pre">Entity.replaceHelmet()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.replaceItem"><code class="docutils literal notranslate"><span class="pre">Entity.replaceItem()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.runCommand"><code class="docutils literal notranslate"><span class="pre">Entity.runCommand()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.teleport"><code class="docutils literal notranslate"><span class="pre">Entity.teleport()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="minecraft.html" title="&lt;no title&gt;"
+              >previous</a> |
+            <a href="player.html" title="&lt;no title&gt;"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/entity.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

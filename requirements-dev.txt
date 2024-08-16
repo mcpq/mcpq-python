@@ -1,0 +1,14 @@
+black
+build
+grpcio-tools
+isort
+mypy
+myst-parser
+pre-commit
+pytest
+pytest-mock
+pytest-timeout
+setuptools_scm
+sphinx
+types-protobuf 
+types-setuptools

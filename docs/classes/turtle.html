@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="vec3.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="vec3.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <dl class="py class">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Turtle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="minecraft.html#mcpq.Minecraft" title="mcpq.minecraft.Minecraft"><span class="pre">Minecraft</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><span class="pre">World</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle" title="Link to this definition">¶</a></dt>
+<dd><p>The turtle is similar to the Python turtle module,
+in that it is a construct that can move precisely while drawing a line behind it.</p>
+<p>The turtle takes three optional arguments, which will be set to the following defaults if not otherwise specified:</p>
+<ul class="simple">
+<li><p><cite>mc</cite> will be initialized with a connection to localhost</p></li>
+<li><p><cite>pos</cite> will be initialized to pos of <code class="xref py py-func docutils literal notranslate"><span class="pre">getPlayer()</span></code></p></li>
+<li><p><cite>world</cite> will be initialized to <cite>mc</cite> (default world)</p></li>
+</ul>
+<p>If any of these are provided use the provided arguments instead.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span>
+<span class="kn">from</span> <span class="nn">mcpq.tools</span> <span class="kn">import</span> <span class="n">Turtle</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to server on localhost</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Turtle</span><span class="p">(</span><span class="n">mc</span><span class="p">)</span>  <span class="c1"># spawn turtle at player position</span>
+<span class="n">t</span><span class="o">.</span><span class="n">speed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">fd</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All methods of <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Turtle</span></code></a> return itself, so that methods can be chained together,
+e.g., <code class="docutils literal notranslate"><span class="pre">t.speed(10).fd(50).rt(90).body(&quot;iron_block&quot;).fd(10)</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most methods have shortcuts, such as <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.forward" title="mcpq.tools.mcturtle.Turtle.forward"><code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code></a> = <cite>fd</cite> or <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.right" title="mcpq.tools.mcturtle.Turtle.right"><code class="xref py py-func docutils literal notranslate"><span class="pre">right()</span></code></a> = <cite>rt</cite>.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.pos" title="Link to this definition">¶</a></dt>
+<dd><p>Current precise position of head (including decimal points)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.home">
+<span class="sig-name descname"><span class="pre">home</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.home" title="Link to this definition">¶</a></dt>
+<dd><p>Equivalent to <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.goto" title="mcpq.tools.mcturtle.Turtle.goto"><code class="xref py py-func docutils literal notranslate"><span class="pre">goto()</span></code></a> with the position the turtle spawned at</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.goto">
+<span class="sig-name descname"><span class="pre">goto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.goto" title="Link to this definition">¶</a></dt>
+<dd><p>Look at and move in a direct line to <cite>pos</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.teleport">
+<span class="sig-name descname"><span class="pre">teleport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.teleport" title="Link to this definition">¶</a></dt>
+<dd><p>Teleport directly to <cite>pos</cite>. Does not draw line there</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.head">
+<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.head" title="Link to this definition">¶</a></dt>
+<dd><p>Set the head of the turtle to <cite>block</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.body">
+<span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.body" title="Link to this definition">¶</a></dt>
+<dd><p>Set the body of the turtle to <cite>block</cite> - this will be used to draw</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.speed">
+<span class="sig-name descname"><span class="pre">speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.speed" title="Link to this definition">¶</a></dt>
+<dd><p>Set the speed of the turtle.
+Roughly corresponds to the number of blocks set per second, i.e.,
+how long the turtle waits between each step =&gt; 1 / speed.
+Can be set to 0 for fastest, i.e., do not wait between steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Move <cite>by</cite> 1-sized steps in the current forward direction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.backward" title="Link to this definition">¶</a></dt>
+<dd><p>Move <cite>by</cite> 1-sized steps opposite the current forward direction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.right">
+<span class="sig-name descname"><span class="pre">right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.right" title="Link to this definition">¶</a></dt>
+<dd><p>Turn <cite>angle</cite> degrees right in place</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.left">
+<span class="sig-name descname"><span class="pre">left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.left" title="Link to this definition">¶</a></dt>
+<dd><p>Turn <cite>angle</cite> degrees left in place</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.up">
+<span class="sig-name descname"><span class="pre">up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.up" title="Link to this definition">¶</a></dt>
+<dd><p>Turn <cite>angle</cite> degrees up in place</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.down">
+<span class="sig-name descname"><span class="pre">down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.down" title="Link to this definition">¶</a></dt>
+<dd><p>Turn <cite>angle</cite> degrees down in place</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.pendown">
+<span class="sig-name descname"><span class="pre">pendown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.pendown" title="Link to this definition">¶</a></dt>
+<dd><p>Stop drawing while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.penup" title="mcpq.tools.mcturtle.Turtle.penup"><code class="xref py py-func docutils literal notranslate"><span class="pre">penup()</span></code></a> is called (default)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.penup">
+<span class="sig-name descname"><span class="pre">penup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.penup" title="Link to this definition">¶</a></dt>
+<dd><p>Stop drawing while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pendown" title="mcpq.tools.mcturtle.Turtle.pendown"><code class="xref py py-func docutils literal notranslate"><span class="pre">pendown()</span></code></a> is called</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.pensize">
+<span class="sig-name descname"><span class="pre">pensize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.pensize" title="Link to this definition">¶</a></dt>
+<dd><p>Change the width of the pen used to draw</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.hidehead">
+<span class="sig-name descname"><span class="pre">hidehead</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.hidehead" title="Link to this definition">¶</a></dt>
+<dd><p>Do not show the head of the turtle (draws body instead)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.showhead">
+<span class="sig-name descname"><span class="pre">showhead</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.showhead" title="Link to this definition">¶</a></dt>
+<dd><p>Show the head of the turtle (default)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.start_batch_mode">
+<span class="sig-name descname"><span class="pre">start_batch_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.start_batch_mode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.stop_batch_mode">
+<span class="sig-name descname"><span class="pre">stop_batch_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.stop_batch_mode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pos"><code class="docutils literal notranslate"><span class="pre">Turtle.pos</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.home"><code class="docutils literal notranslate"><span class="pre">Turtle.home()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.goto"><code class="docutils literal notranslate"><span class="pre">Turtle.goto()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.teleport"><code class="docutils literal notranslate"><span class="pre">Turtle.teleport()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.head"><code class="docutils literal notranslate"><span class="pre">Turtle.head()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.body"><code class="docutils literal notranslate"><span class="pre">Turtle.body()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.speed"><code class="docutils literal notranslate"><span class="pre">Turtle.speed()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.forward"><code class="docutils literal notranslate"><span class="pre">Turtle.forward()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.backward"><code class="docutils literal notranslate"><span class="pre">Turtle.backward()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.right"><code class="docutils literal notranslate"><span class="pre">Turtle.right()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.left"><code class="docutils literal notranslate"><span class="pre">Turtle.left()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.up"><code class="docutils literal notranslate"><span class="pre">Turtle.up()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.down"><code class="docutils literal notranslate"><span class="pre">Turtle.down()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pendown"><code class="docutils literal notranslate"><span class="pre">Turtle.pendown()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.penup"><code class="docutils literal notranslate"><span class="pre">Turtle.penup()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pensize"><code class="docutils literal notranslate"><span class="pre">Turtle.pensize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.hidehead"><code class="docutils literal notranslate"><span class="pre">Turtle.hidehead()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.showhead"><code class="docutils literal notranslate"><span class="pre">Turtle.showhead()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.start_batch_mode"><code class="docutils literal notranslate"><span class="pre">Turtle.start_batch_mode()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.stop_batch_mode"><code class="docutils literal notranslate"><span class="pre">Turtle.stop_batch_mode()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="vec3.html" title="&lt;no title&gt;"
+              >previous</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/turtle.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Minecraft Protobuf Queries (MCPQ) Python Client Library &#8212; MCPQ 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=8513425a" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="classes/minecraft.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">MCPQ 1.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="classes/minecraft.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="minecraft-protobuf-queries-mcpq-python-client-library">
+<h1>Minecraft Protobuf Queries (MCPQ) Python Client Library<a class="headerlink" href="#minecraft-protobuf-queries-mcpq-python-client-library" title="Link to this heading">¶</a></h1>
+<p>This library is designed to control a Minecraft Java Server, such as <a class="reference external" href="https://www.spigotmc.org/">Spigot</a> or <a class="reference external" href="https://papermc.io/">Paper</a> running the <strong><a class="reference external" href="https://github.com/mcpq/mcpq-plugin">mcpq plugin</a></strong>, with Python.</p>
+<p>This library is heavily inspired by <a class="reference external" href="https://github.com/martinohanlon/mcpi">MCPI</a> (and its corresponding plugin <a class="reference external" href="https://github.com/zhuowei/RaspberryJuice">RaspberryJuice</a>) and attempts a more modern approach for communication between server and client that also works for more modern versions of Minecraft.</p>
+<p>This library uses <a class="reference external" href="https://github.com/mcpq/mcpq-proto">Protocol Buffers</a> and the <a class="reference external" href="https://grpc.io/">gRPC</a> library and protocols to communicate with the <a class="reference external" href="https://github.com/mcpq/mcpq-plugin">plugin</a> on the server.</p>
+<p>Due to the use of the new type annotations <strong>Python 3.10+</strong> is required!</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>After getting a <a class="reference external" href="https://papermc.io/">server</a> and <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">compatible plugin</a> setup and running, the only thing left to do is to install the python library:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>mcpq
+</pre></div>
+</div>
+<p>Get coding!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to server on localhost</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Hello Minecraft!&quot;</span><span class="p">)</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># origin of world, coordinates x, y and z = 0</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>  <span class="c1"># get block at origin</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;obsidian&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>  <span class="c1"># replace block with obsidian</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Replaced&quot;</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="s2">&quot;with obsidian at&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A good place to start is the turtle module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span>
+<span class="kn">from</span> <span class="nn">mcpq.tools</span> <span class="kn">import</span> <span class="n">Turtle</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to server on localhost</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Turtle</span><span class="p">(</span><span class="n">mc</span><span class="p">)</span>  <span class="c1"># spawn turtle at player position</span>
+<span class="n">t</span><span class="o">.</span><span class="n">speed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">fd</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>To learn everything about the library checkout <a class="reference external" href="https://mcpq.github.io/mcpq-python/">the docs</a> where the <em>most recent version</em> of the docs are available.</p>
+<p>Only the most recent version of the docs is published.
+If you want to checkout older versions of the documentation, <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span></code> the branch or tag you want to see and use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">show_docs</span></code> to locally host the current docs at <code class="docutils literal notranslate"><span class="pre">localhost:8000</span></code>.</p>
+</section>
+<section id="versions">
+<h2>Versions<a class="headerlink" href="#versions" title="Link to this heading">¶</a></h2>
+<p>First off, to see which version of the plugin is compatible with which <strong>Minecraft version</strong>, checkout <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">this Minecraft version table</a>.</p>
+<p>The three tuple <code class="docutils literal notranslate"><span class="pre">major.minor.patch</span></code> of the version refers to the following:</p>
+<ul class="simple">
+<li><p>major: <a class="reference external" href="https://github.com/mcpq/mcpq-proto">protocol version/tag</a></p></li>
+<li><p>minor: <a class="reference external" href="https://github.com/mcpq/mcpq-plugin">plugin version/tag</a></p></li>
+<li><p>patch: is incremented with patches and additional functionality of this library independend of protocol or plugin</p></li>
+</ul>
+<p>In other words, the first two numbers (<code class="docutils literal notranslate"><span class="pre">major.minor</span></code>) refer to the <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">plugin</a> version the library was written against.</p>
+<blockquote>
+<div><p>E.g. the Python library version 1.0.X would require plugin version 1.0 or newer</p>
+</div></blockquote>
+<p>This Python library <em>should</em> work for any newer versions of the plugin if everything works out and no breaking changes are introduced, at least across <em>minor</em> versions (see <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">table</a>).
+On the other hand, the library will most likely not work for older versions of the plugin, especially not across <em>major</em> versions.</p>
+<p>TLDR; make sure the first 2 numbers (<code class="docutils literal notranslate"><span class="pre">major.minor</span></code>) of the library version are the same as the plugin’s and choose the last number as high as possible.</p>
+</section>
+<section id="build-instructions">
+<h2>Build Instructions<a class="headerlink" href="#build-instructions" title="Link to this heading">¶</a></h2>
+<p>The library is currently <a class="reference external" href="https://pypi.org/project/mcpq/">published on PyPI</a>. The package can be downloaded from there with <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">mcpq</span></code>.</p>
+<p>You can also install this package directly by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/mcpq/mcpq-python.git&#64;&lt;tag/branch&gt;</span></code> to install it directly from Github (<code class="docutils literal notranslate"><span class="pre">git</span></code> is required for this).
+If you cloned the repository already then <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> can be used.</p>
+<p>Building the library locally can be done by using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span></code>, which will build the wheel and dist packages in <code class="docutils literal notranslate"><span class="pre">dist/*</span></code>.
+Afterwards the tar file can be installed with pip: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mcpq-0.0.0.tar.gz</span></code>.</p>
+<p>If you want to play around with the library itself you can also clone the repository as <a class="reference external" href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">git submodule</a>.</p>
+<p>If you want to rebuild the protobuf files, for example, because you switched to a new <code class="docutils literal notranslate"><span class="pre">major</span></code> version of the <a class="reference external" href="https://github.com/mcpq/mcpq-proto">protocol</a>, first clone the <code class="docutils literal notranslate"><span class="pre">proto</span></code> submodule with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span> <span class="pre">--init</span> <span class="pre">--recursive</span></code>, then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into the directory and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;tag&gt;</span></code> the version you want to use.
+Afterwards you can use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">proto</span></code> to re-build the stubs.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="#LICENSE"><span class="xref myst">LGPLv3</span></a></p>
+<blockquote>
+<div><p>Note: The <em>intent</em> behind the chosen license, is to allow the licensed software to be <em>used</em> (as is) in any type of project, even commercial or closed-source ones.
+However, changes or modifications <em>to the licensed software itself</em> must be shared via the same license openly.
+Checkout <a class="reference external" href="https://fossa.com/blog/open-source-software-licenses-101-lgpl-license/">this blog</a> for an in-depth explanation.</p>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search.html">Search Page</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Minecraft Protobuf Queries (MCPQ) Python Client Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versions">Versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-instructions">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="classes/minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes/turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="classes/minecraft.html" title="&lt;no title&gt;"
+              >next</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/readme_link.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
