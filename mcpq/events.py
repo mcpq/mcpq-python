@@ -49,7 +49,7 @@ WARN_DROPPED_INTERVAL: int = (
 class Event:
     timestamp: float = field(
         init=False, repr=False, compare=True, hash=False, default_factory=time.time
-    )  #: The timestamp when the event was received. Will be used for sorting events by default
+    )  #: The timestamp when the event was received. Used for sorting events of same type
 
 
 @dataclass(frozen=True, slots=True)
@@ -269,8 +269,7 @@ class _EventHandler(_HasStub, _EntityProvider, _PlayerProvider):
       .. code-block:: python
 
          for event in mc.pollProjectileHitEvents():
-             if event.target_player:
-                 mc.postToChat(f"Player {event.player} hit player {event.target_player} with {event.projectile_type}")
+             mc.postToChat(f"Player {event.player} hit {event.target}")
 
     - **Register Callback:**
 
@@ -281,8 +280,7 @@ class _EventHandler(_HasStub, _EntityProvider, _PlayerProvider):
       .. code-block:: python
 
          def myfunc(event):
-             if event.target_player:
-                 mc.postToChat(f"Player {event.player} hit player {event.target_player} with {event.projectile_type}")
+             mc.postToChat(f"Player {event.player} hit {event.target}")
 
          mc.registerCallbackProjectileHitEvent(myfunc)
 

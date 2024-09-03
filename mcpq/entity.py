@@ -31,12 +31,15 @@ class Entity(_HasStub):
 
        # `world` can be `mc` for default world or a specific world, like `mc.nether`
        entities = world.getEntities()  # get all spawnable entities in world
-       entities = world.getEntities(only_spawnable=False)  # get all entities in world, even non-spawnable ones (usually not needed)
+       # get all entities in world, even non-spawnable ones (usually not needed)
+       entities = world.getEntities(only_spawnable=False)
        entities = world.getEntities("pig")  # get all pigs in world
-       # get all falling_block in world, which are not spawnable, therefore requires the second argument to be False
+       # get all falling_block in world, which are not spawnable (only_spawnable=False)
        entities = world.getEntities("falling_block", only_spawnable=False)
-       entities = world.getEntitiesAround(Vec3(0, 0, 0), 20)  # get all entities in world in 20 block radius around origin
-       mycreeper = world.spawnEntity("creeper", Vec3(0, 0, 0))  # spawn a creeper at origin and get it as entity
+       # get all entities in world in 20 block radius around origin
+       entities = world.getEntitiesAround(Vec3(0, 0, 0), 20)
+       # spawn a creeper at origin and get it as entity
+       mycreeper = world.spawnEntity("creeper", Vec3(0, 0, 0))
 
     Once you have your entitiy you can use it in a multitude of ways:
 
@@ -55,15 +58,16 @@ class Entity(_HasStub):
        # other modifiers
        entity.kill()  # kill entity
        entity.giveEffect("glowing", 5)  # give entity glowing for 5 seconds
-       entity.runCommand("data merge entity @s {NoAI:1b}")  # run command as entity and disable its ai, @s refers to itself
+       # run command as entity and disable its ai, @s refers to itself
+       entity.runCommand("data merge entity @s {NoAI:1b}")
        ...
 
     .. note::
 
        Whether or not exceptions from operations on *unloaded or dead* entities are ignored is controlled by the global variable ``mcpq.entity.ALLOW_UNLOADED_ENTITY_OPS``, which is True by default.
-       Entities can get unloaded or die at any time and checking with :attr:`loaded` before every operation will still not guarantee that the entity exists by the time the operation is received by the server.
-       To make life easier all EntityNotFound exceptions will be cought and ignored if ``mcpq.entity.ALLOW_UNLOADED_ENTITY_OPS`` is True.
-       Note that this will make it look like the operation succeeded, even if the entity was (already) unloaded or offline.
+       Entities can get unloaded or die at any time and even checking with :attr:`loaded` before every operation will not guarantee that the entity exists by the time the operation is received by the server.
+       To make life easier all EntityNotFound exceptions will be caught and ignored if ``mcpq.entity.ALLOW_UNLOADED_ENTITY_OPS`` is True.
+       Note that this will make it look like the operation succeeded, even if the entity was (already) unloaded or dead.
 
     .. note::
 
@@ -316,10 +320,14 @@ class Entity(_HasStub):
 
         .. code-block:: python
 
-           entity.teleport(pos=Vec3(0, 0, 0))  # teleport entity to origin in same world
-           entity.teleport(world=mc.end)  # teleport entity to end at same relative coordinates
-           entity.teleport(facing=Vec3().east())  # make entity face straigth east without changing world or position
-           entity.teleport(pos=Vec3(), facing=Vec3().east(), world=mc.end)  # teleport entity into origin at end facing east
+           # teleport entity to origin in same world
+           entity.teleport(pos=Vec3(0, 0, 0))
+           # teleport entity to end at same relative coordinates
+           entity.teleport(world=mc.end)
+           # make entity face straigth east without changing world or position
+           entity.teleport(facing=Vec3().east())
+           # teleport entity into origin at end facing east
+           entity.teleport(pos=Vec3(), facing=Vec3().east(), world=mc.end)
 
         :param pos: New position the entity should be teleported to, or None if position should not change, defaults to None
         :type pos: Vec3 | None, optional
