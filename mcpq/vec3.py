@@ -51,6 +51,7 @@ class Vec3:
         return yaw, pitch
 
     def __add__(self, v: _NumVec) -> Vec3:
+        "Vector addition or add scalar to x, y and z"
         if isinstance(v, Number):
             return Vec3(self.x + v, self.y + v, self.z + v)
         if isinstance(v, Vec3):
@@ -61,6 +62,7 @@ class Vec3:
         return self + v
 
     def __sub__(self, v: _NumVec) -> Vec3:
+        "Vector subtraction or subtract scalar from x, y and z"
         if isinstance(v, Number):
             return Vec3(self.x - v, self.y - v, self.z - v)
         if isinstance(v, Vec3):
@@ -81,6 +83,7 @@ class Vec3:
         return NotImplemented
 
     def __mul__(self, v: _NumVec) -> Vec3:
+        "Scalar multiplication or equiavalent to :func:`multiply_elementwise`"
         if isinstance(v, Number):
             return Vec3(self.x * v, self.y * v, self.z * v)
         if isinstance(v, Vec3):
@@ -91,6 +94,7 @@ class Vec3:
         return self * v
 
     def __truediv__(self, v: _NumType) -> Vec3:
+        "Equivalent to multiplying x, y and z with 1.0 / `v`"
         if isinstance(v, Number):
             return Vec3(self.x / v, self.y / v, self.z / v)
         return NotImplemented

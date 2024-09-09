@@ -29,8 +29,6 @@ def process_signature(app, what, name, obj, options, signature, return_annotatio
         if classname.startswith("_") or any(l.startswith("_") for l in lasts):
             print(f"Delete signature of {classname}")
             signature = ""
-    if what != "data" and name.split(".")[-1].startswith("_"):
-        print("DEBUG DATA", what, name)
 
     return signature, return_annotation
 
