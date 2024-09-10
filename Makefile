@@ -7,9 +7,7 @@ show_docs:
 	@echo "Serving ./docs on http://127.0.0.1:8000/"
 	@python3 -m http.server 8000 --bind 127.0.0.1 --directory ./docs
 
-live_docs:
-	rm -rf docsource/_build
-	make -C ./docsource html && python3 -m http.server 8000 --bind 127.0.0.1 --directory ./docsource/_build/html
+live_docs: | docs show_docs
 
 all: | docs dist
 

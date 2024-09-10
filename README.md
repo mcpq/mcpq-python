@@ -48,10 +48,12 @@ for i in range(4):
 
 ## Documentation
 
-To learn everything about the library checkout [the docs](https://mcpq.github.io/mcpq-python/) where the *most recent version* of the docs are available.
+You can explore the full documentation for the library by visiting [the docs](https://mcpq.github.io/mcpq-python/), which hosts the *latest released version*.
 
-Only the most recent version of the docs is published. 
-If you want to checkout older versions of the documentation, `git checkout` the branch or tag you want to see and use `make show_docs` to locally host the current docs at `localhost:8000`. 
+Only the most recent version of the documentation is published there. 
+If you need to view older versions, you can use `git checkout vX.Y.Z` to switch to a desired release, then run `make show_docs` to serve the `docs` folder locally at `localhost:8000`.
+
+For documentation related to *non-tagged commits*, run `make live_docs` to build the docs first, as the `docs` folder is only committed for tagged releases.
 
 
 ## Versions
@@ -94,6 +96,6 @@ Afterwards you can use `make proto` to re-build the stubs.
 
 [LGPLv3](LICENSE)
 
-> Note: The *intent* behind the chosen license, is to allow the licensed software to be *used* (as is) in any type of project, even commercial or closed-source ones.
-> However, changes or modifications *to the licensed software itself* must be shared via the same license openly.
+> Note: The *intent* behind the chosen license is to allow the licensed software to be *used* (without modification) in any type of project, even commercial or closed-source ones.
+> However, if you make changes or modifications *to the licensed software itself*, those modifications must be shared under the same license.
 > Checkout [this blog](https://fossa.com/blog/open-source-software-licenses-101-lgpl-license/) for an in-depth explanation.
