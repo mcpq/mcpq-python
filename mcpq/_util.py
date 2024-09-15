@@ -1,11 +1,36 @@
 from __future__ import annotations
 
 import contextlib
+import functools
 import threading
+import warnings
 import weakref
 from typing import Callable, Generator, Hashable, TypeAlias, TypeVar
 
 __all__ = ["ReentrantRWLock", "ThreadSafeSingeltonCache"]
+
+
+def deprecated(message: str | None = None):
+    def inner(func):
+        """This is a decorator which can be used to mark functions
+        as deprecated. It will result in a warning being emitted
+        when the function is used."""
+        # https://stackoverflow.com/questions/2536307/decorators-in-the-python-standard-lib-deprecated-specifically
+
+        @functools.wraps(func)
+        def new_func(*args, **kwargs):
+            warnings.simplefilter("always", DeprecationWarning)  # turn off filter
+            warnings.warn(
+                message if message else "Call to deprecated function {}.".format(func.__name__),
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.simplefilter("default", DeprecationWarning)  # reset filter
+            return func(*args, **kwargs)
+
+        return new_func
+
+    return inner
 
 
 class ReentrantRWLock:
@@ -230,7 +255,7 @@ class ThreadSafeSingeltonCache:
 
         .. warning::
 
-        In case ``uses_weakre == True`` no guarantee is given that when this function returns
+        In case ``uses_weakref == True`` no guarantee is given that when this function returns
         the returned keys actually exist.
 
         :return: a tuple of keys that currently exist
@@ -242,7 +267,7 @@ class ThreadSafeSingeltonCache:
     def values(self) -> tuple[Value]:
         """Returns a tuple of all values which currently exist.
 
-        :return:  a tuple of values that currently exist
+        :return: a tuple of values that currently exist
         :rtype: tuple[Value]
         """
         with self._lock.for_read():
@@ -251,7 +276,7 @@ class ThreadSafeSingeltonCache:
     def items(self) -> tuple[tuple[Key, Value]]:
         """Returns a tuple of all key value pairs which currently exist.
 
-        :return:  a tuple of key value pairs that currently exist
+        :return: a tuple of key value pairs that currently exist
         :rtype: tuple[tuple[Key, Value]]
         """
         with self._lock.for_read():

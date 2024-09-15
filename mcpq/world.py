@@ -30,17 +30,22 @@ class _DefaultWorld(_HasStub, _EntityProvider):
        mc.pvp = False  # disable pvp everywhere (on all worlds)
 
        # affect only 'default' world (entities and blocks are only collected/set in that world)
-       ground_pos = mc.getHeighestPos(0, 0)  # get heighest position on ground (= non-air) at origin
+       ground_pos = mc.getHeighestPos(0, 0)  # get position of heighest ground at origin
        block = mc.getBlock(ground_pos)  # get the block type there
        mc.setBlock("diamond_block", ground_pos)  # replace that block at location with diamond
        mc.setBlockList("emerald_block", [ground_pos.up(2).east(i) for i in range(0,20,2)])  # set every second block in a line along the x axis to emerald
-       mc.setBlockCube("oak_planks", ground_pos.up(50), ground_pos.up(50) + 9)  # set a 10 x 10 x 10 oak plank block 50 blocks above ground
-       sheep = mc.spawnEntity("sheep", ground_pos.up(1))  # spawn a sheep on that block
+       # set a 10 x 10 x 10 oak plank block 50 blocks above ground
+       mc.setBlockCube("oak_planks", ground_pos.up(50), ground_pos.up(50) + 9)
+       # spawn a sheep on that block
+       sheep = mc.spawnEntity("sheep", ground_pos.up(1))
        entities = mc.getEntities()  # get all (loaded) entities
-       entities = mc.getEntitiesAround(ground_pos, 20)  # get all  (loaded) entities around origin highest block in 20 block radius
+       # get all  (loaded) entities around origin highest block in 20 block radius
+       entities = mc.getEntitiesAround(ground_pos, 20)
        mc.removeEntities("sheep")  # remove all (loaded) sheep
-       blocks = mc.copyBlockCube(Vec3(0,0,0), Vec3(5,5,5))  # copy all blocks between those two points (inclusive)
-       mc.pasteBlockCube(blocks, ground_pos.up(20))  # paste back the copied blocks 20 blocks above origin ground
+       # copy all blocks between those two points (inclusive)
+       blocks = mc.copyBlockCube(Vec3(0,0,0), Vec3(5,5,5))
+       # paste back the copied blocks 20 blocks above origin ground
+       mc.pasteBlockCube(blocks, ground_pos.up(20))
        mc.setBed(ground_pos.up(1))  # place a bed on top of diamond block
     """
 
@@ -529,6 +534,7 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
 
     .. code-block:: python
 
+       worlds = mc.worlds
        world = mc.overworld
        world = mc.nether
        world = mc.end
@@ -539,18 +545,22 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
     .. code-block:: python
 
        world.pvp = False  # disable pvp only in this world
-       ground_pos = world.getHeighestPos(0, 0)  # get heighest position on ground (= non-air) at origin
+       ground_pos = world.getHeighestPos(0, 0)  # get position of heighest ground at origin
        block = world.getBlock(ground_pos)  # get the block type there
        world.setBlock("diamond_block", ground_pos)  # replace that block at location with diamond
        # set every second block in a line along the x axis to emerald
        world.setBlockList("emerald_block", [ground_pos.up(2).east(i) for i in range(0,20,2)])
-       world.setBlockCube("oak_planks", ground_pos.up(50), ground_pos.up(50) + 9)  # set a 10 x 10 x 10 oak plank block 50 blocks above ground
+       # set a 10 x 10 x 10 oak plank block 50 blocks above ground
+       world.setBlockCube("oak_planks", ground_pos.up(50), ground_pos.up(50) + 9)
        sheep = world.spawnEntity("sheep", ground_pos.up(1))  # spawn a sheep on that block
        entities = world.getEntities()  # get all (loaded) entities
-       entities = world.getEntitiesAround(ground_pos, 20)  # get all  (loaded) entities around origin highest block in 20 block radius
+       # get all  (loaded) entities around origin highest block in 20 block radius
+       entities = world.getEntitiesAround(ground_pos, 20)
        world.removeEntities("sheep")  # remove all (loaded) sheep
-       blocks = world.copyBlockCube(Vec3(0,0,0), Vec3(5,5,5))  # copy all blocks between those two points (inclusive)
-       world.pasteBlockCube(blocks, ground_pos.up(20))  # paste back the copied blocks 20 blocks above origin ground
+       # copy all blocks between those two points (inclusive)
+       blocks = world.copyBlockCube(Vec3(0,0,0), Vec3(5,5,5))
+       # paste back the copied blocks 20 blocks above origin ground
+       world.pasteBlockCube(blocks, ground_pos.up(20))
        world.setBed(ground_pos.up(1))  # place a bed on top of diamond block
 
     .. note::
@@ -581,7 +591,7 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
 
     @property
     def name(self) -> str:
-        """The name of the folder/namespace the world resides in, e.g., ``"world"`` or ``"world_the_nether"``"""
+        """The name of the folder/namespace the world resides in, e.g., ``"world"`` or ``"world_the_end"``"""
         return self._name
 
     @property
@@ -687,6 +697,7 @@ class _WorldHub(_HasStub, _EntityProvider):
         :return: The corresponding :class:`World` object
         :rtype: World
         """
+        world = None
         parts = key.split(":", maxsplit=1)
         if len(parts) == 1:
             key = "minecraft:" + key
@@ -694,6 +705,7 @@ class _WorldHub(_HasStub, _EntityProvider):
             if world.key == key:
                 return world
         raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="key=" + key))
+        return world
 
     def getWorldByName(self, name: str) -> World:
         """The `name` of a world is the folder or namespace the world resides in.
@@ -704,7 +716,7 @@ class _WorldHub(_HasStub, _EntityProvider):
 
         - ``"world"``, for the overworld
 
-        - ``"world_the_nether"``, for the nether
+        - ``"world_nether"``, for the nether
 
         - ``"world_the_end"``, for the end
 

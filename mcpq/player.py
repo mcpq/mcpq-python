@@ -59,8 +59,8 @@ class Player(Entity, _HasStub):
     .. note::
 
        Whether or not exceptions from operations on *offline* players are ignored is controlled by the global variable ``mcpq.player.ALLOW_OFFLINE_PLAYER_OPS``, which is True by default.
-       Players can go offline at any time and checking with :attr:`online` before every operation will still not guarantee that the player is online by the time the operation is received by the server.
-       To make life easier all PlayerNotFound exceptions will be cought and ignored if ``mcpq.player.ALLOW_OFFLINE_PLAYER_OPS`` is True.
+       Players can go offline at any time and even checking with :attr:`online` before every operation will not guarantee that the player is online by the time the operation is received by the server.
+       To make life easier all PlayerNotFound exceptions will be caught and ignored if ``mcpq.player.ALLOW_OFFLINE_PLAYER_OPS`` is True.
        Note that this will make it look like the operation succeeded, even if the player was (already) offline.
        Use :class:`PlayerJoinEvent`, :class:`PlayerLeaveEvent` or update your online players regularly with ``mc.getPlayers()`` to control the state of your online players.
 

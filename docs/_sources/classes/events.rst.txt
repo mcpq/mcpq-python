@@ -1,9 +1,13 @@
 Events
 ======
 
-.. autodata:: mcpq.events._EventHandler
-   :annotation: = Minecraft
+.. autoclass:: mcpq.events.EventHandler
 
+-----
+
+.. autoclass:: mcpq.events.SingleEventHandler
+
+-----
 
 .. autoclass:: mcpq.events.PlayerJoinEvent
    :inherited-members:

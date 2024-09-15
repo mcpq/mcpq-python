@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="events.html" title="Events"
              accesskey="P">previous</a> |
@@ -79,6 +79,30 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <li><p>yaw: -180..179.99 (-180 north, -90 east, 0 south, 90 west)</p></li>
 <li><p>pitch: -90..90 (-90 up, 0 straight, 90 down)</p></li>
 </ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__add__" title="Link to this definition">¶</a></dt>
+<dd><p>Vector addition or add scalar to x, y and z</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.__sub__">
+<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__sub__" title="Link to this definition">¶</a></dt>
+<dd><p>Vector subtraction or subtract scalar from x, y and z</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.__mul__">
+<span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__mul__" title="Link to this definition">¶</a></dt>
+<dd><p>Scalar multiplication or equiavalent to <a class="reference internal" href="#mcpq.Vec3.multiply_elementwise" title="mcpq.Vec3.multiply_elementwise"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiply_elementwise()</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.__truediv__">
+<span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__truediv__" title="Link to this definition">¶</a></dt>
+<dd><p>Equivalent to multiplying x, y and z with 1.0 / <cite>v</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -336,6 +360,10 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.z"><code class="docutils literal notranslate"><span class="pre">Vec3.z</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.from_yaw_pitch"><code class="docutils literal notranslate"><span class="pre">Vec3.from_yaw_pitch()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.yaw_pitch"><code class="docutils literal notranslate"><span class="pre">Vec3.yaw_pitch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__add__"><code class="docutils literal notranslate"><span class="pre">Vec3.__add__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__sub__"><code class="docutils literal notranslate"><span class="pre">Vec3.__sub__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__mul__"><code class="docutils literal notranslate"><span class="pre">Vec3.__mul__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__truediv__"><code class="docutils literal notranslate"><span class="pre">Vec3.__truediv__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.length"><code class="docutils literal notranslate"><span class="pre">Vec3.length()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.distance"><code class="docutils literal notranslate"><span class="pre">Vec3.distance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.angle"><code class="docutils literal notranslate"><span class="pre">Vec3.angle()</span></code></a></li>

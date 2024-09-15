@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -18,7 +18,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="vec3.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -39,8 +39,8 @@
   <dl class="py class">
 <dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Turtle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="minecraft.html#mcpq.Minecraft" title="mcpq.minecraft.Minecraft"><span class="pre">Minecraft</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><span class="pre">World</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle" title="Link to this definition">¶</a></dt>
-<dd><p>The turtle is similar to the Python turtle module,
-in that it is a construct that can move precisely while drawing a line behind it.</p>
+<dd><p>Turtle is a construct that can move precisely in 3D while drawing a line behind it on the Minecraft server made of blocks.
+It is inspired by the Python turtle module.</p>
 <p>The turtle takes three optional arguments, which will be set to the following defaults if not otherwise specified:</p>
 <ul class="simple">
 <li><p><cite>mc</cite> will be initialized with a connection to localhost</p></li>
@@ -152,13 +152,13 @@ Can be set to 0 for fastest, i.e., do not wait between steps.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.pendown">
 <span class="sig-name descname"><span class="pre">pendown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.pendown" title="Link to this definition">¶</a></dt>
-<dd><p>Stop drawing while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.penup" title="mcpq.tools.mcturtle.Turtle.penup"><code class="xref py py-func docutils literal notranslate"><span class="pre">penup()</span></code></a> is called (default)</p>
+<dd><p>Draw while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.penup" title="mcpq.tools.mcturtle.Turtle.penup"><code class="xref py py-func docutils literal notranslate"><span class="pre">penup()</span></code></a> is called (default)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.tools.mcturtle.Turtle.penup">
 <span class="sig-name descname"><span class="pre">penup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.tools.mcturtle.Turtle" title="mcpq.tools.mcturtle.Turtle"><span class="pre">Turtle</span></a></span></span><a class="headerlink" href="#mcpq.tools.mcturtle.Turtle.penup" title="Link to this definition">¶</a></dt>
-<dd><p>Stop drawing while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pendown" title="mcpq.tools.mcturtle.Turtle.pendown"><code class="xref py py-func docutils literal notranslate"><span class="pre">pendown()</span></code></a> is called</p>
+<dd><p>Do not draw while moving until <a class="reference internal" href="#mcpq.tools.mcturtle.Turtle.pendown" title="mcpq.tools.mcturtle.Turtle.pendown"><code class="xref py py-func docutils literal notranslate"><span class="pre">pendown()</span></code></a> is called</p>
 </dd></dl>
 
 <dl class="py method">

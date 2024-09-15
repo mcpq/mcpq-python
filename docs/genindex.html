@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; MCPQ 1.0.0 documentation</title>
+    <title>Index &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=8513425a" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="#" />
@@ -16,7 +16,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="index.html">MCPQ 1.0.0 documentation</a></div>
+          href="index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="#" title="General Index"
              accesskey="I">index</a>
@@ -66,7 +66,15 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="classes/events.html#mcpq.events._EventHandler">_EventHandler (in module mcpq.events)</a>
+      <li><a href="classes/vec3.html#mcpq.Vec3.__add__">__add__() (Vec3 method)</a>
+</li>
+      <li><a href="classes/vec3.html#mcpq.Vec3.__mul__">__mul__() (Vec3 method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="classes/vec3.html#mcpq.Vec3.__sub__">__sub__() (Vec3 method)</a>
+</li>
+      <li><a href="classes/vec3.html#mcpq.Vec3.__truediv__">__truediv__() (Vec3 method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -108,6 +116,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.block_hit">block_hit (EventHandler property)</a>
+</li>
       <li><a href="classes/events.html#mcpq.events.BlockHitEvent">BlockHitEvent (class in mcpq.events)</a>
 </li>
       <li><a href="classes/turtle.html#mcpq.tools.mcturtle.Turtle.body">body() (Turtle method)</a>
@@ -122,12 +132,14 @@
 </li>
       <li><a href="classes/vec3.html#mcpq.Vec3.ceil">ceil() (Vec3 method)</a>
 </li>
-      <li><a href="classes/events.html#mcpq.events.ChatEvent">ChatEvent (class in mcpq.events)</a>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.chat">chat (EventHandler property)</a>
 </li>
-      <li><a href="classes/vec3.html#mcpq.Vec3.closest_axis">closest_axis() (Vec3 method)</a>
+      <li><a href="classes/events.html#mcpq.events.ChatEvent">ChatEvent (class in mcpq.events)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="classes/vec3.html#mcpq.Vec3.closest_axis">closest_axis() (Vec3 method)</a>
+</li>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.copyBlockCube">copyBlockCube() (Minecraft method)</a>
 
       <ul>
@@ -170,11 +182,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/vec3.html#mcpq.Vec3.east">east() (Vec3 method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.end">end (Minecraft property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/entity.html#mcpq.entity.Entity">Entity (class in mcpq.entity)</a>
+</li>
+      <li><a href="classes/events.html#mcpq.events.EventHandler">EventHandler (class in mcpq.events)</a>
+</li>
+      <li><a href="classes/minecraft.html#mcpq.Minecraft.events">events (Minecraft property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -210,6 +226,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/player.html#mcpq.player.Player.gamemode">gamemode() (Player method)</a>
 </li>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler.get">get() (SingleEventHandler method)</a>
+</li>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler.get_nowait">get_nowait() (SingleEventHandler method)</a>
+</li>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.getBlock">getBlock() (Minecraft method)</a>
 
       <ul>
@@ -240,14 +260,14 @@
       </ul></li>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.getEntityById">getEntityById() (Minecraft method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.getHeight">getHeight() (Minecraft method)</a>
 
       <ul>
         <li><a href="classes/world.html#mcpq.world.World.getHeight">(World method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.getHighestPos">getHighestPos() (Minecraft method)</a>
 
       <ul>
@@ -432,25 +452,21 @@
         <li><a href="classes/events.html#mcpq.events.ProjectileHitEvent.player">(ProjectileHitEvent attribute)</a>
 </li>
       </ul></li>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.player_death">player_death (EventHandler property)</a>
+</li>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.player_join">player_join (EventHandler property)</a>
+</li>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.player_leave">player_leave (EventHandler property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/events.html#mcpq.events.PlayerDeathEvent">PlayerDeathEvent (class in mcpq.events)</a>
 </li>
       <li><a href="classes/events.html#mcpq.events.PlayerJoinEvent">PlayerJoinEvent (class in mcpq.events)</a>
 </li>
       <li><a href="classes/events.html#mcpq.events.PlayerLeaveEvent">PlayerLeaveEvent (class in mcpq.events)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollBlockHitEvents">pollBlockHitEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollChatEvents">pollChatEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollPlayerDeathEvents">pollPlayerDeathEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollPlayerJoinEvents">pollPlayerJoinEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollPlayerLeaveEvents">pollPlayerLeaveEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.pollProjectileHitEvents">pollProjectileHitEvents() (Minecraft method)</a>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler.poll">poll() (SingleEventHandler method)</a>
 </li>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.port">port (Minecraft property)</a>
 </li>
@@ -467,6 +483,8 @@
 </li>
       </ul></li>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.postToChat">postToChat() (Minecraft method)</a>
+</li>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.projectile_hit">projectile_hit (EventHandler property)</a>
 </li>
       <li><a href="classes/events.html#mcpq.events.ProjectileHitEvent.projectile_type">projectile_type (ProjectileHitEvent attribute)</a>
 </li>
@@ -486,17 +504,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/minecraft.html#mcpq.Minecraft.refreshWorlds">refreshWorlds() (Minecraft method)</a>
 </li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackBlockHitEvent">registerCallbackBlockHitEvent() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackChatEvent">registerCallbackChatEvent() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackPlayerDeathEvents">registerCallbackPlayerDeathEvents() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackPlayerJoinEvent">registerCallbackPlayerJoinEvent() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackPlayerLeaveEvent">registerCallbackPlayerLeaveEvent() (Minecraft method)</a>
-</li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.registerCallbackProjectileHitEvent">registerCallbackProjectileHitEvent() (Minecraft method)</a>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler.register">register() (SingleEventHandler method)</a>
 </li>
       <li><a href="classes/entity.html#mcpq.entity.Entity.remove">remove() (Entity method)</a>
 
@@ -516,14 +524,14 @@
         <li><a href="classes/player.html#mcpq.player.Player.replaceHelmet">(Player method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/entity.html#mcpq.entity.Entity.replaceItem">replaceItem() (Entity method)</a>
 
       <ul>
         <li><a href="classes/player.html#mcpq.player.Player.replaceItem">(Player method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes/turtle.html#mcpq.tools.mcturtle.Turtle.right">right() (Turtle method)</a>
 </li>
       <li><a href="classes/events.html#mcpq.events.BlockHitEvent.right_hand">right_hand (BlockHitEvent attribute)</a>
@@ -576,6 +584,8 @@
       </ul></li>
       <li><a href="classes/turtle.html#mcpq.tools.mcturtle.Turtle.showhead">showhead() (Turtle method)</a>
 </li>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler">SingleEventHandler (class in mcpq.events)</a>
+</li>
       <li><a href="classes/vec3.html#mcpq.Vec3.south">south() (Vec3 method)</a>
 </li>
   </ul></td>
@@ -598,9 +608,11 @@
 </li>
       <li><a href="classes/turtle.html#mcpq.tools.mcturtle.Turtle.start_batch_mode">start_batch_mode() (Turtle method)</a>
 </li>
+      <li><a href="classes/events.html#mcpq.events.SingleEventHandler.stop">stop() (SingleEventHandler method)</a>
+</li>
       <li><a href="classes/turtle.html#mcpq.tools.mcturtle.Turtle.stop_batch_mode">stop_batch_mode() (Turtle method)</a>
 </li>
-      <li><a href="classes/minecraft.html#mcpq.Minecraft.stopEventPollingAndClearCallbacks">stopEventPollingAndClearCallbacks() (Minecraft method)</a>
+      <li><a href="classes/events.html#mcpq.events.EventHandler.stopEventPollingAndClearCallbacks">stopEventPollingAndClearCallbacks() (EventHandler method)</a>
 </li>
       <li><a href="classes/player.html#mcpq.player.Player.survival">survival() (Player method)</a>
 </li>

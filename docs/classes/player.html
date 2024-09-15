@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="entity.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -77,8 +77,8 @@ getting or setting their position, orientation, world, gamemode and more.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Whether or not exceptions from operations on <em>offline</em> players are ignored is controlled by the global variable <code class="docutils literal notranslate"><span class="pre">mcpq.player.ALLOW_OFFLINE_PLAYER_OPS</span></code>, which is True by default.
-Players can go offline at any time and checking with <a class="reference internal" href="#mcpq.player.Player.online" title="mcpq.player.Player.online"><code class="xref py py-attr docutils literal notranslate"><span class="pre">online</span></code></a> before every operation will still not guarantee that the player is online by the time the operation is received by the server.
-To make life easier all PlayerNotFound exceptions will be cought and ignored if <code class="docutils literal notranslate"><span class="pre">mcpq.player.ALLOW_OFFLINE_PLAYER_OPS</span></code> is True.
+Players can go offline at any time and even checking with <a class="reference internal" href="#mcpq.player.Player.online" title="mcpq.player.Player.online"><code class="xref py py-attr docutils literal notranslate"><span class="pre">online</span></code></a> before every operation will not guarantee that the player is online by the time the operation is received by the server.
+To make life easier all PlayerNotFound exceptions will be caught and ignored if <code class="docutils literal notranslate"><span class="pre">mcpq.player.ALLOW_OFFLINE_PLAYER_OPS</span></code> is True.
 Note that this will make it look like the operation succeeded, even if the player was (already) offline.
 Use <code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code> or update your online players regularly with <code class="docutils literal notranslate"><span class="pre">mc.getPlayers()</span></code> to control the state of your online players.</p>
 </div>
@@ -294,10 +294,14 @@ When assigned to is equivalent to <code class="docutils literal notranslate"><sp
 <dd><p>Change the entity’s position, facing direction and/or world by teleporting it.
 Any of the arguments not set will not be changed.
 For example, it is possible to only change the world the entity is in without changing its (relative) coordinates or facing direction and vice versa.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># teleport entity to origin in same world</span>
-<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c1"># teleport entity to end at same relative coordinates</span>
-<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">())</span>  <span class="c1"># make entity face straigth east without changing world or position</span>
-<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(),</span> <span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">(),</span> <span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c1"># teleport entity into origin at end facing east</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># teleport entity to origin in same world</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="c1"># teleport entity to end at same relative coordinates</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+<span class="c1"># make entity face straigth east without changing world or position</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">())</span>
+<span class="c1"># teleport entity into origin at end facing east</span>
+<span class="n">entity</span><span class="o">.</span><span class="n">teleport</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(),</span> <span class="n">facing</span><span class="o">=</span><span class="n">Vec3</span><span class="p">()</span><span class="o">.</span><span class="n">east</span><span class="p">(),</span> <span class="n">world</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="player.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -47,7 +47,8 @@ With this you can query blocks and world features and set them in turn, as well 
 This allows building on the server quickly and precisely with only a few commands.
 Note that all commands of <a class="reference internal" href="#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> will only manipulate that world, for example, <a class="reference internal" href="#mcpq.world.World.getEntities" title="mcpq.world.World.getEntities"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntities()</span></code></a> will <em>only</em> return entities in <em>this</em> world.</p>
 <p>Do not instantiate the <a class="reference internal" href="#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> class directly but use one of the following methods instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">overworld</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">worlds</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">worlds</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">overworld</span>
 <span class="n">world</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">nether</span>
 <span class="n">world</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">end</span>
 <span class="n">someotherworld</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getWorldByKey</span><span class="p">(</span><span class="s2">&quot;mod_namespace:world_key&quot;</span><span class="p">)</span>
@@ -55,18 +56,22 @@ Note that all commands of <a class="reference internal" href="#mcpq.world.World"
 </div>
 <p>Once you have your world you can use it in a multitude of ways:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world</span><span class="o">.</span><span class="n">pvp</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># disable pvp only in this world</span>
-<span class="n">ground_pos</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getHeighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># get heighest position on ground (= non-air) at origin</span>
+<span class="n">ground_pos</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getHeighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># get position of heighest ground at origin</span>
 <span class="n">block</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(</span><span class="n">ground_pos</span><span class="p">)</span>  <span class="c1"># get the block type there</span>
 <span class="n">world</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">ground_pos</span><span class="p">)</span>  <span class="c1"># replace that block at location with diamond</span>
 <span class="c1"># set every second block in a line along the x axis to emerald</span>
 <span class="n">world</span><span class="o">.</span><span class="n">setBlockList</span><span class="p">(</span><span class="s2">&quot;emerald_block&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">east</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
-<span class="n">world</span><span class="o">.</span><span class="n">setBlockCube</span><span class="p">(</span><span class="s2">&quot;oak_planks&quot;</span><span class="p">,</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span>  <span class="c1"># set a 10 x 10 x 10 oak plank block 50 blocks above ground</span>
+<span class="c1"># set a 10 x 10 x 10 oak plank block 50 blocks above ground</span>
+<span class="n">world</span><span class="o">.</span><span class="n">setBlockCube</span><span class="p">(</span><span class="s2">&quot;oak_planks&quot;</span><span class="p">,</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span>
 <span class="n">sheep</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;sheep&quot;</span><span class="p">,</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># spawn a sheep on that block</span>
 <span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntities</span><span class="p">()</span>  <span class="c1"># get all (loaded) entities</span>
-<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntitiesAround</span><span class="p">(</span><span class="n">ground_pos</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># get all  (loaded) entities around origin highest block in 20 block radius</span>
+<span class="c1"># get all  (loaded) entities around origin highest block in 20 block radius</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getEntitiesAround</span><span class="p">(</span><span class="n">ground_pos</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 <span class="n">world</span><span class="o">.</span><span class="n">removeEntities</span><span class="p">(</span><span class="s2">&quot;sheep&quot;</span><span class="p">)</span>  <span class="c1"># remove all (loaded) sheep</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">copyBlockCube</span><span class="p">(</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>  <span class="c1"># copy all blocks between those two points (inclusive)</span>
-<span class="n">world</span><span class="o">.</span><span class="n">pasteBlockCube</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>  <span class="c1"># paste back the copied blocks 20 blocks above origin ground</span>
+<span class="c1"># copy all blocks between those two points (inclusive)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">copyBlockCube</span><span class="p">(</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="c1"># paste back the copied blocks 20 blocks above origin ground</span>
+<span class="n">world</span><span class="o">.</span><span class="n">pasteBlockCube</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
 <span class="n">world</span><span class="o">.</span><span class="n">setBed</span><span class="p">(</span><span class="n">ground_pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># place a bed on top of diamond block</span>
 </pre></div>
 </div>
@@ -84,7 +89,7 @@ If you want to affect a specific world, use <a class="reference internal" href="
 <dl class="py property">
 <dt class="sig sig-object py" id="mcpq.world.World.name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.world.World.name" title="Link to this definition">¶</a></dt>
-<dd><p>The name of the folder/namespace the world resides in, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;world&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;world_the_nether&quot;</span></code></p>
+<dd><p>The name of the folder/namespace the world resides in, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;world&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;world_the_end&quot;</span></code></p>
 </dd></dl>
 
 <dl class="py property">

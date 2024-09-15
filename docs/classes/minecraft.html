@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="../readme_link.html" title="Minecraft Protobuf Queries (MCPQ) Python Client Library"
              accesskey="P">previous</a> |
@@ -62,6 +62,13 @@ For security reasons it is recommended to connect from the same host as the serv
 </div>
 <p>The <a class="reference internal" href="#mcpq.Minecraft" title="mcpq.Minecraft"><code class="xref py py-class docutils literal notranslate"><span class="pre">Minecraft</span></code></a> instance is also an <em>event handler</em>, the default <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> and can be used to query <code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> objects from the server.
 Checkout the corresponding classes for more information.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.events">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><span class="pre">EventHandler</span></a></em><a class="headerlink" href="#mcpq.Minecraft.events" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code> for receiving events from the server.
+Checkout the <code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code> class for examples for receiving events.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="mcpq.Minecraft.host">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.Minecraft.host" title="Link to this definition">¶</a></dt>
@@ -206,7 +213,7 @@ The setting for the world the server opens is found in <code class="docutils lit
 A typical, unmodified <a class="reference external" href="https://papermc.io/">PaperMC</a> server will save the worlds in the following folders:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;world&quot;</span></code>, for the overworld</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;world_the_nether&quot;</span></code>, for the nether</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;world_nether&quot;</span></code>, for the nether</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;world_the_end&quot;</span></code>, for the end</p></li>
 </ul>
 <p>The name of the overworld (default <code class="docutils literal notranslate"><span class="pre">world</span></code>) is used as the prefix for the other folders.</p>
@@ -319,169 +326,6 @@ Will raise an error if either no player is online, or if the player with given <
 <dd class="field-odd"><p><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a></p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollPlayerJoinEvents">
-<span class="sig-name descname"><span class="pre">pollPlayerJoinEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><span class="pre">PlayerJoinEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollPlayerJoinEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent">PlayerJoinEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollPlayerLeaveEvents">
-<span class="sig-name descname"><span class="pre">pollPlayerLeaveEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><span class="pre">PlayerLeaveEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollPlayerLeaveEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent">PlayerLeaveEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollPlayerDeathEvents">
-<span class="sig-name descname"><span class="pre">pollPlayerDeathEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><span class="pre">PlayerDeathEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollPlayerDeathEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent">PlayerDeathEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollChatEvents">
-<span class="sig-name descname"><span class="pre">pollChatEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><span class="pre">ChatEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollChatEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent">ChatEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollBlockHitEvents">
-<span class="sig-name descname"><span class="pre">pollBlockHitEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><span class="pre">BlockHitEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollBlockHitEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent">BlockHitEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.pollProjectileHitEvents">
-<span class="sig-name descname"><span class="pre">pollProjectileHitEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><span class="pre">ProjectileHitEvent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.pollProjectileHitEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all events</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a list of events of that type since last poll, oldest first</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="events.html#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent">ProjectileHitEvent</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackPlayerJoinEvent">
-<span class="sig-name descname"><span class="pre">registerCallbackPlayerJoinEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><span class="pre">PlayerJoinEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackPlayerJoinEvent" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><em>PlayerJoinEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackPlayerLeaveEvent">
-<span class="sig-name descname"><span class="pre">registerCallbackPlayerLeaveEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><span class="pre">PlayerLeaveEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackPlayerLeaveEvent" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><em>PlayerLeaveEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackPlayerDeathEvents">
-<span class="sig-name descname"><span class="pre">registerCallbackPlayerDeathEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><span class="pre">PlayerDeathEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackPlayerDeathEvents" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><em>PlayerDeathEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackChatEvent">
-<span class="sig-name descname"><span class="pre">registerCallbackChatEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><span class="pre">ChatEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackChatEvent" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><em>ChatEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackBlockHitEvent">
-<span class="sig-name descname"><span class="pre">registerCallbackBlockHitEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><span class="pre">BlockHitEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackBlockHitEvent" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><em>BlockHitEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.registerCallbackProjectileHitEvent">
-<span class="sig-name descname"><span class="pre">registerCallbackProjectileHitEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><span class="pre">ProjectileHitEvent</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.registerCallbackProjectileHitEvent" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="events.html#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><em>ProjectileHitEvent</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – the function that should be called with the event as argument for each event of that type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.stopEventPollingAndClearCallbacks">
-<span class="sig-name descname"><span class="pre">stopEventPollingAndClearCallbacks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.stopEventPollingAndClearCallbacks" title="Link to this definition">¶</a></dt>
-<dd><p>Stops all active event capturing and clears event backlogs and registered callback functions.
-Calling a polling function or registering a callback afterwards, will start capturing events anew.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -798,6 +642,7 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.events"><code class="docutils literal notranslate"><span class="pre">Minecraft.events</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.host"><code class="docutils literal notranslate"><span class="pre">Minecraft.host</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.port"><code class="docutils literal notranslate"><span class="pre">Minecraft.port</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.postToChat"><code class="docutils literal notranslate"><span class="pre">Minecraft.postToChat()</span></code></a></li>
@@ -814,19 +659,6 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayers"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayers()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayerNames"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayerNames()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayer()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollPlayerJoinEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollPlayerJoinEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollPlayerLeaveEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollPlayerLeaveEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollPlayerDeathEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollPlayerDeathEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollChatEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollChatEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollBlockHitEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollBlockHitEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pollProjectileHitEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.pollProjectileHitEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackPlayerJoinEvent"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackPlayerJoinEvent()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackPlayerLeaveEvent"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackPlayerLeaveEvent()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackPlayerDeathEvents"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackPlayerDeathEvents()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackChatEvent"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackChatEvent()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackBlockHitEvent"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackBlockHitEvent()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.registerCallbackProjectileHitEvent"><code class="docutils literal notranslate"><span class="pre">Minecraft.registerCallbackProjectileHitEvent()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.stopEventPollingAndClearCallbacks"><code class="docutils literal notranslate"><span class="pre">Minecraft.stopEventPollingAndClearCallbacks()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pvp"><code class="docutils literal notranslate"><span class="pre">Minecraft.pvp</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getHighestPos"><code class="docutils literal notranslate"><span class="pre">Minecraft.getHighestPos()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getHeight"><code class="docutils literal notranslate"><span class="pre">Minecraft.getHeight()</span></code></a></li>

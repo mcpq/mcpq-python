@@ -11,8 +11,8 @@ def _sign(num: int | float) -> float:
 
 
 class Turtle:
-    """The turtle is similar to the Python turtle module,
-    in that it is a construct that can move precisely while drawing a line behind it.
+    """Turtle is a construct that can move precisely in 3D while drawing a line behind it on the Minecraft server made of blocks.
+    It is inspired by the Python turtle module.
 
     The turtle takes three optional arguments, which will be set to the following defaults if not otherwise specified:
 
@@ -260,13 +260,13 @@ class Turtle:
         return self
 
     def pendown(self) -> Turtle:
-        "Stop drawing while moving until :func:`penup` is called (default)"
+        "Draw while moving until :func:`penup` is called (default)"
         self._pendown = True
         self._paint()
         return self
 
     def penup(self) -> Turtle:
-        "Stop drawing while moving until :func:`pendown` is called"
+        "Do not draw while moving until :func:`pendown` is called"
         self._pendown = False
         self._paint()
         return self

@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Events &#8212; MCPQ 1.0.0 documentation</title>
+    <title>Events &#8212; MCPQ 1.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.0 documentation</a></div>
+          href="../index.html">MCPQ 1.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="world.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -41,15 +41,15 @@
             
   <section id="events">
 <h1>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h1>
-<dl class="py data">
-<dt class="sig sig-object py" id="mcpq.events._EventHandler">
-<span class="sig-name descname"><span class="pre">_EventHandler</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Minecraft</span></em><a class="headerlink" href="#mcpq.events._EventHandler" title="Link to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EventHandler</span></span><a class="headerlink" href="#mcpq.events.EventHandler" title="Link to this definition">¶</a></dt>
 <dd><p>Certain events that happen on the server can be captured and reacted to.</p>
 <p>These events are:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a> triggers whenever a player connects to the server</p></li>
-<li><p><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a> triggers whenever a player disconnects from the server</p></li>
-<li><p><a class="reference internal" href="#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a> triggers whenever a player dies</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a> triggers whenever a player connects to the server.</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a> triggers whenever a player disconnects from the server.</p></li>
+<li><p><a class="reference internal" href="#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a> triggers whenever a player dies.</p></li>
 <li><p><a class="reference internal" href="#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChatEvent</span></code></a> triggers whenever someone writes in the chat.
 This does <em>not</em> trigger for <code class="docutils literal notranslate"><span class="pre">/</span></code>-commands, <code class="xref py py-func docutils literal notranslate"><span class="pre">postToChat()</span></code>, direct console messages or other server logs.</p></li>
 <li><p><a class="reference internal" href="#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockHitEvent</span></code></a> triggers whenever a player clicks on a block with either the left or right mouse button.
@@ -60,35 +60,196 @@ This does <em>not</em> trigger for projectiles that were not fired by the player
 <p>There are two mutually exclusive ways how to receive events:</p>
 <ul>
 <li><p><strong>Polling:</strong></p>
-<p>The corresponding poll*EventName* function can be called to receive the events of that type since the last call to that poll function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">mc</span><span class="o">.</span><span class="n">pollProjectileHitEvents</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="p">:</span>
-        <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">projectile_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code> function on the corresponding <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> can be called to receive the events
+of that type since the last call to that <code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">mc</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">projectile_hit</span><span class="o">.</span><span class="n">poll</span><span class="p">():</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, the <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">get_nowait()</span></code> functions on the corresponding <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a>
+can be called to get (and potentially wait) for the next event of that type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">event</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">projectile_hit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Did NOT get an event within 5 seconds&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got event </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2"> within 5 seconds&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p><strong>Register Callback:</strong></p>
-<p>The corresponding registerCallback*EventName* function can register another function as a callback.
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code> function on the corresponding <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> can register another function as a callback.
 That function is then called for each event as it arrives with the event as the argument to the callback function.
 Multiple functions can be registered for the same event, in which case the functions are called in order they were registered in.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="p">:</span>
-        <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target_player</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">projectile_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">player</span><span class="si">}</span><span class="s2"> hit </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">mc</span><span class="o">.</span><span class="n">registerCallbackProjectileHitEvent</span><span class="p">(</span><span class="n">myfunc</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">projectile_hit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">myfunc</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 </ul>
 <p>These methods of receiving events are mutually exclusive <em>for the same event type</em> because registering a function will also consume the events.
-Calling the poll-function for an event type where a function is registered as callback will raise a RuntimeException.</p>
+Calling the poll function for an event type where a function is registered as callback will raise a RuntimeException.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In both cases, events will only be captured <em>after the first call</em> of either poll*EventName* or registerCallback*EventName*
-and indefinitly afterwards until <code class="xref py py-func docutils literal notranslate"><span class="pre">stopEventPollingAndClearCallbacks()</span></code> is called.</p>
+<p>In both cases, events will only be captured <em>after the first call</em> to either <code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">get_nowait()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code>
+and indefinitely afterwards until <code class="xref py py-func docutils literal notranslate"><span class="pre">stop()</span></code> is called.</p>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.player_join">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">player_join</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><span class="pre">PlayerJoinEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.player_join" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.PlayerJoinEvent" title="mcpq.events.PlayerJoinEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a> event.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.player_leave">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">player_leave</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><span class="pre">PlayerLeaveEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.player_leave" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.PlayerLeaveEvent" title="mcpq.events.PlayerLeaveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a> event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.player_death">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">player_death</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><span class="pre">PlayerDeathEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.player_death" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.PlayerDeathEvent" title="mcpq.events.PlayerDeathEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a> event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.chat">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><span class="pre">ChatEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.chat" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.ChatEvent" title="mcpq.events.ChatEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChatEvent</span></code></a> event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.block_hit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">block_hit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><span class="pre">BlockHitEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.block_hit" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.BlockHitEvent" title="mcpq.events.BlockHitEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockHitEvent</span></code></a> event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.projectile_hit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">projectile_hit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><span class="pre">SingleEventHandler</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><span class="pre">ProjectileHitEvent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.events.EventHandler.projectile_hit" title="Link to this definition">¶</a></dt>
+<dd><p>Receive the <a class="reference internal" href="#mcpq.events.SingleEventHandler" title="mcpq.events.SingleEventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a> for the <a class="reference internal" href="#mcpq.events.ProjectileHitEvent" title="mcpq.events.ProjectileHitEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectileHitEvent</span></code></a> event.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.EventHandler.stopEventPollingAndClearCallbacks">
+<span class="sig-name descname"><span class="pre">stopEventPollingAndClearCallbacks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.events.EventHandler.stopEventPollingAndClearCallbacks" title="Link to this definition">¶</a></dt>
+<dd><p>Stops all active event capturing and clears event backlogs and registered callback functions.
+Calling a polling function or registering a callback afterwards, will start capturing events anew.</p>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SingleEventHandler</span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler" title="Link to this definition">¶</a></dt>
+<dd><p>The specific event handler responsible for receiving a certain type of event in different ways.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EventType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get and potentially wait for at most <cite>timeout</cite> seconds for the next event that was not yet received
+with either <a class="reference internal" href="#mcpq.events.SingleEventHandler.poll" title="mcpq.events.SingleEventHandler.poll"><code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code></a> or <a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a>.
+If <cite>timeout</cite> is None, wait potentially indefinitely for the next event
+or until <a class="reference internal" href="#mcpq.events.SingleEventHandler.stop" title="mcpq.events.SingleEventHandler.stop"><code class="xref py py-func docutils literal notranslate"><span class="pre">stop()</span></code></a> is called or the connection closes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function checks periodically (every few seconds) if <a class="reference internal" href="#mcpq.events.SingleEventHandler.stop" title="mcpq.events.SingleEventHandler.stop"><code class="xref py py-func docutils literal notranslate"><span class="pre">stop()</span></code></a> was called and
+whether the connection was closed while waiting.
+If either of these checks is true, then eventually this function will stop waiting and return None.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – time in seconds to wait for at most for next event, if None may wait indefinitely, defaults to None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if called while a callback is registered</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the next event of that type since last poll, or None if not received within <cite>timeout</cite> seconds</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>EventType | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler.get_nowait">
+<span class="sig-name descname"><span class="pre">get_nowait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EventType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler.get_nowait" title="Link to this definition">¶</a></dt>
+<dd><p>Identical to <a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a> with <cite>timeout</cite> of 0.
+This function does not block and returns immediately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – if called while a callback is registered</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the next event of that type if one has already been received since last poll, else None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EventType | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler.poll">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">EventType</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler.poll" title="Link to this definition">¶</a></dt>
+<dd><p>Poll up to <cite>maximum</cite> many events received since the last time <a class="reference internal" href="#mcpq.events.SingleEventHandler.poll" title="mcpq.events.SingleEventHandler.poll"><code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code></a> or
+<a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a> was called, or all events received since then if <cite>maxmimum</cite> is None.
+This function does not block and returns immediately with the events not yet
+received with either <a class="reference internal" href="#mcpq.events.SingleEventHandler.poll" title="mcpq.events.SingleEventHandler.poll"><code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code></a> or <a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maximum</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – the maxmimum number of events to return, if None return all received events</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if called while a callback is registered</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a list of events of that type since last poll, oldest first</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[EventType]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">EventType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler.register" title="Link to this definition">¶</a></dt>
+<dd><p>Register a callback function to run whenever an event is received
+with the event as the argument to the callback function.
+Multiple functions can be registered for the same event,
+in which case the functions are called in order they were registered in.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Registered callback functions consume the received events, therefore
+polling and registering at the same time is not possible and will result
+in a RuntimeException if using <a class="reference internal" href="#mcpq.events.SingleEventHandler.poll" title="mcpq.events.SingleEventHandler.poll"><code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code></a> or <a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a> with registered callback.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>No other events can be received while a callback function is being run,
+so make your callback functions non-blocking and fast if possible.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>callback</strong> (<em>Callable</em><em>[</em><em>[</em><em>EventType</em><em>]</em><em>, </em><em>None</em><em>]</em>) – the function called with the event as argument for each event of that type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.events.SingleEventHandler.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.events.SingleEventHandler.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stop the receiving of this event type and clear all events and callbacks.
+Calling either <a class="reference internal" href="#mcpq.events.SingleEventHandler.poll" title="mcpq.events.SingleEventHandler.poll"><code class="xref py py-func docutils literal notranslate"><span class="pre">poll()</span></code></a>, <a class="reference internal" href="#mcpq.events.SingleEventHandler.get" title="mcpq.events.SingleEventHandler.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a> or <a class="reference internal" href="#mcpq.events.SingleEventHandler.register" title="mcpq.events.SingleEventHandler.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> afterwards will start receiving events again.</p>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
 <dl class="py class">
 <dt class="sig sig-object py" id="mcpq.events.PlayerJoinEvent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PlayerJoinEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Player'</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.events.PlayerJoinEvent" title="Link to this definition">¶</a></dt>
@@ -101,7 +262,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.PlayerJoinEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerJoinEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -118,7 +279,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.PlayerLeaveEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerLeaveEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -141,7 +302,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.PlayerDeathEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.PlayerDeathEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -164,7 +325,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.ChatEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.ChatEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -205,7 +366,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.BlockHitEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.BlockHitEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -264,7 +425,7 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcpq.events.ProjectileHitEvent.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.events.ProjectileHitEvent.timestamp" title="Link to this definition">¶</a></dt>
-<dd><p>The timestamp when the event was received. Will be used for sorting events by default</p>
+<dd><p>The timestamp when the event was received. Used for sorting events of same type</p>
 </dd></dl>
 
 </dd></dl>
@@ -289,7 +450,8 @@ and indefinitly afterwards until <code class="xref py py-func docutils literal n
 <li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Events</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.events._EventHandler"><code class="docutils literal notranslate"><span class="pre">_EventHandler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.EventHandler"><code class="docutils literal notranslate"><span class="pre">EventHandler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.events.SingleEventHandler"><code class="docutils literal notranslate"><span class="pre">SingleEventHandler</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerJoinEvent"><code class="docutils literal notranslate"><span class="pre">PlayerJoinEvent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerLeaveEvent"><code class="docutils literal notranslate"><span class="pre">PlayerLeaveEvent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.events.PlayerDeathEvent"><code class="docutils literal notranslate"><span class="pre">PlayerDeathEvent</span></code></a></li>
