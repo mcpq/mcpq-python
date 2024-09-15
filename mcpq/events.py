@@ -32,11 +32,13 @@ __all__ = [
 
 POLL_DEFAULT: int | None = 10  # default maximum event chunk size to return from polling functions
 
-MAX_QUEUE_SIZE: int = 100  # maximum number of backlogged events per event type
+MAX_QUEUE_SIZE: int = 100  # maximum number of backlogged events per event type (must be set before initializing EventHandler)
 
 WARN_DROPPED_INTERVAL: int = (
     30  # the interval in seconds after which a warning should be printed on dropped events
 )
+
+TIMEOUT_CHECK_INTERVAL: int = 3  # the interval in which :func:`get` should check the connection to the server to potentially wake up
 
 EventType = TypeVar("EventType")
 
@@ -54,7 +56,7 @@ class Event:
         raise NotImplementedError("Build is only implemented for super classes")
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class PlayerJoinEvent(Event):
     player: Player  #: The :class:`Player` who connected to the server
 
@@ -63,7 +65,7 @@ class PlayerJoinEvent(Event):
         return cls(provider._get_or_create_player(event.playerMsg.trigger.name))
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class PlayerLeaveEvent(Event):
     player: Player  #: The :class:`Player` who disconnected from the server
 
@@ -72,7 +74,7 @@ class PlayerLeaveEvent(Event):
         return cls(provider._get_or_create_player(event.playerMsg.trigger.name))
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class PlayerDeathEvent(Event):
     player: Player  #: The :class:`Player` who died
     deathMessage: str  #: The death message the player received
@@ -85,7 +87,7 @@ class PlayerDeathEvent(Event):
         )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class ChatEvent(Event):
     player: Player  #: The :class:`Player` who sent the chat message
     message: str  #: The message sent in chat
@@ -98,7 +100,7 @@ class ChatEvent(Event):
         )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class BlockHitEvent(Event):
     player: Player  #: The :class:`Player` who clicked on a block
     right_hand: bool  #: Whether the player used their right hand instead of their left
@@ -117,7 +119,7 @@ class BlockHitEvent(Event):
         )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, order=True)
 class ProjectileHitEvent(Event):
     player: Player  #: The :class:`Player` that shot/used the projectile
     target: (
@@ -193,18 +195,19 @@ class SingleEventHandler(Generic[EventType]):
         self._provider = provider
         self._cls = cls
         self._key = key
-        self._event_queue: Queue[Event] = Queue(MAX_QUEUE_SIZE)
+        self._event_queue: Queue[EventType] = Queue(MAX_QUEUE_SIZE)
         self._event_drop_time = 0.0
-        self._callbacks: list[Callable[[Event], None]] = []
+        self._callbacks: list[Callable[[EventType], None]] = []
         self._logp = self.__repr__() + ": "
         self._thread_lock = ReentrantRWLock()
-        self._thread: Thread | None = None  # set in _have_thread
-        # this variable is only set in the following ways:
-        # * only main may set this to False with lock (once new thread is created)!
-        # * only main may set this to True with lock (when it wants to cancel)!
-        # * only main may set this to None with lock (when cleanup was finished)!
+        # * the variables _thread and _stream must only be set together (something or None)
+        # * must hold _thread_lock to write, must be not None while polling thread exists
+        self._thread: Thread | None = None
+        # * only thread may initialize thus with lock
+        # * must hold _thread_lock to write, must be not None while polling thread exists
+        self._stream: grpc.Future | None = None
+        # * must only be set to False or None if polling thread does *not* exist
         self._thread_cancelled: bool | None = None
-        self._stream: grpc.Future | None = None  # set in _poll by thread
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}[{self._cls.__name__}](key={self._key})"
@@ -219,36 +222,38 @@ class SingleEventHandler(Generic[EventType]):
                 logging.debug(self._logp + "_cleanup: joining thread...")
                 self._thread.join()
                 logging.debug(self._logp + "_cleanup: joined thread")
-            self._thread_cancelled = None
-            self._thread = None
+            self._thread_cancelled, self._thread, self._stream = None, None, None
 
     def _have_thread(self) -> None:
         with self._thread_lock.for_read():
-            if self._thread is None:
+            if self._thread is None or self._thread_cancelled:
                 with self._thread_lock.for_write():
-                    if self._thread is None:
+                    if self._thread is None or self._thread_cancelled:
+                        if self._thread is not None:  # then _thread_cancelled is True
+                            self._cleanup()
+                        assert (
+                            self._thread is None
+                        ), f"{self._logp}Either thread was set with held read lock or cleanup failed!"
                         assert (
                             self._thread_cancelled is None
-                        ), f"Thread cancelled was {self._thread_cancelled} in _have_thread!"
-                        self._thread = Thread(
-                            target=self._poll,
-                            name=f"EventPollingThread-{self._key}-{self._cls.__name__}",
-                            daemon=True,
+                        ), f"{self._logp}Thread cancelled was {self._thread_cancelled} in _have_thread!"
+                        self._thread_cancelled, self._thread, self._stream = (
+                            False,
+                            Thread(
+                                target=self._poll,
+                                name=f"EventPollingThread-{self._key}-{self._cls.__name__}",
+                                daemon=True,
+                            ),
+                            self._stub.getEventStream(pb.EventStreamRequest(eventType=self._key)),
                         )
-                        self._thread_cancelled = False
                         self._thread.start()
 
     def _poll(self) -> None:
-        logging.debug(self._logp + "_poll: started polling")
-        with self._thread_lock.for_read():
+        try:
+            logging.debug(self._logp + "_poll: started polling")
             if self._thread_cancelled:
                 logging.debug(self._logp + "_poll: stream was cancelled instantly")
                 return
-            with self._thread_lock.for_write():
-                self._stream = self._stub.getEventStream(
-                    pb.EventStreamRequest(eventType=self._key)
-                )
-        try:
             for rpc_event in self._stream:
                 if self._thread_cancelled:  # is only set to True once! (no lock required)
                     logging.debug(self._logp + "_poll: stream was cancelled via variable")
@@ -257,14 +262,26 @@ class SingleEventHandler(Generic[EventType]):
                 if self._callbacks:
                     for callback in self._callbacks:
                         logging.debug(self._logp + f"_poll: callback with event: {rpc_event}")
-                        callback(event)
+                        try:
+                            callback(event)
+                        except Exception as e:
+                            name = (
+                                callback.__name__
+                                if hasattr(callback, "__name__")
+                                else str(callback)
+                            )
+                            logging.error(
+                                self._logp
+                                + f"callback {name}({event}) raised error: {type(e).__name__}{e.args}"
+                            )
+                            # TODO: potentially propagate error to main thread? (for now, continue)
                 else:
                     logging.debug(self._logp + f"_poll: putting event in queue: {rpc_event}")
                     try:
                         self._event_queue.put(event, block=False, timeout=None)
                     except Full:
                         if self._event_drop_time + WARN_DROPPED_INTERVAL < time.time():
-                            logging.warn(
+                            logging.warning(
                                 self._logp + "_poll: dropping events due to backlog in queue"
                             )
                             self._event_drop_time = time.time()
@@ -278,17 +295,22 @@ class SingleEventHandler(Generic[EventType]):
             else:
                 logging.error(self._logp + f"_poll: stream was closed by RpcError: {e}")
                 raise e
+        finally:
+            self._thread_cancelled = True
 
     def get(self, timeout: int | None = None) -> EventType | None:
         """Get and potentially wait for at most `timeout` seconds for the next event that was not yet received
         with either :func:`poll` or :func:`get`.
-        If `timeout` is None, wait potentially indefinitly for the next event.
+        If `timeout` is None, wait potentially indefinitely for the next event
+        or until :func:`stop` is called or the connection closes.
 
         .. note::
 
-           In case the next event was already received when this function is called, it returns immediately.
+           This function checks periodically (every few seconds) if :func:`stop` was called and
+           whether the connection was closed while waiting.
+           If either of these checks is true, then eventually this function will stop waiting and return None.
 
-        :param timeout: time in seconds to wait for at most for next event, if None may wait indefinitly, defaults to None
+        :param timeout: time in seconds to wait for at most for next event, if None may wait indefinitely, defaults to None
         :type timeout: int | None, optional
         :raises RuntimeError: if called while a callback is registered
         :return: the next event of that type since last poll, or None if not received within `timeout` seconds
@@ -296,12 +318,22 @@ class SingleEventHandler(Generic[EventType]):
         """
         if self._callbacks:
             raise RuntimeError(self._logp + "Trying to get event while callback is registered")
+        _timeout = TIMEOUT_CHECK_INTERVAL
         self._have_thread()
-        # code could race here! (they'll have to deal with this edge case)
-        try:
-            return self._event_queue.get(block=True, timeout=timeout)
-        except Empty:
-            return None
+        while True:
+            if timeout is not None:
+                _timeout = TIMEOUT_CHECK_INTERVAL if timeout > TIMEOUT_CHECK_INTERVAL else timeout
+                timeout = timeout - _timeout
+            try:
+                return self._event_queue.get(block=True, timeout=_timeout)
+            except Empty:
+                pass
+            if timeout is not None and timeout <= 0:
+                break
+            with self._thread_lock.for_read():
+                if self._thread_cancelled or self._thread is None:
+                    break
+        return None
 
     def get_nowait(self) -> EventType | None:
         """Identical to :func:`get` with `timeout` of 0.
@@ -315,17 +347,17 @@ class SingleEventHandler(Generic[EventType]):
             raise RuntimeError(self._logp + "Trying to get event while callback is registered")
         self._have_thread()
         try:
-            return self._event_queue.get(block=False, timeout=None)
+            return self._event_queue.get_nowait()
         except Empty:
             return None
 
     def poll(self, maximum: int | None = POLL_DEFAULT) -> list[EventType]:
         """Poll up to `maximum` many events received since the last time :func:`poll` or
         :func:`get` was called, or all events received since then if `maxmimum` is None.
-        This function does not block and returns immediately with the events not yet received
-        with either :func:`poll` or :func:`get`.
+        This function does not block and returns immediately with the events not yet
+        received with either :func:`poll` or :func:`get`.
 
-        :param maximum: the maxmimum number of events to return, if None return all events
+        :param maximum: the maxmimum number of events to return, if None return all received events
         :type maximum: int | None, optional
         :raises RuntimeError: if called while a callback is registered
         :return: a list of events of that type since last poll, oldest first
@@ -355,6 +387,11 @@ class SingleEventHandler(Generic[EventType]):
            polling and registering at the same time is not possible and will result
            in a RuntimeException if using :func:`poll` or :func:`get` with registered callback.
 
+        .. note::
+
+           No other events can be received while a callback function is being run,
+           so make your callback functions non-blocking and fast if possible.
+
         :param callback: the function called with the event as argument for each event of that type
         :type callback: Callable[[EventType], None]
         """
@@ -364,24 +401,16 @@ class SingleEventHandler(Generic[EventType]):
     def stop(self) -> None:
         """Stop the receiving of this event type and clear all events and callbacks.
         Calling either :func:`poll`, :func:`get` or :func:`register` afterwards will start receiving events again.
-
-        .. note::
-
-           Threads waiting on an event with :func:`get` may or may not return.
-           Make sure to not be waiting when stop is called or wait with a timeout.
         """
         with self._thread_lock.for_write():
             self._cleanup()
-            self._callbacks = []
-            try:
-                self._event_queue.put_nowait(None)  # wake anything waiting on get
-            except Full:
-                pass
+            time.sleep(0.0001)  # give chance for other threads to return from get/poll etc.
             try:
                 while True:  # clear the queue
                     self._event_queue.get_nowait()
             except Empty:
                 pass
+            self._callbacks = []
 
 
 class EventHandler:
@@ -446,7 +475,7 @@ class EventHandler:
     .. note::
 
        In both cases, events will only be captured *after the first call* to either :func:`poll`, :func:`get`, :func:`get_nowait` or :func:`register`
-       and indefinitly afterwards until :func:`stop` is called.
+       and indefinitely afterwards until :func:`stop` is called.
 
     """
 

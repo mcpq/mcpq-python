@@ -697,6 +697,7 @@ class _WorldHub(_HasStub, _EntityProvider):
         :return: The corresponding :class:`World` object
         :rtype: World
         """
+        world = None
         parts = key.split(":", maxsplit=1)
         if len(parts) == 1:
             key = "minecraft:" + key
@@ -704,6 +705,7 @@ class _WorldHub(_HasStub, _EntityProvider):
             if world.key == key:
                 return world
         raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="key=" + key))
+        return world
 
     def getWorldByName(self, name: str) -> World:
         """The `name` of a world is the folder or namespace the world resides in.

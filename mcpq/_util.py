@@ -255,7 +255,7 @@ class ThreadSafeSingeltonCache:
 
         .. warning::
 
-        In case ``uses_weakre == True`` no guarantee is given that when this function returns
+        In case ``uses_weakref == True`` no guarantee is given that when this function returns
         the returned keys actually exist.
 
         :return: a tuple of keys that currently exist
@@ -267,7 +267,7 @@ class ThreadSafeSingeltonCache:
     def values(self) -> tuple[Value]:
         """Returns a tuple of all values which currently exist.
 
-        :return:  a tuple of values that currently exist
+        :return: a tuple of values that currently exist
         :rtype: tuple[Value]
         """
         with self._lock.for_read():
@@ -276,7 +276,7 @@ class ThreadSafeSingeltonCache:
     def items(self) -> tuple[tuple[Key, Value]]:
         """Returns a tuple of all key value pairs which currently exist.
 
-        :return:  a tuple of key value pairs that currently exist
+        :return: a tuple of key value pairs that currently exist
         :rtype: tuple[tuple[Key, Value]]
         """
         with self._lock.for_read():
