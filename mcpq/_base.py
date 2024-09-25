@@ -30,9 +30,10 @@ class _HasStub:
             + ")"
         )
 
-    def runCommand(self, command: str, blocking: bool = False) -> None:
+    def runCommand(self, command: str) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command.
         The command is run with the highest possible permission and no other modifiers.
+        Returns immediately without waiting for the command to finish executing.
 
         .. code-block:: python
 
@@ -41,11 +42,26 @@ class _HasStub:
 
         :param command: the command without the slash ``/``
         :type command: str
-        :param blocking: wait until the command has finished executing on the server, defaults to False
-        :type blocking: bool, optional
         """
-        response = self._stub.runCommand(pb.CommandRequest(command=command, blocking=blocking))
+        response = self._stub.runCommand(pb.CommandRequest(command=command))
         raise_on_error(response)
+
+    def runCommandBlocking(self, command: str) -> str:
+        """Run the `command` as if it was typed in chat as ``/``-command and return the response from the server.
+        The command is run with the highest possible permission and no other modifiers.
+        Blocks and waits for the command to finish executing returning the command's result.
+
+        .. code-block:: python
+
+           response = mc.runCommand("locate biome mushroom_fields")
+
+        :param command: the command without the slash ``/``
+        :type command: str
+        """
+        # TODO: output=True once implemented by server
+        response = self._stub.runCommand(pb.CommandRequest(command=command, blocking=True))
+        raise_on_error(response)
+        return response.output
 
 
 class _EntityProvider(ABC):

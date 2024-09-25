@@ -613,7 +613,8 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         return f"{self.__class__.__name__}(key={self.key})"
 
     def runCommand(self, command: str, blocking: bool = False) -> None:
-        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension..
+        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension.
+        Returns immediately without waiting for the command to finish executing.
 
         .. code-block:: python
 
@@ -625,7 +626,21 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         :type blocking: bool, optional
         """
         command = f"execute in {self.key} run " + command
-        return super().runCommand(command, blocking=blocking)
+        return super().runCommand(command)
+
+    def runCommandBlocking(self, command: str) -> str:
+        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension.
+        Blocks and waits for the command to finish executing returning the command's result.
+
+        .. code-block:: python
+
+           response = world.runCommandBlocking("locate biome mushroom_fields")
+
+        :param command: the command without the slash ``/``
+        :type command: str
+        """
+        command = f"execute in {self.key} run " + command
+        return super().runCommandBlocking(command)
 
 
 class _WorldHub(_HasStub, _EntityProvider):

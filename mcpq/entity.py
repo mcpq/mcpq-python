@@ -294,8 +294,9 @@ class Entity(_HasStub):
         else:
             self.runCommand(f"item replace entity @s {where} with {item}{nbt} {amount}")
 
-    def runCommand(self, command: str, blocking: bool = False) -> None:
+    def runCommand(self, command: str) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command by and at the location of the given entity.
+        Returns immediately without waiting for the command to finish executing.
 
         .. code-block:: python
 
@@ -304,11 +305,23 @@ class Entity(_HasStub):
 
         :param command: the command without the slash ``/``
         :type command: str
-        :param blocking: wait until the command has finished executing on the server, defaults to False
-        :type blocking: bool, optional
         """
         command = f"execute as {self.id} at @s run " + command
-        return super().runCommand(command, blocking=blocking)
+        return super().runCommand(command)
+
+    def runCommandBlocking(self, command: str) -> str:
+        """Run the `command` as if it was typed in chat as ``/``-command by and at the location of the given entity.
+        Blocks and waits for the command to finish executing returning the command's result.
+
+        .. code-block:: python
+
+           response = entity.runCommandBlocking("data get entity @s")  # @s refers to this entity
+
+        :param command: the command without the slash ``/``
+        :type command: str
+        """
+        command = f"execute as {self.id} at @s run " + command
+        return super().runCommandBlocking(command)
 
     def teleport(
         self,
