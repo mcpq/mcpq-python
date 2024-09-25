@@ -191,6 +191,33 @@ class Player(Entity, _HasStub):
         else:
             self.runCommand(f"give @s {type}{nbt} {amount}")
 
+    def postToChat(self, *objects, sep: str = " ") -> None:
+        """Print `objects` in chat separated by `sep` and *only visible to player*.
+        All objects are converted to strings using :func:`str()` first.
+
+        .. code-block:: python
+
+           p = mc.getPlayer()
+           p.postToChat(f"Hello {p.name}, only you can see this")
+
+        You can also use the module `mcpq.text` to color or markup your chat messages.
+
+        .. code-block:: python
+
+           from mcpq import text
+           p.postToChat(text.RED + text.BOLD + "super " + text.RESET + text.BLUE + "cool!")
+
+        :param sep: the separated between each object, defaults to " "
+        :type sep: str, optional
+        """
+        response = self._stub.postToChat(
+            pb.ChatPostRequest(
+                message=sep.join(map(str, objects)), player=pb.Player(name=self.name)
+            )
+        )
+        if not ALLOW_OFFLINE_PLAYER_OPS or response.code != pb.PLAYER_NOT_FOUND:
+            raise_on_error(response)
+
     # server access commands cannot be executed via 'execute as ...'
     def kick(self) -> None:
         _HasStub.runCommand(self, f"kick {self.name}")

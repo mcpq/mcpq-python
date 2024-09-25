@@ -612,7 +612,7 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         # return f"{self.__class__.__name__}(name={self.name}, key={self.key})"
         return f"{self.__class__.__name__}(key={self.key})"
 
-    def runCommand(self, command: str) -> None:
+    def runCommand(self, command: str, blocking: bool = False) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension..
 
         .. code-block:: python
@@ -621,9 +621,11 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
 
         :param command: the command without the slash ``/``
         :type command: str
+        :param blocking: wait until the command has finished executing on the server, defaults to False
+        :type blocking: bool, optional
         """
         command = f"execute in {self.key} run " + command
-        return super().runCommand(command)
+        return super().runCommand(command, blocking=blocking)
 
 
 class _WorldHub(_HasStub, _EntityProvider):

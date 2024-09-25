@@ -30,7 +30,7 @@ class _HasStub:
             + ")"
         )
 
-    def runCommand(self, command: str) -> None:
+    def runCommand(self, command: str, blocking: bool = False) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command.
         The command is run with the highest possible permission and no other modifiers.
 
@@ -41,8 +41,10 @@ class _HasStub:
 
         :param command: the command without the slash ``/``
         :type command: str
+        :param blocking: wait until the command has finished executing on the server, defaults to False
+        :type blocking: bool, optional
         """
-        response = self._stub.runCommand(pb.CommandRequest(command=command))
+        response = self._stub.runCommand(pb.CommandRequest(command=command, blocking=blocking))
         raise_on_error(response)
 
 

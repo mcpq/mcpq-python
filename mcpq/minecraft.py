@@ -113,12 +113,6 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
         self._cleanup()
 
     @property
-    def events(self) -> EventHandler:
-        """The :class:`EventHandler` for receiving events from the server.
-        Checkout the :class:`EventHandler` class for examples for receiving events."""
-        return self._event_handler
-
-    @property
     def host(self) -> str:
         """The Minecraft server host address this instance is connected to."""
         return self._addr[0]
@@ -127,6 +121,68 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
     def port(self) -> int:
         """The Minecraft server port this instance is connected to."""
         return self._addr[1]
+
+    @property
+    def blocks(self) -> list[str]:
+        """The list of all block-types that can be set with :func:`setBlock`"""
+        response = self._stub.getMaterials(pb.MaterialRequest())
+        raise_on_error(response.status)
+        return sorted([m.key for m in response.materials if m.isBlock])
+
+    @property
+    def entities(self) -> list[str]:
+        """The list of all entity-types that can be spawned with :func:`spawnEntity`"""
+        response = self._stub.getEntityTypes(pb.EntityTypeRequest())
+        raise_on_error(response.status)
+        return sorted([e.key for e in response.types if e.isSpawnable])
+
+    @property
+    def events(self) -> EventHandler:
+        """The :class:`EventHandler` for receiving events from the server.
+        Checkout the :class:`EventHandler` class for examples for receiving events."""
+        return self._event_handler
+
+    @property
+    def items(self) -> list[str]:
+        """The list of all block-types that can be set with :func:`setBlock`"""
+        response = self._stub.getMaterials(pb.MaterialRequest())
+        raise_on_error(response.status)
+        return sorted([m.key for m in response.materials if m.isItem])
+
+    @property
+    def materials(self) -> dict[str, dict[str, bool]]:
+        response = self._stub.getMaterials(pb.MaterialRequest())
+        raise_on_error(response.status)
+        return {
+            m.key: {
+                "isAir": m.isAir,
+                "isBlock": m.isBlock,
+                "isBurnable": m.isBurnable,
+                "isEdible": m.isEdible,
+                "isFlammable": m.isFlammable,
+                "isFuel": m.isFuel,
+                "isInteractable": m.isInteractable,
+                "isItem": m.isItem,
+                "isOccluding": m.isOccluding,
+                "isSolid": m.isSolid,
+                "hasGravity": m.hasGravity,
+            }
+            for m in response.materials
+        }
+
+    @property
+    def version_minecraft(self) -> str:
+        """The Minecraft version of the server this instance is connected to."""
+        response = self._stub.getServerInfo(pb.ServerInfoRequest())
+        raise_on_error(response.status)
+        return response.mcVersion
+
+    @property
+    def version_plugin(self) -> str:
+        """The MCPQ Plugin version running on the server this instance is connected to."""
+        response = self._stub.getServerInfo(pb.ServerInfoRequest())
+        raise_on_error(response.status)
+        return response.mcpqVersion
 
     def postToChat(self, *objects, sep: str = " ") -> None:
         """Print `objects` in chat separated by `sep`.
