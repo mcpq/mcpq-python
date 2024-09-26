@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from functools import partial
-
 from . import entity
-from ._base import _EntityProvider, _HasStub
-from ._proto import MinecraftStub
+from ._abc import _ServerInterface
+from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import CARDINAL, COLOR, DIRECTION
-from ._util import ThreadSafeSingeltonCache
 from .exception import raise_on_error
 from .vec3 import Vec3
 
 MAX_BLOCKS = 50000  # TODO: replace with block stream
 
 
-class _DefaultWorld(_HasStub, _EntityProvider):
+class _DefaultWorld(_SharedBase, _HasServer):
     """Manipulating the world is the heart piece of the entire library.
     With this you can query blocks and world features and set them in turn, as well as finding and spawning entities in the world.
     This allows building on the server quickly and precisely with only a few commands.
@@ -125,14 +122,14 @@ class _DefaultWorld(_HasStub, _EntityProvider):
             ),
             withLocations=with_locations,
         )
-        response = self._stub.getEntities(request)
+        response = self._server.stub.getEntities(request)
         raise_on_error(response.status)
         entities = []
         for e in response.entities:
             if include_non_spawnable and e.type == "player":
                 # TODO: players are also included in getEntities(includeNotSpawnable=True) call
                 continue
-            nativeE = self._get_or_create_entity(e.id)
+            nativeE = self._server.get_or_create_entity(e.id)
             if with_locations:
                 nativeE._inject_update(e)
             else:
@@ -147,16 +144,16 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         Can be set to enable or disable pvp on all worlds on the server.
         """
         # TODO: returning if ANY world has pvp
-        response = self._stub.accessWorlds(pb.WorldRequest())
+        response = self._server.stub.accessWorlds(pb.WorldRequest())
         raise_on_error(response.status)
         return any(world.info.pvp for world in response.worlds)
 
     @pvp.setter
     def pvp(self, value: bool) -> None:
         # TODO: setting ALL world pvp variables
-        response = self._stub.accessWorlds(pb.WorldRequest())
+        response = self._server.stub.accessWorlds(pb.WorldRequest())
         raise_on_error(response.status)
-        response = self._stub.accessWorlds(
+        response = self._server.stub.accessWorlds(
             pb.WorldRequest(
                 worlds=[
                     pb.World(name=world.name, info=pb.WorldInfo(pvp=value))
@@ -172,7 +169,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :return: The position of the highest non-air block with given `x` and `z`
         :rtype: Vec3
         """
-        response = self._stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
+        response = self._server.stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
         raise_on_error(response.status)
         pos = Vec3(response.block.pos.x, response.block.pos.y, response.block.pos.z)
         return pos
@@ -193,7 +190,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :return: block type/id at queried position
         :rtype: str
         """
-        response = self._stub.getBlock(
+        response = self._server.stub.getBlock(
             pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(**pos.floor().asdict()))
         )
         raise_on_error(response.status)
@@ -227,7 +224,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :param pos: the position where the block should be set
         :type pos: Vec3
         """
-        response = self._stub.setBlock(
+        response = self._server.stub.setBlock(
             pb.Block(
                 world=self._pb_world,
                 info=pb.BlockInfo(blockType=blocktype),
@@ -268,7 +265,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         for chunk in (
             positions[index : index + MAX_BLOCKS] for index in range(0, len(positions), MAX_BLOCKS)
         ):
-            response = self._stub.setBlocks(
+            response = self._server.stub.setBlocks(
                 pb.Blocks(
                     world=self._pb_world,
                     info=pb.BlockInfo(blockType=blocktype),
@@ -304,7 +301,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
         """
-        response = self._stub.setBlockCube(
+        response = self._server.stub.setBlockCube(
             pb.Blocks(
                 world=self._pb_world,
                 info=pb.BlockInfo(blockType=blocktype),
@@ -440,14 +437,14 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :return: the :class:`Entity` entity spawned
         :rtype: entity.Entity
         """
-        response = self._stub.spawnEntity(
+        response = self._server.stub.spawnEntity(
             pb.Entity(
                 type=type,
                 location=pb.EntityLocation(world=self._pb_world, pos=pb.Vec3f(**pos.asdict())),
             )
         )
         raise_on_error(response.status)
-        entity = self._get_or_create_entity(response.entity.id)
+        entity = self._server.get_or_create_entity(response.entity.id)
         entity._type = response.entity.type
         return entity
 
@@ -524,7 +521,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
             raise TypeError("Type should be of type str")
 
 
-class World(_DefaultWorld, _HasStub, _EntityProvider):
+class World(_DefaultWorld, _SharedBase, _HasServer):
     """Manipulating the world is the heart piece of the entire library.
     With this you can query blocks and world features and set them in turn, as well as finding and spawning entities in the world.
     This allows building on the server quickly and precisely with only a few commands.
@@ -569,16 +566,10 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
        If you want to affect a specific world, use :class:`World` classes instead, such as ``mc.overworld``, ``mc.nether`` or ``mc.end``.
     """
 
-    def __init__(
-        self, stub: MinecraftStub, entity_provider: _EntityProvider, key: str, name: str
-    ) -> None:
-        super().__init__(stub)
-        self._entity_provider = entity_provider
+    def __init__(self, server: _ServerInterface, key: str, name: str) -> None:
+        super().__init__(server)
         self._key = key
         self._name = name
-
-    def _get_or_create_entity(self, entity_id: str):
-        return self._entity_provider._get_or_create_entity(entity_id)
 
     @property
     def _pb_world(self) -> pb.World:
@@ -597,13 +588,13 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
     @property
     def pvp(self) -> bool:
         """True if pvp is enabled in this world. Can be set to enable or disable pvp in only this world."""
-        response = self._stub.accessWorlds(pb.WorldRequest(worlds=[self._pb_world]))
+        response = self._server.stub.accessWorlds(pb.WorldRequest(worlds=[self._pb_world]))
         raise_on_error(response.status)
         return response.worlds[0].info.pvp
 
     @pvp.setter
     def pvp(self, value: bool) -> None:
-        response = self._stub.accessWorlds(
+        response = self._server.stub.accessWorlds(
             pb.WorldRequest(worlds=[pb.World(name=self.name, info=pb.WorldInfo(pvp=value))])
         )
         raise_on_error(response.status)
@@ -612,7 +603,7 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         # return f"{self.__class__.__name__}(name={self.name}, key={self.key})"
         return f"{self.__class__.__name__}(key={self.key})"
 
-    def runCommand(self, command: str, blocking: bool = False) -> None:
+    def runCommand(self, command: str) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension.
         Returns immediately without waiting for the command to finish executing.
 
@@ -622,8 +613,6 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
 
         :param command: the command without the slash ``/``
         :type command: str
-        :param blocking: wait until the command has finished executing on the server, defaults to False
-        :type blocking: bool, optional
         """
         command = f"execute in {self.key} run " + command
         return super().runCommand(command)
@@ -641,125 +630,3 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         """
         command = f"execute in {self.key} run " + command
         return super().runCommandBlocking(command)
-
-
-class _WorldHub(_HasStub, _EntityProvider):
-    """All functions regarding getting World objects and interacting with different worlds.
-
-    .. note::
-
-       What is called :class:`World` here is referred to as a dimension in game.
-
-    """
-
-    def __init__(self, stub: MinecraftStub) -> None:
-        super().__init__(stub)
-        self._world_by_name_cache = ThreadSafeSingeltonCache(None)
-
-    @property
-    def worlds(self) -> tuple[World, ...]:
-        """Give a tuple of all worlds loaded on the server.
-        Does not automatically call :func:`refreshWorlds`.
-
-        :return: A tuple of all worlds loaded on the server
-        :rtype: tuple[World, ...]
-        """
-        if not self._world_by_name_cache:
-            self.refreshWorlds()
-        return tuple(self._world_by_name_cache.values())
-
-    @property
-    def overworld(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:overworld"``.
-
-        :return: The overworld world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:overworld")
-
-    @property
-    def nether(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_nether"``.
-
-        :return: The nether world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:the_nether")
-
-    @property
-    def end(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_end"``.
-
-        :return: The end world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:the_end")
-
-    def getWorldByKey(self, key: str) -> World:
-        """The `key` of a world is the dimensions internal name/id.
-        Typically a regular server has the following worlds/keys:
-
-        - ``"minecraft:overworld"``
-
-        - ``"minecraft:the_nether"``
-
-        - ``"minecraft:the_end"``
-
-        The ``"minecraft:"`` prefix may be omitted, e.g., ``"the_nether"``.
-
-        If the given `key` does not exist an exception is raised.
-
-        :param key: Internal name/id of the world, such as ``"minecraft:the_nether"`` or ``"the_nether"``
-        :type key: str
-        :return: The corresponding :class:`World` object
-        :rtype: World
-        """
-        world = None
-        parts = key.split(":", maxsplit=1)
-        if len(parts) == 1:
-            key = "minecraft:" + key
-        for world in self.worlds:
-            if world.key == key:
-                return world
-        raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="key=" + key))
-        return world
-
-    def getWorldByName(self, name: str) -> World:
-        """The `name` of a world is the folder or namespace the world resides in.
-        The setting for the world the server opens is found in ``server.properties``.
-        A typical, unmodified PaperMC_ server will save the worlds in the following folders:
-
-        .. _PaperMC: https://papermc.io/
-
-        - ``"world"``, for the overworld
-
-        - ``"world_nether"``, for the nether
-
-        - ``"world_the_end"``, for the end
-
-        The name of the overworld (default ``world``) is used as the prefix for the other folders.
-
-        If the given `name` does not exist an exception is raised.
-
-        :param name: Foldername the world is saved in, such as ``world``
-        :type name: str
-        :return: The corresponding :class:`World` object
-        :rtype: World
-        """
-        if not self._world_by_name_cache:
-            self.refreshWorlds()
-        world = self._world_by_name_cache.get(name)
-        if world is None:
-            raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="name=" + name))
-        return world
-
-    def refreshWorlds(self) -> None:
-        """Fetches the currently loaded worlds from server and updates the world objects.
-        This should only be called if the loaded worlds on the server change, for example, with the Multiverse Core Plugin.
-        By default, the worlds will be refreshed on first use only.
-        """
-        response = self._stub.accessWorlds(pb.WorldRequest())
-        raise_on_error(response.status)
-        for world in response.worlds:
-            factory = partial(World, self._stub, self, world.info.key)
-            self._world_by_name_cache.get_or_create(world.name, factory)

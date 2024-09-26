@@ -1,24 +1,20 @@
 from __future__ import annotations
 
 import time
-from functools import partial
 from typing import Literal
 
-from ._base import _HasStub, _PlayerProvider
-from ._proto import MinecraftStub
+from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
-from ._util import ThreadSafeSingeltonCache
 from .entity import Entity
 from .exception import raise_on_error
 from .nbt import NBT
 from .vec3 import Vec3
-from .world import _WorldHub
 
 CACHE_PLAYER_TIME = 0.2
 ALLOW_OFFLINE_PLAYER_OPS = True
 
 
-class Player(Entity, _HasStub):
+class Player(Entity, _SharedBase, _HasServer):
     """The :class:`Player` class represents a player on the server.
     It can be used to query information about the player or manipulate them, such as
     getting or setting their position, orientation, world, gamemode and more.
@@ -71,11 +67,6 @@ class Player(Entity, _HasStub):
        This improves performance but may also cause bugs or problems if the interval in which the up-to-date position is requred is lower than ``mcpq.player.CACHE_PLAYER_TIME``.
     """
 
-    def __init__(self, stub: MinecraftStub, worldhub: _WorldHub, name: str) -> None:
-        if not isinstance(name, str):
-            raise TypeError("Player name must be of type str")
-        super().__init__(stub, worldhub, name)
-
     @property
     def name(self) -> str:
         "The name of this player, equivalent to :attr:`id`"
@@ -109,7 +100,7 @@ class Player(Entity, _HasStub):
 
     def _inject_update(self, pb_player: pb.Player) -> bool:
         assert pb_player.name == self.name
-        self._world = self._worldhub.getWorldByName(pb_player.location.world.name)
+        self._world = self._server.get_world_by_name(pb_player.location.world.name)
         self._pos = Vec3(
             pb_player.location.pos.x, pb_player.location.pos.y, pb_player.location.pos.z
         )
@@ -120,7 +111,7 @@ class Player(Entity, _HasStub):
         return True
 
     def _set_entity_loc(self, entity_loc: pb.EntityLocation) -> None:
-        response = self._stub.setPlayer(
+        response = self._server.stub.setPlayer(
             pb.Player(
                 name=self.name,
                 location=entity_loc,
@@ -130,7 +121,9 @@ class Player(Entity, _HasStub):
             raise_on_error(response)
 
     def _update(self, allow_offline: bool = ALLOW_OFFLINE_PLAYER_OPS) -> bool:
-        response = self._stub.getPlayers(pb.PlayerRequest(names=[self.name], withLocations=True))
+        response = self._server.stub.getPlayers(
+            pb.PlayerRequest(names=[self.name], withLocations=True)
+        )
         if allow_offline and response.status.code == pb.PLAYER_NOT_FOUND:
             self._loaded = False  # do not update self._update_ts on purpose
             return False
@@ -220,92 +213,16 @@ class Player(Entity, _HasStub):
 
     # server access commands cannot be executed via 'execute as ...'
     def kick(self) -> None:
-        _HasStub.runCommand(self, f"kick {self.name}")
+        _SharedBase.runCommand(self, f"kick {self.name}")
 
     def ban(self) -> None:
-        _HasStub.runCommand(self, f"ban {self.name}")
+        _SharedBase.runCommand(self, f"ban {self.name}")
 
     def pardon(self) -> None:
-        _HasStub.runCommand(self, f"pardon {self.name}")
+        _SharedBase.runCommand(self, f"pardon {self.name}")
 
     def op(self) -> None:
-        _HasStub.runCommand(self, f"op {self.name}")
+        _SharedBase.runCommand(self, f"op {self.name}")
 
     def deop(self) -> None:
-        _HasStub.runCommand(self, f"deop {self.name}")
-
-
-class _PlayerCache(_WorldHub, _HasStub, _PlayerProvider):
-    def __init__(self, stub: MinecraftStub) -> None:
-        super().__init__(stub)
-        self._player_cache = ThreadSafeSingeltonCache(partial(Player, self._stub, self))
-        self._default_player: Player | None = None
-
-    def _get_or_create_player(self, name: str) -> Player:
-        return self._player_cache.get_or_create(name)
-
-    def getOfflinePlayer(self, name: str) -> Player:
-        """Get the :class:`Player` with the given `name` no matter if the player is online or not.
-        Does not raise any errors if the player is offline.
-
-        :param name: player name/id
-        :type name: str
-        :return: the player with the given `name`
-        :rtype: Player
-        """
-        return self._get_or_create_player(name)
-
-    def getPlayers(self, names: list[str] | None = None) -> list[Player]:
-        """Get all currently online players on the entire server.
-        If `names` is provided get all players with the given names only if they are online.
-        Will raise an error if `names` is provided and at least one player with given name is offline.
-
-        :param names: if given return only players with given names or error if one of the given players is offline, otherwise if `names` is `None` will return all currently online players, defaults to None
-        :type names: list[str] | None, optional
-        :return: the list of all currently online players, or if `names` is provided, only those online players
-        :rtype: list[Player]
-        """
-        if names is None:
-            response = self._stub.getPlayers(pb.PlayerRequest())
-        else:
-            response = self._stub.getPlayers(pb.PlayerRequest(names=names))
-        raise_on_error(response.status)
-        players = [self._get_or_create_player(player.name) for player in response.players]
-        if self._default_player is None and players:
-            self._default_player = players[0]
-        return players
-
-    def getPlayerNames(self) -> list[str]:
-        """Equivalent to :func:`getPlayers` but only return their names instead.
-
-        :return: list of all currently online :class:`Player` names
-        :rtype: list[str]
-        """
-        players = self.getPlayers()
-        return [player.name for player in players]
-
-    def getPlayer(self, name: str | None = None) -> Player:
-        """Get any currently online player, which will become the default player thereafter, or get the online player with given `name`.
-        Will raise an error if either no player is online, or if the player with given `name` is not online.
-
-        If you want to check for any currently online players, use :func:`getPlayers` instead.
-
-        :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
-        :type name: str | None, optional
-        :return: the player with `name` if name is given, else any online player that will become default player thereafter
-        :rtype: Player
-        """
-        if name is None:
-            if self._default_player:
-                name = self._default_player.name
-            else:
-                players = self.getPlayers()
-                if players:
-                    return players[0]
-                else:
-                    raise_on_error(pb.Status(code=pb.PLAYER_NOT_FOUND))
-                    return None  # type: ignore
-        players = self.getPlayers([name])
-        if players:
-            return players[0]
-        return None  # type: ignore
+        _SharedBase.runCommand(self, f"deop {self.name}")

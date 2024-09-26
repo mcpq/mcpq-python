@@ -11,8 +11,8 @@ from typing import Callable, Generic, TypeVar
 
 import grpc
 
-from ._base import _EntityProvider, _PlayerProvider
-from ._proto import MinecraftStub
+from ._abc import _ServerInterface
+from ._base import _HasServer
 from ._proto import minecraft_pb2 as pb
 from ._types import DIRECTION
 from ._util import ReentrantRWLock, ThreadSafeSingeltonCache
@@ -52,7 +52,7 @@ class Event:
     )  #: The timestamp when the event was received. Used for sorting events of same type
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
+    def _build(cls, server: _ServerInterface, event: pb.Event):
         raise NotImplementedError("Build is only implemented for super classes")
 
 
@@ -61,8 +61,8 @@ class PlayerJoinEvent(Event):
     player: Player  #: The :class:`Player` who connected to the server
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
-        return cls(provider._get_or_create_player(event.playerMsg.trigger.name))
+    def _build(cls, server: _ServerInterface, event: pb.Event):
+        return cls(server.get_or_create_player(event.playerMsg.trigger.name))
 
 
 @dataclass(frozen=True, slots=True, order=True)
@@ -70,8 +70,8 @@ class PlayerLeaveEvent(Event):
     player: Player  #: The :class:`Player` who disconnected from the server
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
-        return cls(provider._get_or_create_player(event.playerMsg.trigger.name))
+    def _build(cls, server: _ServerInterface, event: pb.Event):
+        return cls(server.get_or_create_player(event.playerMsg.trigger.name))
 
 
 @dataclass(frozen=True, slots=True, order=True)
@@ -80,9 +80,9 @@ class PlayerDeathEvent(Event):
     deathMessage: str  #: The death message the player received
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
+    def _build(cls, server: _ServerInterface, event: pb.Event):
         return cls(
-            provider._get_or_create_player(event.playerMsg.trigger.name),
+            server.get_or_create_player(event.playerMsg.trigger.name),
             event.playerMsg.message,
         )
 
@@ -93,9 +93,9 @@ class ChatEvent(Event):
     message: str  #: The message sent in chat
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
+    def _build(cls, server: _ServerInterface, event: pb.Event):
         return cls(
-            provider._get_or_create_player(event.playerMsg.trigger.name),
+            server.get_or_create_player(event.playerMsg.trigger.name),
             event.playerMsg.message,
         )
 
@@ -109,9 +109,9 @@ class BlockHitEvent(Event):
     face: DIRECTION  #: The face/side of the block that was clicked
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
+    def _build(cls, server: _ServerInterface, event: pb.Event):
         return cls(
-            provider._get_or_create_player(event.blockHit.trigger.name),
+            server.get_or_create_player(event.blockHit.trigger.name),
             event.blockHit.right_hand,
             event.blockHit.item_type,
             Vec3(event.blockHit.pos.x, event.blockHit.pos.y, event.blockHit.pos.z),
@@ -156,12 +156,12 @@ class ProjectileHitEvent(Event):
         return None
 
     @classmethod
-    def _build(cls, provider: _EntityProvider | _PlayerProvider, event: pb.Event):
+    def _build(cls, server: _ServerInterface, event: pb.Event):
         target = (
-            provider._get_or_create_player(event.projectileHit.player.name)
+            server.get_or_create_player(event.projectileHit.player.name)
             if event.projectileHit.HasField("player")
             else (
-                provider._get_or_create_entity(event.projectileHit.entity.id)
+                server.get_or_create_entity(event.projectileHit.entity.id)
                 if event.projectileHit.HasField("entity")
                 else event.projectileHit.block
             )
@@ -169,7 +169,7 @@ class ProjectileHitEvent(Event):
         if event.projectileHit.HasField("entity"):
             target._type = event.projectileHit.entity.type
         return cls(
-            provider._get_or_create_player(event.projectileHit.trigger.name),
+            server.get_or_create_player(event.projectileHit.trigger.name),
             target,
             event.projectileHit.projectile,
             Vec3(
@@ -181,18 +181,16 @@ class ProjectileHitEvent(Event):
         )
 
 
-class SingleEventHandler(Generic[EventType]):
+class SingleEventHandler(_HasServer, Generic[EventType]):
     """The specific event handler responsible for receiving a certain type of event in different ways."""
 
     def __init__(
         self,
-        stub: MinecraftStub,
-        provider: _EntityProvider | _PlayerProvider,
+        server: _ServerInterface,
         cls: type[Event],
         key: int,
     ) -> None:
-        self._stub = stub
-        self._provider = provider
+        super().__init__(server)
         self._cls = cls
         self._key = key
         self._event_queue: Queue[EventType] = Queue(MAX_QUEUE_SIZE)
@@ -244,7 +242,9 @@ class SingleEventHandler(Generic[EventType]):
                                 name=f"EventPollingThread-{self._key}-{self._cls.__name__}",
                                 daemon=True,
                             ),
-                            self._stub.getEventStream(pb.EventStreamRequest(eventType=self._key)),
+                            self._server.stub.getEventStream(
+                                pb.EventStreamRequest(eventType=self._key)
+                            ),
                         )
                         self._thread.start()
 
@@ -258,7 +258,7 @@ class SingleEventHandler(Generic[EventType]):
                 if self._thread_cancelled:  # is only set to True once! (no lock required)
                     logging.debug(self._logp + "_poll: stream was cancelled via variable")
                     return
-                event = self._cls._build(self._provider, rpc_event)
+                event = self._cls._build(self._server, rpc_event)
                 if self._callbacks:
                     for callback in self._callbacks:
                         logging.debug(self._logp + f"_poll: callback with event: {rpc_event}")
@@ -413,7 +413,7 @@ class SingleEventHandler(Generic[EventType]):
             self._callbacks = []
 
 
-class EventHandler:
+class EventHandler(_HasServer):
     """Certain events that happen on the server can be captured and reacted to.
 
     These events are:
@@ -479,10 +479,11 @@ class EventHandler:
 
     """
 
-    def __init__(self, stub: MinecraftStub, provider: _EntityProvider | _PlayerProvider) -> None:
-        self._stub = stub
-        self._provider = provider
-        self._poller = ThreadSafeSingeltonCache(None)  # of type dict[int, SingleEventHandler]
+    def __init__(self, server: _ServerInterface) -> None:
+        super().__init__(server)
+        self._poller: ThreadSafeSingeltonCache[int, SingleEventHandler] = ThreadSafeSingeltonCache(
+            None
+        )
 
     def _cleanup(self) -> None:
         logging.debug("EventHandler: _cleanup: called...")
@@ -494,9 +495,7 @@ class EventHandler:
         logging.debug("EventHandler: _cleanup: done")
 
     def _get_or_create_poller(self, key: int, cls: EventType) -> SingleEventHandler:
-        return self._poller.get_or_create(
-            key, partial(SingleEventHandler, self._stub, self._provider, cls)
-        )
+        return self._poller.get_or_create(key, partial(SingleEventHandler, self._server, cls))
 
     @property
     def player_join(self) -> SingleEventHandler[PlayerJoinEvent]:

@@ -4,15 +4,18 @@ import logging
 
 import grpc
 
-from ._base import _HasStub
+from ._base import _HasServer, _SharedBase
 from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
+from ._server import _Server
 from ._util import deprecated
-from .entity import _EntityCache
+from .entity import Entity
+from .entitytype import EntityType
 from .events import EventHandler
 from .exception import raise_on_error
-from .player import _PlayerCache
-from .world import _DefaultWorld, _WorldHub
+from .material import Material
+from .player import Player
+from .world import World, _DefaultWorld
 
 __all__ = ["Minecraft"]
 
@@ -20,7 +23,7 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 # logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 
 
-class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
+class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     """:class:`Minecraft` is the main object of interacting with Minecraft servers that have the mcpq-plugin_.
     When constructing the class, a ``host`` and ``port`` of the server should be provided to which a connection will be built. They default to ``"localhost"`` and ``1789`` respectively.
     All other worlds, events, entities and more are then received via the methods of that instance.
@@ -51,9 +54,9 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
     def __init__(self, host: str = "localhost", port: int = 1789) -> None:
         self._addr = (host, port)
         self._channel = grpc.insecure_channel(f"{host}:{port}")
-        stub = MinecraftStub(self._channel)
-        super().__init__(stub)
-        self._event_handler = EventHandler(stub, self)
+        server = _Server(MinecraftStub(self._channel))
+        super().__init__(server)
+        self._event_handler = EventHandler(server)
 
         # deprecated event functions
         # stop event polling is now unsafe as the underlying SingleEventHandlers were exposed (might still be around)
@@ -113,6 +116,12 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
         self._cleanup()
 
     @property
+    def events(self) -> EventHandler:
+        """The :class:`EventHandler` for receiving events from the server.
+        Checkout the :class:`EventHandler` class for examples for receiving events."""
+        return self._event_handler
+
+    @property
     def host(self) -> str:
         """The Minecraft server host address this instance is connected to."""
         return self._addr[0]
@@ -121,68 +130,6 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
     def port(self) -> int:
         """The Minecraft server port this instance is connected to."""
         return self._addr[1]
-
-    @property
-    def blocks(self) -> list[str]:
-        """The list of all block-types that can be set with :func:`setBlock`"""
-        response = self._stub.getMaterials(pb.MaterialRequest())
-        raise_on_error(response.status)
-        return sorted([m.key for m in response.materials if m.isBlock])
-
-    @property
-    def entities(self) -> list[str]:
-        """The list of all entity-types that can be spawned with :func:`spawnEntity`"""
-        response = self._stub.getEntityTypes(pb.EntityTypeRequest())
-        raise_on_error(response.status)
-        return sorted([e.key for e in response.types if e.isSpawnable])
-
-    @property
-    def events(self) -> EventHandler:
-        """The :class:`EventHandler` for receiving events from the server.
-        Checkout the :class:`EventHandler` class for examples for receiving events."""
-        return self._event_handler
-
-    @property
-    def items(self) -> list[str]:
-        """The list of all block-types that can be set with :func:`setBlock`"""
-        response = self._stub.getMaterials(pb.MaterialRequest())
-        raise_on_error(response.status)
-        return sorted([m.key for m in response.materials if m.isItem])
-
-    @property
-    def materials(self) -> dict[str, dict[str, bool]]:
-        response = self._stub.getMaterials(pb.MaterialRequest())
-        raise_on_error(response.status)
-        return {
-            m.key: {
-                "isAir": m.isAir,
-                "isBlock": m.isBlock,
-                "isBurnable": m.isBurnable,
-                "isEdible": m.isEdible,
-                "isFlammable": m.isFlammable,
-                "isFuel": m.isFuel,
-                "isInteractable": m.isInteractable,
-                "isItem": m.isItem,
-                "isOccluding": m.isOccluding,
-                "isSolid": m.isSolid,
-                "hasGravity": m.hasGravity,
-            }
-            for m in response.materials
-        }
-
-    @property
-    def version_minecraft(self) -> str:
-        """The Minecraft version of the server this instance is connected to."""
-        response = self._stub.getServerInfo(pb.ServerInfoRequest())
-        raise_on_error(response.status)
-        return response.mcVersion
-
-    @property
-    def version_plugin(self) -> str:
-        """The MCPQ Plugin version running on the server this instance is connected to."""
-        response = self._stub.getServerInfo(pb.ServerInfoRequest())
-        raise_on_error(response.status)
-        return response.mcpqVersion
 
     def postToChat(self, *objects, sep: str = " ") -> None:
         """Print `objects` in chat separated by `sep`.
@@ -208,5 +155,200 @@ class Minecraft(_DefaultWorld, _PlayerCache, _EntityCache, _WorldHub, _HasStub):
         :param sep: the separated between each object, defaults to " "
         :type sep: str, optional
         """
-        response = self._stub.postToChat(pb.ChatPostRequest(message=sep.join(map(str, objects))))
+        response = self._server.stub.postToChat(
+            pb.ChatPostRequest(message=sep.join(map(str, objects)))
+        )
         raise_on_error(response)
+
+    def getEntityById(self, entity_id: str) -> Entity:
+        """Get an entity with a certain `entity_id`, even if it is not loaded.
+
+        Normally the `entity_id` is not known ahead of time.
+        Prefer using :func:`getEntities`, :func:`getEntitiesAround` and :func:`spawnEntity`, which all return entities.
+
+        :param entity_id: the unique entity identified
+        :type entity_id: str
+        :return: the corresponding entity with that id, even if not loaded
+        :rtype: Entity
+        """
+        entity = self._server.get_or_create_entity(entity_id)
+        entity._update_on_check()
+        return entity
+
+    def getOfflinePlayer(self, name: str) -> Player:
+        """Get the :class:`Player` with the given `name` no matter if the player is online or not.
+        Does not raise any errors if the player is offline.
+
+        :param name: player name/id
+        :type name: str
+        :return: the player with the given `name`
+        :rtype: Player
+        """
+        return self._server.get_or_create_player(name)
+
+    def getPlayers(self, names: list[str] | None = None) -> list[Player]:
+        """Get all currently online players on the entire server.
+        If `names` is provided get all players with the given names only if they are online.
+        Will raise an error if `names` is provided and at least one player with given name is offline.
+
+        :param names: if given return only players with given names or error if one of the given players is offline, otherwise if `names` is `None` will return all currently online players, defaults to None
+        :type names: list[str] | None, optional
+        :return: the list of all currently online players, or if `names` is provided, only those online players
+        :rtype: list[Player]
+        """
+        if names is None:
+            response = self._server.stub.getPlayers(pb.PlayerRequest())
+        else:
+            response = self._server.stub.getPlayers(pb.PlayerRequest(names=names))
+        raise_on_error(response.status)
+        return [self._server.get_or_create_player(player.name) for player in response.players]
+
+    def getPlayerNames(self) -> list[str]:
+        """Equivalent to :func:`getPlayers` but only return their names instead.
+
+        :return: list of all currently online :class:`Player` names
+        :rtype: list[str]
+        """
+        return [player.name for player in self.getPlayers()]
+
+    def getPlayer(self, name: str | None = None) -> Player:
+        """Get any currently online player, which will become the default player thereafter, or get the online player with given `name`.
+        Will raise an error if either no player is online, or if the player with given `name` is not online.
+
+        If you want to check for any currently online players, use :func:`getPlayers` instead.
+
+        :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
+        :type name: str | None, optional
+        :return: the player with `name` if name is given, else any online player that will become default player thereafter
+        :rtype: Player
+        """
+        if name is None:
+            players = self.getPlayers()
+            if players:
+                return players[0]
+            else:
+                raise_on_error(pb.Status(code=pb.PLAYER_NOT_FOUND))
+                return None  # type: ignore
+        players = self.getPlayers([name])
+        if players:
+            return players[0]
+        return None  # type: ignore
+
+    @property
+    def worlds(self) -> tuple[World, ...]:
+        """Give a tuple of all worlds loaded on the server.
+        Does not automatically call :func:`refreshWorlds`.
+
+        :return: A tuple of all worlds loaded on the server
+        :rtype: tuple[World, ...]
+        """
+        return self._server.get_worlds()
+
+    @property
+    def overworld(self) -> World:
+        """Identical to :func:`getWorldByKey` with key ``"minecraft:overworld"``.
+
+        :return: The overworld world :class:`World` object
+        :rtype: World
+        """
+        return self.getWorldByKey("minecraft:overworld")
+
+    @property
+    def nether(self) -> World:
+        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_nether"``.
+
+        :return: The nether world :class:`World` object
+        :rtype: World
+        """
+        return self.getWorldByKey("minecraft:the_nether")
+
+    @property
+    def end(self) -> World:
+        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_end"``.
+
+        :return: The end world :class:`World` object
+        :rtype: World
+        """
+        return self.getWorldByKey("minecraft:the_end")
+
+    def getWorldByKey(self, key: str) -> World:
+        """The `key` of a world is the dimensions internal name/id.
+        Typically a regular server has the following worlds/keys:
+
+        - ``"minecraft:overworld"``
+
+        - ``"minecraft:the_nether"``
+
+        - ``"minecraft:the_end"``
+
+        The ``"minecraft:"`` prefix may be omitted, e.g., ``"the_nether"``.
+
+        If the given `key` does not exist an exception is raised.
+
+        :param key: Internal name/id of the world, such as ``"minecraft:the_nether"`` or ``"the_nether"``
+        :type key: str
+        :return: The corresponding :class:`World` object
+        :rtype: World
+        """
+        return self._server.get_world_by_key(key)
+
+    def getWorldByName(self, name: str) -> World:
+        """The `name` of a world is the folder or namespace the world resides in.
+        The setting for the world the server opens is found in ``server.properties``.
+        A typical, unmodified PaperMC_ server will save the worlds in the following folders:
+
+        .. _PaperMC: https://papermc.io/
+
+        - ``"world"``, for the overworld
+
+        - ``"world_nether"``, for the nether
+
+        - ``"world_the_end"``, for the end
+
+        The name of the overworld (default ``world``) is used as the prefix for the other folders.
+
+        If the given `name` does not exist an exception is raised.
+
+        :param name: Foldername the world is saved in, such as ``world``
+        :type name: str
+        :return: The corresponding :class:`World` object
+        :rtype: World
+        """
+        return self._server.get_world_by_name(name)
+
+    def refreshWorlds(self) -> None:
+        """Fetches the currently loaded worlds from server and updates the world objects.
+        This should only be called if the loaded worlds on the server change, for example, with the Multiverse Core Plugin.
+        By default, the worlds will be refreshed on first use only.
+        """
+        self._server.update_worlds()
+
+    def getBlockTypes(self) -> list[str]:
+        """The list of all block-types that can be set with :func:`setBlock`"""
+        return [m.key for m in self._server.get_materials(lambda m: m.is_block)]
+
+    def getEntityTypes(self) -> list[EntityType]:
+        return list(self._server.get_entity_types())
+
+    def getItemTypes(self) -> list[str]:
+        """The list of all obtainable items"""
+        return [m.key for m in self._server.get_materials(lambda m: m.is_item)]
+
+    def getMaterials(self) -> list[Material]:
+        return list(self._server.get_materials())
+
+    def getMinecraftVersion(self) -> str:
+        """The Minecraft version of the server this instance is connected to."""
+        response = self._server.stub.getServerInfo(pb.ServerInfoRequest())
+        raise_on_error(response.status)
+        return response.mcVersion
+
+    def getPluginVersion(self) -> str:
+        """The MCPQ Plugin version running on the server this instance is connected to."""
+        response = self._server.stub.getServerInfo(pb.ServerInfoRequest())
+        raise_on_error(response.status)
+        return response.mcpqVersion
+
+    def getSpawnableEntities(self) -> list[str]:
+        """The list of all entity-types that can be spawned with :func:`spawnEntity`"""
+        return [e.key for e in self._server.get_entity_types(lambda e: e.is_spawnable)]

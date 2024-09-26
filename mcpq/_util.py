@@ -5,7 +5,7 @@ import functools
 import threading
 import warnings
 import weakref
-from typing import Callable, Generator, Hashable, TypeAlias, TypeVar
+from typing import Callable, Generator, Generic, Hashable, TypeVar
 
 __all__ = ["ReentrantRWLock", "ThreadSafeSingeltonCache"]
 
@@ -152,11 +152,11 @@ class ReentrantRWLock:
         self._lock.release()
 
 
-Key: TypeAlias = Hashable
-Value = TypeVar("Value")
+KT = TypeVar("KT", bound=Hashable)
+VT = TypeVar("VT")
 
 
-class ThreadSafeSingeltonCache:
+class ThreadSafeSingeltonCache(Generic[KT, VT]):
     """This is a thread safe dictionary intended to be used as a cache.
     Using the :func:`get_or_create` function guarantees that every object returned
     for a given key is a singleton across all threads.
@@ -175,12 +175,12 @@ class ThreadSafeSingeltonCache:
     """
 
     def __init__(
-        self, default_factory: Callable[[Key], Value] | None, use_weakref: bool = False
+        self, default_factory: Callable[[KT], VT] | None, use_weakref: bool = False
     ) -> None:
         self._default_factory = default_factory
         # lock must be reentrant, could deadlock otherwise (if constructing Impl in __init__ of Impl)
         self._lock = ReentrantRWLock()
-        self._cache: dict[Key, Value] = weakref.WeakValueDictionary() if use_weakref else dict()
+        self._cache: dict[KT, VT] = weakref.WeakValueDictionary() if use_weakref else dict()
 
     @property
     def uses_weakref(self) -> bool:
@@ -194,21 +194,21 @@ class ThreadSafeSingeltonCache:
         with self._lock.for_read():
             return len(self._cache)
 
-    def __getitem__(self, key: Key) -> Value:
+    def __getitem__(self, key: KT) -> VT:
         with self._lock.for_read():
             return self._cache[key]
 
-    def __setitem__(self, key: Key, item: Value) -> None:
+    def __setitem__(self, key: KT, item: VT) -> None:
         """Prefer using the :func:`get_or_create` function for creating items."""
         with self._lock.for_write():
             self._cache[key] = item
 
-    def __delitem__(self, key: Key) -> None:
+    def __delitem__(self, key: KT) -> None:
         """Use with care! Once an object is deleted from the cache a new one might be created (might not be singleton anymore)"""
         with self._lock.for_write():
             del self._cache[key]
 
-    def get(self, key: Key, default=None) -> Value | None:
+    def get(self, key: KT, default=None) -> VT | None:
         """Return the value for `key` if `key` is in the cache, else `default`.
         If `default` is not given, it defaults to None, so that this method never raises a KeyError.
         This function does not create a new value in cache.
@@ -223,7 +223,7 @@ class ThreadSafeSingeltonCache:
         except KeyError:
             return default
 
-    def get_or_create(self, key: Key, factory: Callable[[Key], Value] | None = None) -> Value:
+    def get_or_create(self, key: KT, factory: Callable[[KT], VT] | None = None) -> VT:
         """Return singleton value for `key` or create value with `factory` (or otherwise `default_factory`) otherwise.
         Guarantees that a value with given key is a singleton in the entire program, even across multiple threads.
 
@@ -249,7 +249,7 @@ class ThreadSafeSingeltonCache:
                     self._cache[key] = strong_ref
         return strong_ref
 
-    def keys(self) -> tuple[Key]:
+    def keys(self) -> tuple[KT, ...]:
         """Returns a tuple of all keys which currently exist.
         Changes that happen to the cache after this function returns are not reflected in the tuple.
 
@@ -264,7 +264,7 @@ class ThreadSafeSingeltonCache:
         with self._lock.for_read():
             return tuple(self._cache.keys())
 
-    def values(self) -> tuple[Value]:
+    def values(self) -> tuple[VT, ...]:
         """Returns a tuple of all values which currently exist.
 
         :return: a tuple of values that currently exist
@@ -273,7 +273,7 @@ class ThreadSafeSingeltonCache:
         with self._lock.for_read():
             return tuple(self._cache.values())
 
-    def items(self) -> tuple[tuple[Key, Value]]:
+    def items(self) -> tuple[tuple[KT, VT], ...]:
         """Returns a tuple of all key value pairs which currently exist.
 
         :return: a tuple of key value pairs that currently exist

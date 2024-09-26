@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import time
-from functools import partial
 
-from ._base import _EntityProvider, _HasStub
-from ._proto import MinecraftStub
+from ._abc import _ServerInterface
+from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import COLOR
-from ._util import ThreadSafeSingeltonCache
 from .colors import color_codes
 from .exception import raise_on_error
 from .nbt import NBT
 from .vec3 import Vec3
-from .world import World, _WorldHub
+from .world import World
 
 __all__ = ["Entity"]
 
@@ -20,7 +18,7 @@ CACHE_ENTITY_TIME = 0.2
 ALLOW_UNLOADED_ENTITY_OPS = True
 
 
-class Entity(_HasStub):
+class Entity(_SharedBase, _HasServer):
     """The :class:`Entity` class represents an entity on the server.
     It can be used to query information about the entity or manipulate them, such as
     getting or setting their position, orientation, world and more.
@@ -76,9 +74,8 @@ class Entity(_HasStub):
        This improves performance but may also cause bugs or problems if the interval in which the up-to-date position is requred is lower than ``mcpq.entity.CACHE_ENTITY_TIME``.
     """
 
-    def __init__(self, stub: MinecraftStub, worldhub: _WorldHub, entity_id: str) -> None:
-        super().__init__(stub)
-        self._worldhub = worldhub
+    def __init__(self, server: _ServerInterface, entity_id: str) -> None:
+        super().__init__(server)
         self._id = entity_id
         self._type: str | None = None  # inject type from outside
         self._update_ts: float = 0.0
@@ -99,8 +96,9 @@ class Entity(_HasStub):
         if self._type is not None:
             # entity types rarely update (e.g., villager to zombie), so do not update here
             return self._type
-        # entity type should be injected directly after creation
-        raise NotImplementedError
+        # entity was not updated yet
+        self._update()
+        return self._type or "UNKNOWN"
 
     @property
     def loaded(self) -> bool:
@@ -145,7 +143,7 @@ class Entity(_HasStub):
         self._update_on_check()
         if self._world is None:
             # TODO: return _DefaultWorld? Does this case even happen?
-            return self._worldhub.worlds[0]
+            return self._server.get_worlds[0]
         return self._world
 
     @world.setter
@@ -179,7 +177,7 @@ class Entity(_HasStub):
         assert pb_entity.id == self.id
         if pb_entity.type:
             self._type = pb_entity.type
-        self._world = self._worldhub.getWorldByName(pb_entity.location.world.name)
+        self._world = self._server.get_world_by_name(pb_entity.location.world.name)
         self._pos = Vec3(
             pb_entity.location.pos.x, pb_entity.location.pos.y, pb_entity.location.pos.z
         )
@@ -190,7 +188,7 @@ class Entity(_HasStub):
         return True
 
     def _set_entity_loc(self, entity_loc: pb.EntityLocation) -> None:
-        response = self._stub.setEntity(
+        response = self._server.stub.setEntity(
             pb.Entity(
                 id=self.id,
                 location=entity_loc,
@@ -200,7 +198,7 @@ class Entity(_HasStub):
             raise_on_error(response)
 
     def _update(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> bool:
-        response = self._stub.getEntities(
+        response = self._server.stub.getEntities(
             pb.EntityRequest(
                 specific=pb.EntityRequest.SpecificEntities(entities=[pb.Entity(id=self.id)]),
                 withLocations=True,
@@ -367,9 +365,9 @@ class Entity(_HasStub):
 
         if world is not None:
             if isinstance(world, str):
-                world = self._worldhub.getWorldByKey(world)
+                world = self._server.get_world_by_key(world)
             elif isinstance(world, World):
-                newworld = self._worldhub.getWorldByName(world.name)
+                newworld = self._server.get_world_by_name(world.name)
                 if newworld is not world:
                     raise ValueError("World and entity are not from same server")
             else:
@@ -389,79 +387,3 @@ class Entity(_HasStub):
             self._yaw, self._pitch = orientation
         if world is not None:
             self._world = world
-
-
-class _EntityCache(_WorldHub, _HasStub, _EntityProvider):
-    def __init__(self, stub: MinecraftStub) -> None:
-        super().__init__(stub)
-        self._entity_cache = ThreadSafeSingeltonCache(
-            partial(Entity, stub, self), use_weakref=True
-        )
-
-    def _get_or_create_entity(self, entity_id: str) -> Entity:
-        return self._entity_cache.get_or_create(entity_id)
-
-    def getEntityById(self, entity_id: str) -> Entity:
-        """Get an entity with a certain `entity_id`, even if it is not loaded.
-
-        Normally the `entity_id` is not known ahead of time.
-        Prefer using :func:`getEntities`, :func:`getEntitiesAround` and :func:`spawnEntity`, which all return entities.
-
-        :param entity_id: the unique entity identified
-        :type entity_id: str
-        :return: the corresponding entity with that id, even if not loaded
-        :rtype: Entity
-        """
-        entity = self._get_or_create_entity(entity_id)
-        entity._update()
-        return entity
-
-
-# if __name__ == "__main__":
-#     from functools import partial
-
-#     test_stub_1 = object()
-#     test_stub_2 = object()
-#     E1 = partial(Entity, test_stub_1)
-#     P1 = partial(TestPlayer, test_stub_1)
-
-#     name1 = "test_id"
-#     name2 = "other_test_id"
-
-#     e1_1 = E1(name1)
-#     e2_1 = E1(name1)
-#     e3_1 = E1(name2)
-#     print(e1_1)
-#     print(e2_1)
-#     print(e3_1)
-#     assert e1_1 is not e2_1
-#     assert e1_1 is not e3_1
-#     assert e1_1 == e2_1
-#     assert e1_1 != e3_1
-#     p1_1 = P1(name1)
-#     print(p1_1)
-#     assert p1_1 != e1_1
-#     e1_1.runCommand("hi")
-#     p1_1.runCommand("hi")
-#     p1_1.kill()
-#     p1_1.kill()
-#     p1_1.only_player_cmd("test")
-
-#     print("---")
-
-#     from ._util import ThreadSafeCachedKeyBasedFactory
-
-#     entity1 = ThreadSafeCachedKeyBasedFactory(partial(Entity, test_stub_1), use_weakref=True)
-#     player1 = ThreadSafeCachedKeyBasedFactory(partial(TestPlayer, test_stub_1))
-
-#     e1_1 = entity1.get_or_create(name1)
-#     e2_1 = entity1.get_or_create(name2)
-#     e3_1 = entity1.get_or_create(name1)
-#     assert e1_1 is not e2_1
-#     assert e1_1 is e3_1
-#     p1_1 = player1.get_or_create(name1)
-#     p2_1 = player1.get_or_create(name2)
-#     p3_1 = player1.get_or_create(name1)
-#     assert p1_1 is not p2_1
-#     assert p1_1 is p3_1
-#     assert p1_1 is not e1_1
