@@ -52,8 +52,9 @@ class _SharedBase(_HasServer):
         :type command: str
         """
         # TODO: output=True once implemented by server
+        # TODO: works ONLY for Bukkit commands! Vanilla are not intercepted
         response = self._server.stub.runCommandWithOptions(
-            pb.CommandRequest(command=command, blocking=True)
+            pb.CommandRequest(command=command, blocking=True, output=True)
         )
         raise_on_error(response.status)
-        return "mcpq-python: Command output not implemented yet"
+        return response.output

@@ -26,9 +26,17 @@ repos:
     hooks:
       - id: run-tests
         name: run-tests
-        entry: pytest .
+        entry: pytest --without-integration .
         language: python
         additional_dependencies:
-          [pre-commit, pytest, pytest-mock, pytest-timeout, grpcio, protobuf]
+          [
+            pre-commit,
+            pytest,
+            pytest-integration,
+            pytest-mock,
+            pytest-timeout,
+            grpcio,
+            protobuf,
+          ]
         always_run: true
         pass_filenames: false

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 
 import grpc
 
@@ -337,17 +338,45 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def getMaterials(self) -> list[Material]:
         return list(self._server.get_materials())
 
-    def getMinecraftVersion(self) -> str:
-        """The Minecraft version of the server this instance is connected to."""
+    def getMinecraftVersion(self) -> str | None:
+        """The Minecraft version of the server this instance is connected to or None if the version cannot be identified."""
         response = self._server.stub.getServerInfo(pb.ServerInfoRequest())
         raise_on_error(response.status)
-        return response.mcVersion
+        full_version: str = response.mcVersion
+        # spigottest = "4226-Spigot-146439e-2889b3a (MC: 1.21)"
+        # papertest = "git-Paper-196 (MC: 1.20.1)"
+        # TODO: write unit test for this
+        m = re.findall("\(MC: (.*)\)", full_version)
+        if m and len(m):
+            return m[-1]
+        logging.warning(f"Minecraft version could not be parsed from '{full_version}'")
+        return None
+
+    def getMinecraftVersionTuple(self) -> tuple[int, ...] | None:
+        """The Minecraft version of the server this instance is connected to as a integer tuple or None if the version cannot be identified (e.g. from non-release candidate servers)."""
+        versionstr = self.getMinecraftVersion()
+        if versionstr is not None:
+            numsstr = versionstr.split(".")
+            try:
+                nums = [int(n) for n in numsstr]
+                return tuple(nums)
+            except ValueError:
+                logging.warning(
+                    f"Minecraft version '{versionstr}' could not be parsed to tuple of integers"
+                )
+        return None
 
     def getPluginVersion(self) -> str:
         """The MCPQ Plugin version running on the server this instance is connected to."""
         response = self._server.stub.getServerInfo(pb.ServerInfoRequest())
         raise_on_error(response.status)
         return response.mcpqVersion
+
+    def getServerVersion(self) -> str:
+        """The full name and version of the server this instance is connected to."""
+        response = self._server.stub.getServerInfo(pb.ServerInfoRequest())
+        raise_on_error(response.status)
+        return response.mcVersion
 
     def getSpawnableEntities(self) -> list[str]:
         """The list of all entity-types that can be spawned with :func:`spawnEntity`"""

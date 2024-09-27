@@ -36,6 +36,7 @@ dev = [
   "mypy",
   "pre-commit",
   "pytest",
+  "pytest-integration",
   "pytest-mock",
   "pytest-timeout",
   "types-protobuf",

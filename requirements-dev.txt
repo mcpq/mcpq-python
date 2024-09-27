@@ -6,6 +6,7 @@ mypy
 myst-parser
 pre-commit
 pytest
+pytest-integration
 pytest-mock
 pytest-timeout
 setuptools_scm
