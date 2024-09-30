@@ -357,7 +357,8 @@ class Entity(_SharedBase, _HasServer):
         world_pb = None
 
         if pos is not None:
-            pos_pb = pb.Vec3f(**pos.map(float).asdict())
+            pos = pos.map(float)
+            pos_pb = pb.Vec3f(x=pos.x, y=pos.y, z=pos.z)
 
         if facing is not None:
             orientation = facing.yaw_pitch()

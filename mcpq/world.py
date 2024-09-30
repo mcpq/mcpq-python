@@ -190,8 +190,9 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :return: block type/id at queried position
         :rtype: str
         """
+        pos = pos.floor()
         response = self._server.stub.getBlock(
-            pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(**pos.floor().asdict()))
+            pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z))
         )
         raise_on_error(response.status)
         return response.info.blockType
@@ -224,11 +225,12 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :param pos: the position where the block should be set
         :type pos: Vec3
         """
+        pos = pos.floor()
         response = self._server.stub.setBlock(
             pb.Block(
                 world=self._pb_world,
                 info=pb.BlockInfo(blockType=blocktype),
-                pos=pb.Vec3(**pos.floor().asdict()),
+                pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z),
             )
         )
         raise_on_error(response)
@@ -265,11 +267,12 @@ class _DefaultWorld(_SharedBase, _HasServer):
         for chunk in (
             positions[index : index + MAX_BLOCKS] for index in range(0, len(positions), MAX_BLOCKS)
         ):
+            floored = (pos.floor() for pos in chunk)
             response = self._server.stub.setBlocks(
                 pb.Blocks(
                     world=self._pb_world,
                     info=pb.BlockInfo(blockType=blocktype),
-                    pos=[pb.Vec3(**pos.floor().asdict()) for pos in chunk],
+                    pos=[pb.Vec3(x=pos.x, y=pos.y, z=pos.z) for pos in floored],
                 )
             )
             raise_on_error(response)
@@ -301,13 +304,14 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
         """
+        pos1, pos2 = pos1.floor(), pos2.floor()
         response = self._server.stub.setBlockCube(
             pb.Blocks(
                 world=self._pb_world,
                 info=pb.BlockInfo(blockType=blocktype),
                 pos=[
-                    pb.Vec3(**pos1.floor().asdict()),
-                    pb.Vec3(**pos2.floor().asdict()),
+                    pb.Vec3(x=pos1.x, y=pos1.y, z=pos1.z),
+                    pb.Vec3(x=pos2.x, y=pos2.y, z=pos2.z),
                 ],
             )
         )
@@ -437,10 +441,13 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :return: the :class:`Entity` entity spawned
         :rtype: entity.Entity
         """
+        pos = pos.map(float)
         response = self._server.stub.spawnEntity(
             pb.Entity(
                 type=type,
-                location=pb.EntityLocation(world=self._pb_world, pos=pb.Vec3f(**pos.asdict())),
+                location=pb.EntityLocation(
+                    world=self._pb_world, pos=pb.Vec3f(x=pos.x, y=pos.y, z=pos.z)
+                ),
             )
         )
         raise_on_error(response.status)
