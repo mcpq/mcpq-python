@@ -58,7 +58,7 @@ Homepage = "https://github.com/mcpq/mcpq-python"
 Issues = "https://github.com/mcpq/mcpq-python/issues"
 
 [tool.setuptools]
-packages = ["mcpq"]
+packages = ["mcpq", "mcpq.tools", "mcpq._proto"]
 
 [tool.setuptools_scm]
 # enables setuptools_scm for versioning based on git tags
