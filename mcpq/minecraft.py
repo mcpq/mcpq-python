@@ -48,7 +48,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
        For security reasons it is recommended to connect from the same host as the server is running on. By default, the plugin does only allow connections from ``localhost`` to prevent access from third parties.
 
 
-    The :class:`Minecraft` instance is also an *event handler*, the default :class:`World` and can be used to query :class:`Entity` and :class:`Player` objects from the server.
+    The :class:`Minecraft` instance is also the default :class:`World` and can be used to query :class:`Entity`, :class:`Player` and :class:`Event` objects from the server.
     Checkout the corresponding classes for more information.
     """
 
@@ -59,8 +59,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         super().__init__(server)
         self._event_handler = EventHandler(server)
 
-        # deprecated event functions
-        # stop event polling is now unsafe as the underlying SingleEventHandlers were exposed (might still be around)
+        # deprecated functions
         self.stopEventPollingAndClearCallbacks = deprecated(
             "Call to deprecated function stopEventPollingAndClearCallbacks. Use events.stopEventPollingAndClearCallbacks instead."
         )(self.events.stopEventPollingAndClearCallbacks)
@@ -213,14 +212,18 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         return [player.name for player in self.getPlayers()]
 
     def getPlayer(self, name: str | None = None) -> Player:
-        """Get any currently online player, which will become the default player thereafter, or get the online player with given `name`.
+        """Get any currently online player or get the online player with given `name`.
         Will raise an error if either no player is online, or if the player with given `name` is not online.
 
         If you want to check for any currently online players, use :func:`getPlayers` instead.
 
+        .. note::
+
+           There is no guarantee that the player returned will be the same across multiple calls of this function. It may change depending on the order the players joined the server or the implementation of the server.
+
         :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
         :type name: str | None, optional
-        :return: the player with `name` if name is given, else any online player that will become default player thereafter
+        :return: the player with `name` if name is given, else any online player
         :rtype: Player
         """
         if name is None:
@@ -346,7 +349,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         # spigottest = "4226-Spigot-146439e-2889b3a (MC: 1.21)"
         # papertest = "git-Paper-196 (MC: 1.20.1)"
         # TODO: write unit test for this
-        m = re.findall("\(MC: (.*)\)", full_version)
+        m = re.findall("\\(MC: (.*)\\)", full_version)
         if m and len(m):
             return m[-1]
         logging.warning(f"Minecraft version could not be parsed from '{full_version}'")

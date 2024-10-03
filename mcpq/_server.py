@@ -62,7 +62,7 @@ class _Server(_ServerInterface):
         if not self._entity_type_cache or force_update:
             response = self.stub.getEntityTypes(pb.EntityTypeRequest())
             raise_on_error(response.status)
-            self._material_cache = {
+            self._entity_type_cache = {
                 m.key: EntityType._build(m) for m in sorted(response.types, key=lambda m: m.key)
             }
         return self._entity_type_cache
