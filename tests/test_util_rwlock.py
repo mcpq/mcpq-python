@@ -74,7 +74,8 @@ def test_single_threaded_deep():
 def test_lock_no_ambiguous_context():
     lock = ReentrantRWLock()
 
-    with pytest.raises(AttributeError):
+    # TypeError in newer Python versions
+    with pytest.raises((AttributeError, TypeError)):
         with lock:
             pass
 
