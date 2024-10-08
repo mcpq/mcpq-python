@@ -4,7 +4,7 @@ import json
 import string
 from collections import UserDict, UserList
 from collections.abc import Mapping
-from typing import Any, Dict, Generic, TypeAlias, TypeVar
+from typing import Any, Iterable, MutableMapping, TypeAlias
 
 
 # TODO: replace NBT with NbtCompound (once tests are written)
@@ -375,6 +375,7 @@ class NbtFloat(float):
 
 
 class NbtDouble(float):
+    # has a limit, but not implemented here
     _end = "d"  # optional
 
     def __new__(cls, value):
@@ -390,95 +391,118 @@ class NbtDouble(float):
 
 
 class NbtList(UserList):
-    def _convert_same_type_and_insert(self, index, value):
-        if len(self) > 0:
-            hastype = type(self[0])
-            if not isinstance(value, hastype):
-                value = hastype(value)
-        else:
+    def _convert_same_type(self, value):
+        dtype = self.dtype
+        if dtype is None:
             value = default_nbt(value)
-        self.data.insert(index, value)
+        elif not isinstance(value, dtype):
+            value = dtype(value)
+        return value
 
     def __init__(self, iterable=None):
         super().__init__()
         if iterable is not None:
-            for index, item in enumerate(list(iterable)):
-                self[index] = item
+            for item in list(iterable):
+                self.append(item)
 
     def __str__(self) -> str:
-        inner = ",".join(str(item) for item in iter(self))
+        dtype = self.dtype
+        if dtype is None:
+            # normal
+            inner = ",".join(str(item) for item in iter(self))
+        elif dtype in (bool, NbtByte):
+            inner = ",".join(str(item).lower() for item in iter(self))
+        elif issubclass(dtype, str):
+            # always enclose (is optional for nonquotables)
+            inner = ",".join(escape_with_double_quotes(item) for item in iter(self))
+        else:
+            # normal
+            inner = ",".join(str(item) for item in iter(self))
         return f"[{inner}]"
 
     def __setitem__(self, index: int, value: Any):
-        self._convert_same_type_and_insert(index, value)
+        self.data[index] = self._convert_same_type(value)
 
-    def insert(self, i: int, item: Any) -> None:
-        self._convert_same_type_and_insert(i, item)
+    @property
+    def dtype(self) -> type[NbtType] | None:
+        if len(self):
+            return type(self[0])
 
     def append(self, item: Any) -> None:
-        self._convert_same_type_and_insert(len(self), item)
+        self.data.append(self._convert_same_type(item))
+
+    def extend(self, other: Iterable) -> None:
+        self.data.extend(self._convert_same_type(v) for v in other)
+
+    def insert(self, index: int, item: Any) -> None:
+        self.data.insert(index, self._convert_same_type(item))
 
 
 class NbtByteArray(NbtList):
-    def _convert_same_type_and_insert(self, index, value):
+    def _convert_same_type(self, value):
+        # bool also allowed
         if not isinstance(value, (NbtByte, bool)):
             value = NbtByte(value)
-        self.data.insert(index, value)
+        return value
 
     def __str__(self) -> str:
+        # bool extra (lower)
         inner = ",".join(str(item).lower() for item in iter(self))
         return f"[B;{inner}]"
 
+    @property
+    def dtype(self) -> type[NbtByte]:
+        return NbtByte
+
 
 class NbtIntArray(NbtList):
-    def _convert_same_type_and_insert(self, index, value):
-        if not isinstance(value, NbtInt):
-            value = NbtInt(value)
-        self.data.insert(index, value)
-
     def __str__(self) -> str:
-        inner = ",".join(str(item).lower() for item in iter(self))
+        inner = ",".join(str(item) for item in iter(self))
         return f"[I;{inner}]"
+
+    @property
+    def dtype(self) -> type[NbtInt]:
+        return NbtInt
 
 
 class NbtLongArray(NbtList):
-    def _convert_same_type_and_insert(self, index, value):
-        if not isinstance(value, NbtLong):
-            value = NbtLong(value)
-        self.data.insert(index, value)
-
     def __str__(self) -> str:
-        inner = ",".join(str(item).lower() for item in iter(self))
+        inner = ",".join(str(item) for item in iter(self))
         return f"[L;{inner}]"
 
+    @property
+    def dtype(self) -> type[NbtLong]:
+        return NbtLong
 
-T = TypeVar("T")
 
-
-class TypedView(dict[str, T], Generic[T]):
+class TypedCompoundView(MutableMapping):
     """A generic view that enforces values to be of a specific type."""
 
-    def __init__(self, original_dict: Dict[str, Any], value_type: type[T]):
-        self._original_dict = original_dict
-        self._value_type = value_type
+    def __init__(self, compound: NbtCompound, dtype: type[NbtType]):
+        self._compound = compound
+        self._dtype = dtype
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}[{self._dtype.__name__}]({repr(self._compound)})"
 
     def __setitem__(self, key: str, value: Any):
-        self._original_dict[key] = self._value_type(value)
+        value = self._dtype(value)
+        self._compound._set_no_value_check(key, value)
 
-    def __getitem__(self, key: str) -> Any:
-        return self._original_dict[key]
+    def __getitem__(self, key: str) -> NbtType:
+        return self._compound[key]
 
     def __delitem__(self, key: str):
-        del self._original_dict[key]
+        del self._compound[key]
 
     def __iter__(self):
-        return iter(self._original_dict)
+        return iter(self._compound)
 
     def __len__(self):
-        return len(self._original_dict)
+        return len(self._compound)
 
     def __contains__(self, key: str):
-        return key in self._original_dict
+        return key in self._compound
 
 
 class NbtCompound(UserDict[str, Any]):
@@ -493,24 +517,27 @@ class NbtCompound(UserDict[str, Any]):
             if all((k in self._nonquotable) for k in key):
                 pair = f"{key}="
             else:
-                pair = f'"{key}"='
+                pair = escape_with_double_quotes(key) + "="
 
             if isinstance(val, bool):
                 pair += str(val).lower()
             elif isinstance(val, (NbtCompound, NbtList)):
                 pair += str(val)
             elif isinstance(val, str):
-                pair += f'"{str(val)}"'
+                pair += escape_with_double_quotes(val)
             else:
                 pair += str(val)
             inner.append(pair)
         return f"{{{','.join(inner)}}}"
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def _set_no_value_check(self, key: str, value: NbtType) -> None:
         if not isinstance(key, str):
             raise ValueError(f"{key} is not a string, expecting all keys to be strings")
-        value = default_nbt(value)
         return super().__setitem__(key, value)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        value = default_nbt(value)
+        return self._set_no_value_check(key, value)
 
     def update(self, iterable) -> None:
         for k, v in iterable.items() if isinstance(iterable, Mapping) else iterable:
@@ -521,62 +548,67 @@ class NbtCompound(UserDict[str, Any]):
             self[name] = NbtCompound()
         return self[name]
 
-    def get_or_create_list(self, name: str) -> list[NbtType]:
+    def get_or_create_list(self, name: str) -> NbtList:
         if name not in self or not isinstance(self[name], NbtList):
             self[name] = NbtList()
         return self[name]
 
     @property
     def bool(self):
-        return TypedView(self, bool)
+        return TypedCompoundView(self, bool)
 
     @property
     def byte(self):
-        return TypedView(self, NbtByte)
+        return TypedCompoundView(self, NbtByte)
 
     @property
     def short(self):
-        return TypedView(self, NbtShort)
+        return TypedCompoundView(self, NbtShort)
 
     @property
     def int(self):
-        return TypedView(self, NbtInt)
+        return TypedCompoundView(self, NbtInt)
 
     @property
     def long(self):
-        return TypedView(self, NbtLong)
+        return TypedCompoundView(self, NbtLong)
 
     @property
     def float(self):
-        return TypedView(self, NbtFloat)
+        return TypedCompoundView(self, NbtFloat)
 
     @property
     def double(self):
-        return TypedView(self, NbtDouble)
+        return TypedCompoundView(self, NbtDouble)
 
     @property
     def string(self):
-        return TypedView(self, str)
+        return TypedCompoundView(self, str)
 
     @property
     def list(self):
-        return TypedView(self, NbtList)
+        return TypedCompoundView(self, NbtList)
 
     @property
     def compound(self):
-        return TypedView(self, NbtCompound)
+        return TypedCompoundView(self, NbtCompound)
 
     @property
     def byte_array(self):
-        return TypedView(self, NbtByteArray)
+        return TypedCompoundView(self, NbtByteArray)
 
     @property
     def int_array(self):
-        return TypedView(self, NbtIntArray)
+        return TypedCompoundView(self, NbtIntArray)
 
     @property
     def long_array(self):
-        return TypedView(self, NbtLongArray)
+        return TypedCompoundView(self, NbtLongArray)
+
+
+def escape_with_double_quotes(s: str):
+    escaped = s.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
 
 
 def default_nbt(
@@ -611,7 +643,10 @@ def default_nbt(
     elif isinstance(value, float):
         value = NbtDouble(value)
     elif isinstance(value, str):
-        pass
+        nbt_number = parse_snbt_number(value)
+        if nbt_number is not None:
+            value = nbt_number
+        # don't parse other compound types/str here, prob. not wanted implicitly
     elif isinstance(value, dict):
         value = NbtCompound(value)
     elif isinstance(value, list):
@@ -621,8 +656,9 @@ def default_nbt(
     return value
 
 
-def parse_snbt(value: str) -> NbtType:
-    nonquotable = string.digits + string.ascii_letters + "_-.+"
+def parse_snbt_number(value: str) -> NbtNumberType | None:
+    if not value:
+        return None
     if value in ["true", "false"]:
         return value == "true"
     if value.isdigit():
@@ -644,6 +680,14 @@ def parse_snbt(value: str) -> NbtType:
                 return NbtFloat(value)
             if back.lower() == "d":
                 return NbtDouble(value)
+
+
+def parse_snbt(value: str) -> NbtType:
+    nonquotable = string.digits + string.ascii_letters + "_-.+"
+
+    nbt_number = parse_snbt_number(value)
+    if nbt_number is not None:
+        return nbt_number
 
     def split_on_comma(inner: str) -> list[str]:
         if not inner:
@@ -674,14 +718,24 @@ def parse_snbt(value: str) -> NbtType:
                 incomp += 1
             elif l == "}":
                 incomp -= 1
-                assert incomp >= 0
+                if incomp < 0:
+                    raise ValueError(f"'{inner}' incorrectly closed with {l}")
             elif l == "[":
                 inlist += 1
             elif l == "]":
                 inlist -= 1
-                assert inlist >= 0
+                if inlist < 0:
+                    raise ValueError(f"'{inner}' incorrectly closed with {l}")
             elif l == "," and incomp == 0 and inlist == 0:
                 splits.append(i)
+        if incomp:
+            raise ValueError(f"'{inner}' incorrectly closes compounds {{}}")
+        if inlist:
+            raise ValueError(f"'{inner}' incorrectly closes lists []")
+        if single or double:
+            raise ValueError(f"'{inner}' incorrectly closes quotes \" or '")
+        if escape:
+            raise ValueError(f"'{inner}' incorrectly escapes \\")
         if not splits:  # only one single "thing" inside
             return [inner]
         result = []
@@ -703,6 +757,7 @@ def parse_snbt(value: str) -> NbtType:
             return inner[:i], i
 
         # quoted string
+        # TODO: correctly escape quotes!
         escape = False
         endstr = inner[0]  # either ' or "
         for i in range(1, len(inner)):
@@ -718,9 +773,8 @@ def parse_snbt(value: str) -> NbtType:
     if value.startswith("{") and value.endswith("}"):
         parts = split_on_comma(value[1:-1])
         indices = [startingstring(part) for part in parts]
-        assert all(
-            part[index] == "=" for (_, index), part in zip(indices, parts)
-        ), f"Found invalid separator (not '=') in compound: {value}"
+        if any(part[index] != "=" for (_, index), part in zip(indices, parts)):
+            raise ValueError(f"Found invalid separator (not '=') in compound: {value}")
         splits = [
             (key, parse_snbt(part[index + 1 :])) for (key, index), part in zip(indices, parts)
         ]
@@ -736,11 +790,13 @@ def parse_snbt(value: str) -> NbtType:
             return NbtList([parse_snbt(part) for part in split_on_comma(value[1:-1])])
     elif value.startswith('"') and value.endswith('"'):
         nstr, endindex = startingstring(value)
-        assert endindex == len(value), f"Incorrect quoting of str: {value} ({nstr} -> {endindex})"
+        if endindex != len(value):
+            raise ValueError(f"Incorrect quoting of str: {value} ({nstr} -> {endindex})")
         return nstr
     elif value.startswith("'") and value.endswith("'"):
         nstr, endindex = startingstring(value)
-        assert endindex == len(value), f"Incorrect quoting of str: {value} ({nstr} -> {endindex})"
+        if endindex != len(value):
+            raise ValueError(f"Incorrect quoting of str: {value} ({nstr} -> {endindex})")
         return nstr
     elif all(l in nonquotable for l in value):
         return value
@@ -748,20 +804,10 @@ def parse_snbt(value: str) -> NbtType:
         raise ValueError(f"Cannot parse '{value}' to nbt")
 
 
+NbtNumberType: TypeAlias = bool | NbtByte | NbtShort | NbtInt | NbtLong | NbtFloat | NbtDouble
+
 NbtType: TypeAlias = (
-    bool
-    | NbtByte
-    | NbtShort
-    | NbtInt
-    | NbtLong
-    | NbtFloat
-    | NbtDouble
-    | str
-    | NbtList
-    | NbtCompound
-    | NbtByteArray
-    | NbtIntArray
-    | NbtLongArray
+    NbtNumberType | str | NbtList | NbtCompound | NbtByteArray | NbtIntArray | NbtLongArray
 )
 
 
