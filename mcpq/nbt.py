@@ -6,158 +6,7 @@ from collections import UserDict, UserList
 from collections.abc import Mapping
 from typing import Any, Iterable, MutableMapping, TypeAlias
 
-
-# TODO: replace NBT with NbtCompound (once tests are written)
-class NBT(dict[str, Any]):
-    def __str__(self) -> str:
-        return json.dumps(self)
-
-    def get_or_create_nbt(self, value: str) -> NBT:
-        if value not in self:
-            self[value] = NBT()
-        return self[value]
-
-    def get_or_create_list(self, value: str) -> list[NBT | str]:
-        if value not in self:
-            self[value] = []
-        return self[value]
-
-    def set_unbreakable(self) -> None:
-        self["Unbreakable"] = 1
-
-    def set_name(self, text: str, italics: bool = True) -> None:
-        itstr = str(bool(italics)).lower()
-        self.get_or_create_nbt("display")["Name"] = f'[{{"text": "{text}", "italic": {itstr}}}]'
-
-    def add_lore(self, text: str) -> None:
-        self.get_or_create_nbt("display").get_or_create_list("Lore").append(f'"{text}"')
-
-    def add_can_place_on(self, block: str) -> None:
-        self.get_or_create_list("CanPlaceOn").append(block)
-
-    def add_can_destroy(self, block: str) -> None:
-        self.get_or_create_list("CanDestroy").append(block)
-
-    def add_enchantment(self, enchantment: str, level: int = 1) -> None:
-        tag = NBT({"id": enchantment, "lvl": level})
-        self.get_or_create_list("Enchantments").append(tag)
-
-    def add_aqua_affinity(self, level: int = 1) -> None:
-        self.add_enchantment("aqua_affinity", level)
-
-    def add_bane_of_arthropods(self, level: int = 1) -> None:
-        self.add_enchantment("bane_of_arthropods", level)
-
-    def add_blast_protection(self, level: int = 1) -> None:
-        self.add_enchantment("blast_protection", level)
-
-    def add_channeling(self, level: int = 1) -> None:
-        self.add_enchantment("channeling", level)
-
-    def add_binding_curse(self, level: int = 1) -> None:
-        self.add_enchantment("binding_curse", level)
-
-    def add_vanishing_curse(self, level: int = 1) -> None:
-        self.add_enchantment("vanishing_curse", level)
-
-    def add_depth_strider(self, level: int = 1) -> None:
-        self.add_enchantment("depth_strider", level)
-
-    def add_efficiency(self, level: int = 1) -> None:
-        self.add_enchantment("efficiency", level)
-
-    def add_feather_falling(self, level: int = 1) -> None:
-        self.add_enchantment("feather_falling", level)
-
-    def add_fire_aspect(self, level: int = 1) -> None:
-        self.add_enchantment("fire_aspect", level)
-
-    def add_fire_protection(self, level: int = 1) -> None:
-        self.add_enchantment("fire_protection", level)
-
-    def add_flame(self, level: int = 1) -> None:
-        self.add_enchantment("flame", level)
-
-    def add_fortune(self, level: int = 1) -> None:
-        self.add_enchantment("fortune", level)
-
-    def add_frost_walker(self, level: int = 1) -> None:
-        self.add_enchantment("frost_walker", level)
-
-    def add_impaling(self, level: int = 1) -> None:
-        self.add_enchantment("impaling", level)
-
-    def add_infinity(self, level: int = 1) -> None:
-        self.add_enchantment("infinity", level)
-
-    def add_knockback(self, level: int = 1) -> None:
-        self.add_enchantment("knockback", level)
-
-    def add_looting(self, level: int = 1) -> None:
-        self.add_enchantment("looting", level)
-
-    def add_loyalty(self, level: int = 1) -> None:
-        self.add_enchantment("loyalty", level)
-
-    def add_luck_of_the_sea(self, level: int = 1) -> None:
-        self.add_enchantment("luck_of_the_sea", level)
-
-    def add_lure(self, level: int = 1) -> None:
-        self.add_enchantment("lure", level)
-
-    def add_mending(self, level: int = 1) -> None:
-        self.add_enchantment("mending", level)
-
-    def add_multishot(self, level: int = 1) -> None:
-        self.add_enchantment("multishot", level)
-
-    def add_piercing(self, level: int = 1) -> None:
-        self.add_enchantment("piercing", level)
-
-    def add_power(self, level: int = 1) -> None:
-        self.add_enchantment("power", level)
-
-    def add_projectile_protection(self, level: int = 1) -> None:
-        self.add_enchantment("projectile_protection", level)
-
-    def add_protection(self, level: int = 1) -> None:
-        self.add_enchantment("protection", level)
-
-    def add_punch(self, level: int = 1) -> None:
-        self.add_enchantment("punch", level)
-
-    def add_quick_charge(self, level: int = 1) -> None:
-        self.add_enchantment("quick_charge", level)
-
-    def add_respiration(self, level: int = 1) -> None:
-        self.add_enchantment("respiration", level)
-
-    def add_riptide(self, level: int = 1) -> None:
-        self.add_enchantment("riptide", level)
-
-    def add_sharpness(self, level: int = 1) -> None:
-        self.add_enchantment("sharpness", level)
-
-    def add_silk_touch(self, level: int = 1) -> None:
-        self.add_enchantment("silk_touch", level)
-
-    def add_smite(self, level: int = 1) -> None:
-        self.add_enchantment("smite", level)
-
-    def add_soul_speed(self, level: int = 1) -> None:
-        self.add_enchantment("soul_speed", level)
-
-    def add_sweeping(self, level: int = 1) -> None:
-        self.add_enchantment("sweeping", level)
-
-    def add_swift_sneak(self, level: int = 1) -> None:
-        self.add_enchantment("swift_sneak", level)
-
-    def add_thorns(self, level: int = 1) -> None:
-        self.add_enchantment("thorns", level)
-
-    def add_unbreaking(self, level: int = 1) -> None:
-        self.add_enchantment("unbreaking", level)
+NONQUOTABLE_STR = string.digits + string.ascii_letters + "_-.+"
 
 
 # TODO: use BlockKey for materials/block types (add nbt as well)
@@ -396,7 +245,8 @@ class NbtList(UserList):
         if dtype is None:
             value = default_nbt(value)
         elif not isinstance(value, dtype):
-            value = dtype(value)
+            if dtype is not NbtByte or not isinstance(value, bool):
+                value = dtype(value)
         return value
 
     def __init__(self, iterable=None):
@@ -410,7 +260,8 @@ class NbtList(UserList):
         if dtype is None:
             # normal
             inner = ",".join(str(item) for item in iter(self))
-        elif dtype in (bool, NbtByte):
+        elif dtype is NbtByte:
+            # lower() due to allowed bool
             inner = ",".join(str(item).lower() for item in iter(self))
         elif issubclass(dtype, str):
             # always enclose (is optional for nonquotables)
@@ -426,7 +277,10 @@ class NbtList(UserList):
     @property
     def dtype(self) -> type[NbtType] | None:
         if len(self):
-            return type(self[0])
+            dtype = type(self[0])
+            if dtype is bool:
+                return NbtByte
+            return dtype
 
     def append(self, item: Any) -> None:
         self.data.append(self._convert_same_type(item))
@@ -506,15 +360,13 @@ class TypedCompoundView(MutableMapping):
 
 
 class NbtCompound(UserDict[str, Any]):
-    _nonquotable = string.digits + string.ascii_letters + "_-.+"
-
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
         inner = []
         for key, val in self.items():
-            if all((k in self._nonquotable) for k in key):
+            if key and all((k in NONQUOTABLE_STR) for k in key):
                 pair = f"{key}="
             else:
                 pair = escape_with_double_quotes(key) + "="
@@ -652,7 +504,9 @@ def default_nbt(
     elif isinstance(value, list):
         value = NbtList(value)
     else:
-        raise ValueError(f"{value} cannot automatically be converted to nbt type")
+        raise ValueError(
+            f"{value} (type: {type(value)}) cannot automatically be converted to nbt type"
+        )
     return value
 
 
@@ -664,7 +518,7 @@ def parse_snbt_number(value: str) -> NbtNumberType | None:
     if value.isdigit():
         return NbtInt(value)
     dots = value.count(".")
-    if dots == 1 and value.replace(".", "").isdigit():
+    if dots == 1 and value.replace(".", "", 1).isdigit():
         return NbtDouble(value)
     if len(value) > 1:
         front, back = value[:-1], value[-1]
@@ -675,20 +529,75 @@ def parse_snbt_number(value: str) -> NbtNumberType | None:
                 return NbtShort(value)
             if back.lower() == "l":
                 return NbtLong(value)
-        elif dots == 1 and front.replace(".", "").isdigit():
+        elif dots == 1 and front.replace(".", "", 1).isdigit():
             if back.lower() == "f":
                 return NbtFloat(value)
             if back.lower() == "d":
                 return NbtDouble(value)
 
 
+def parse_snbt_string(value: str) -> str | None:
+    "Parse value to 'normal (not snbt escaped)' Python string if entire value is valid string"
+    if not value:
+        return None  # empty is not valid without quotes
+
+    def check_escapes(quote):
+        escape = False
+        for l in value[1:-1]:
+            if escape:
+                escape = False
+                if l == "\\":
+                    pass
+                elif l != quote:
+                    raise ValueError(f"`{value}` contains invalid escape character `{l}` ")
+            elif l == "\\":
+                escape = True
+        if escape:
+            raise ValueError(f"`{value}` incorrectly escapes \\")
+
+    if value.startswith('"') and value.endswith('"'):
+        check_escapes('"')
+        normal = value.replace('\\"', '"').replace("\\\\", "\\")[1:-1]
+        return normal
+    elif value.startswith("'") and value.endswith("'"):
+        check_escapes("'")
+        normal = value.replace("\\'", "'").replace("\\\\", "\\")[1:-1]
+        return normal
+    elif all((l in NONQUOTABLE_STR) for l in value):
+        return value
+
+
+def parse_snbt_string_start(value: str) -> tuple[str, int]:
+    "Parse the start of value for a valid string and return that substring and index of end of string"
+    if not value:
+        return "", 0
+
+    # non quoted string
+    if value[0] not in ["'", '"']:
+        for i, l in enumerate(value):
+            if l not in NONQUOTABLE_STR:
+                break
+        return value[:i], i
+
+    # quoted string
+    escape = False
+    endstr = value[0]  # either ' or "
+    for i in range(1, len(value)):
+        l = value[i]
+        if escape:
+            escape = False
+            if l == "\\":
+                pass
+            elif endstr != l:
+                raise ValueError(f"`{value}` contains invalid escape character `{l}`")
+        elif l == "\\":
+            escape = True
+        elif l == endstr:
+            return value[1:i].replace("\\" + endstr, endstr).replace("\\\\", "\\"), i + 1
+    raise ValueError(f"`{value}` string not correctly closed")
+
+
 def parse_snbt(value: str) -> NbtType:
-    nonquotable = string.digits + string.ascii_letters + "_-.+"
-
-    nbt_number = parse_snbt_number(value)
-    if nbt_number is not None:
-        return nbt_number
-
     def split_on_comma(inner: str) -> list[str]:
         if not inner:
             return []
@@ -702,6 +611,7 @@ def parse_snbt(value: str) -> NbtType:
             l = inner[i]
             if escape:
                 escape = False
+                # parsing strings happens further in
             elif l == "\\":
                 escape = True
             elif single:
@@ -719,23 +629,23 @@ def parse_snbt(value: str) -> NbtType:
             elif l == "}":
                 incomp -= 1
                 if incomp < 0:
-                    raise ValueError(f"'{inner}' incorrectly closed with {l}")
+                    raise ValueError(f"`{inner}` incorrectly closed with `{l}`")
             elif l == "[":
                 inlist += 1
             elif l == "]":
                 inlist -= 1
                 if inlist < 0:
-                    raise ValueError(f"'{inner}' incorrectly closed with {l}")
+                    raise ValueError(f"`{inner}` incorrectly closed with `{l}`")
             elif l == "," and incomp == 0 and inlist == 0:
                 splits.append(i)
         if incomp:
-            raise ValueError(f"'{inner}' incorrectly closes compounds {{}}")
+            raise ValueError(f"`{inner}` incorrectly closes compounds {{}}")
         if inlist:
-            raise ValueError(f"'{inner}' incorrectly closes lists []")
+            raise ValueError(f"`{inner}` incorrectly closes lists []")
         if single or double:
-            raise ValueError(f"'{inner}' incorrectly closes quotes \" or '")
+            raise ValueError(f"`{inner}` incorrectly closes quotes \" or '")
         if escape:
-            raise ValueError(f"'{inner}' incorrectly escapes \\")
+            raise ValueError(f"`{inner}` incorrectly escapes \\")
         if not splits:  # only one single "thing" inside
             return [inner]
         result = []
@@ -745,63 +655,55 @@ def parse_snbt(value: str) -> NbtType:
             start = i + 1
         return result
 
-    def startingstring(inner: str) -> tuple[str, int]:
-        if not inner:
-            return "", 0
-
-        # non quoted string
-        if inner[0] not in ["'", '"']:
-            for i, l in enumerate(inner):
-                if l not in nonquotable:
-                    break
-            return inner[:i], i
-
-        # quoted string
-        # TODO: correctly escape quotes!
-        escape = False
-        endstr = inner[0]  # either ' or "
-        for i in range(1, len(inner)):
-            l = inner[i]
-            if escape:
-                escape = False
-            elif l == "\\":
-                escape = True
-            elif l == endstr:
-                return inner[1:i], i + 1
-        raise ValueError(f"'{inner}' str not correctly closed")
-
     if value.startswith("{") and value.endswith("}"):
         parts = split_on_comma(value[1:-1])
-        indices = [startingstring(part) for part in parts]
-        if any(part[index] != "=" for (_, index), part in zip(indices, parts)):
-            raise ValueError(f"Found invalid separator (not '=') in compound: {value}")
+        keys_indices = [parse_snbt_string_start(part) for part in parts]
+        for (_, index), part in zip(keys_indices, parts):
+            if index == 0:
+                raise ValueError(f"Missing key for '{part}' in '{value}'")
+            if index == len(part):
+                raise ValueError(f"Missing value for key '{part}' in '{value}'")
+            if part[index] != "=":
+                raise ValueError(
+                    f"Found invalid separator '{part[index]}' (expected '=') in compound: {value}"
+                )
         splits = [
-            (key, parse_snbt(part[index + 1 :])) for (key, index), part in zip(indices, parts)
+            (key, parse_snbt(part[index + 1 :])) for (key, index), part in zip(keys_indices, parts)
         ]
         return NbtCompound(splits)
     elif value.startswith("[") and value.endswith("]"):
         if value.startswith("[B;"):
-            return NbtByteArray([parse_snbt(part) for part in split_on_comma(value[3:-1])])
+            data = [parse_snbt(part) for part in split_on_comma(value[3:-1])]
+            ltype = NbtByteArray
+            dtypes = (NbtByte, bool)
         elif value.startswith("[I;"):
-            return NbtIntArray([parse_snbt(part) for part in split_on_comma(value[3:-1])])
+            data = [parse_snbt(part) for part in split_on_comma(value[3:-1])]
+            ltype = NbtIntArray
+            dtypes = (NbtInt,)
         elif value.startswith("[L;"):
-            return NbtLongArray([parse_snbt(part) for part in split_on_comma(value[3:-1])])
+            data = [parse_snbt(part) for part in split_on_comma(value[3:-1])]
+            ltype = NbtLongArray
+            dtypes = (NbtLong,)
         else:
-            return NbtList([parse_snbt(part) for part in split_on_comma(value[1:-1])])
-    elif value.startswith('"') and value.endswith('"'):
-        nstr, endindex = startingstring(value)
-        if endindex != len(value):
-            raise ValueError(f"Incorrect quoting of str: {value} ({nstr} -> {endindex})")
-        return nstr
-    elif value.startswith("'") and value.endswith("'"):
-        nstr, endindex = startingstring(value)
-        if endindex != len(value):
-            raise ValueError(f"Incorrect quoting of str: {value} ({nstr} -> {endindex})")
-        return nstr
-    elif all(l in nonquotable for l in value):
-        return value
+            data = [parse_snbt(part) for part in split_on_comma(value[1:-1])]
+            ltype = NbtList
+            dtypes = (type(data[0]) if data else None,)
+            if NbtByte in dtypes or bool in dtypes:
+                dtypes = (NbtByte, bool)
+        for d in data:
+            if type(d) not in dtypes:
+                raise ValueError(
+                    f"List element `{d}` does not have expected type of {' or '.join(t.__name__ for t in dtypes)} in `{value}`"
+                )
+        listobject = ltype()
+        listobject.data.extend(data)
+        return listobject
+    elif (nbt_number := parse_snbt_number(value)) is not None:
+        return nbt_number
+    elif (nbt_string := parse_snbt_string(value)) is not None:
+        return nbt_string
     else:
-        raise ValueError(f"Cannot parse '{value}' to nbt")
+        raise ValueError(f"Cannot parse `{value}` to nbt")
 
 
 NbtNumberType: TypeAlias = bool | NbtByte | NbtShort | NbtInt | NbtLong | NbtFloat | NbtDouble
@@ -809,6 +711,159 @@ NbtNumberType: TypeAlias = bool | NbtByte | NbtShort | NbtInt | NbtLong | NbtFlo
 NbtType: TypeAlias = (
     NbtNumberType | str | NbtList | NbtCompound | NbtByteArray | NbtIntArray | NbtLongArray
 )
+
+
+# TODO: replace NBT with NbtCompound (once tests are written)
+class NBT(NbtCompound):
+    def __init__(
+        self,
+        dict: dict[str, Any] | None = None,
+        version: tuple[int, ...] | None = None,
+        /,
+        **kwargs,
+    ):
+        super().__init__(dict, **kwargs)
+        self.version = version
+
+    def __str__(self) -> str:
+        return json.dumps(self)
+
+    def set_unbreakable(self) -> None:
+        self["Unbreakable"] = 1
+
+    def set_name(self, text: str, italics: bool = True) -> None:
+        itstr = str(bool(italics)).lower()
+        self.get_or_create_nbt("display")["Name"] = f'[{{"text": "{text}", "italic": {itstr}}}]'
+
+    def add_lore(self, text: str) -> None:
+        self.get_or_create_nbt("display").get_or_create_list("Lore").append(f'"{text}"')
+
+    def add_can_place_on(self, block: str) -> None:
+        self.get_or_create_list("CanPlaceOn").append(block)
+
+    def add_can_destroy(self, block: str) -> None:
+        self.get_or_create_list("CanDestroy").append(block)
+
+    def add_enchantment(self, enchantment: str, level: int = 1) -> None:
+        tag = NBT({"id": enchantment, "lvl": level})
+        self.get_or_create_list("Enchantments").append(tag)
+
+    def add_aqua_affinity(self, level: int = 1) -> None:
+        self.add_enchantment("aqua_affinity", level)
+
+    def add_bane_of_arthropods(self, level: int = 1) -> None:
+        self.add_enchantment("bane_of_arthropods", level)
+
+    def add_blast_protection(self, level: int = 1) -> None:
+        self.add_enchantment("blast_protection", level)
+
+    def add_channeling(self, level: int = 1) -> None:
+        self.add_enchantment("channeling", level)
+
+    def add_binding_curse(self, level: int = 1) -> None:
+        self.add_enchantment("binding_curse", level)
+
+    def add_vanishing_curse(self, level: int = 1) -> None:
+        self.add_enchantment("vanishing_curse", level)
+
+    def add_depth_strider(self, level: int = 1) -> None:
+        self.add_enchantment("depth_strider", level)
+
+    def add_efficiency(self, level: int = 1) -> None:
+        self.add_enchantment("efficiency", level)
+
+    def add_feather_falling(self, level: int = 1) -> None:
+        self.add_enchantment("feather_falling", level)
+
+    def add_fire_aspect(self, level: int = 1) -> None:
+        self.add_enchantment("fire_aspect", level)
+
+    def add_fire_protection(self, level: int = 1) -> None:
+        self.add_enchantment("fire_protection", level)
+
+    def add_flame(self, level: int = 1) -> None:
+        self.add_enchantment("flame", level)
+
+    def add_fortune(self, level: int = 1) -> None:
+        self.add_enchantment("fortune", level)
+
+    def add_frost_walker(self, level: int = 1) -> None:
+        self.add_enchantment("frost_walker", level)
+
+    def add_impaling(self, level: int = 1) -> None:
+        self.add_enchantment("impaling", level)
+
+    def add_infinity(self, level: int = 1) -> None:
+        self.add_enchantment("infinity", level)
+
+    def add_knockback(self, level: int = 1) -> None:
+        self.add_enchantment("knockback", level)
+
+    def add_looting(self, level: int = 1) -> None:
+        self.add_enchantment("looting", level)
+
+    def add_loyalty(self, level: int = 1) -> None:
+        self.add_enchantment("loyalty", level)
+
+    def add_luck_of_the_sea(self, level: int = 1) -> None:
+        self.add_enchantment("luck_of_the_sea", level)
+
+    def add_lure(self, level: int = 1) -> None:
+        self.add_enchantment("lure", level)
+
+    def add_mending(self, level: int = 1) -> None:
+        self.add_enchantment("mending", level)
+
+    def add_multishot(self, level: int = 1) -> None:
+        self.add_enchantment("multishot", level)
+
+    def add_piercing(self, level: int = 1) -> None:
+        self.add_enchantment("piercing", level)
+
+    def add_power(self, level: int = 1) -> None:
+        self.add_enchantment("power", level)
+
+    def add_projectile_protection(self, level: int = 1) -> None:
+        self.add_enchantment("projectile_protection", level)
+
+    def add_protection(self, level: int = 1) -> None:
+        self.add_enchantment("protection", level)
+
+    def add_punch(self, level: int = 1) -> None:
+        self.add_enchantment("punch", level)
+
+    def add_quick_charge(self, level: int = 1) -> None:
+        self.add_enchantment("quick_charge", level)
+
+    def add_respiration(self, level: int = 1) -> None:
+        self.add_enchantment("respiration", level)
+
+    def add_riptide(self, level: int = 1) -> None:
+        self.add_enchantment("riptide", level)
+
+    def add_sharpness(self, level: int = 1) -> None:
+        self.add_enchantment("sharpness", level)
+
+    def add_silk_touch(self, level: int = 1) -> None:
+        self.add_enchantment("silk_touch", level)
+
+    def add_smite(self, level: int = 1) -> None:
+        self.add_enchantment("smite", level)
+
+    def add_soul_speed(self, level: int = 1) -> None:
+        self.add_enchantment("soul_speed", level)
+
+    def add_sweeping(self, level: int = 1) -> None:
+        self.add_enchantment("sweeping", level)
+
+    def add_swift_sneak(self, level: int = 1) -> None:
+        self.add_enchantment("swift_sneak", level)
+
+    def add_thorns(self, level: int = 1) -> None:
+        self.add_enchantment("thorns", level)
+
+    def add_unbreaking(self, level: int = 1) -> None:
+        self.add_enchantment("unbreaking", level)
 
 
 if __name__ == "__main__":

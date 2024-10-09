@@ -12,6 +12,7 @@ from mcpq.nbt import (
     NbtLong,
     NbtLongArray,
     NbtShort,
+    parse_snbt,
 )
 
 
@@ -141,6 +142,8 @@ def test_string():
     s = n.string
 
     a = "Call 'me' \"Ishmael\" and use a \\-command"
+    a1 = """Call \'me\' "Ishmael" and use a \\-command"""
+    assert a == a1
     r = """\"Call 'me' \\"Ishmael\\" and use a \\\\-command\""""
 
     def escape_with_double_quotes(normal_string: str):
@@ -151,6 +154,7 @@ def test_string():
     print("Escape:", escape_with_double_quotes(a))
     print("Should:", r)
     assert escape_with_double_quotes(a) == r
+    assert escape_with_double_quotes(a1) == r
 
     loc = "test"
     s[loc] = a
@@ -158,6 +162,7 @@ def test_string():
     print("n:", n)
     assert s[loc] == a
     assert str(n) == f"{{{loc}={r}}}"
+    assert str(parse_snbt(str(n))) == f"{{{loc}={r}}}"
 
     n.clear()
     loc = "Strange 'key' without \" or \\\\"
@@ -165,18 +170,21 @@ def test_string():
     n[loc] = "text"
     assert n[loc] == "text"
     assert str(n) == f'{{{locr}="text"}}'
+    assert str(parse_snbt(str(n))) == f'{{{locr}="text"}}'
 
     l = NbtList([a, "text", loc])
     assert l[0] == a
     assert l[1] == "text"
     assert l[2] == loc
     assert str(l) == f'[{r},"text",{locr}]'
+    assert str(parse_snbt(str(l))) == f'[{r},"text",{locr}]'
 
     l.clear()
     last = '''"Nice' string"'''
     l.append(last)
     assert l[0] == last
     assert str(l) == f"[{escape_with_double_quotes(last)}]"
+    assert str(parse_snbt(str(l))) == f"[{escape_with_double_quotes(last)}]"
 
 
 def test_list():
@@ -271,6 +279,7 @@ def test_compound():
             '{key1="value1","key 2"=2}',
             NbtCompound,
         ),
+        (n.compound, {"": ""}, {"": ""}, '{""=""}', NbtCompound),
         (n.byte_array, [1, False, 3], [1, 0, 3], "[B;1b,false,3b]", NbtByteArray),
         (n.int_array, [1, 2, 3], [1, 2, 3], "[I;1,2,3]", NbtIntArray),
         (n.long_array, [1, 2, 3], [1, 2, 3], "[L;1l,2l,3l]", NbtLongArray),
@@ -286,6 +295,8 @@ def test_compound():
         (n, "1.0d", 1, "1.0", NbtDouble),
         (n, [], [], "[]", NbtList),
         (n, [1, 2, 3], [1, 2, 3], "[1,2,3]", NbtList),
+        (n, ["0b", True, "2b"], [0, True, 2], "[0b,true,2b]", NbtList),
+        (n, [False, "1b", "2b"], [False, 1, 2], "[false,1b,2b]", NbtList),
         (n, {}, {}, "{}", NbtCompound),
         (
             n,
@@ -349,3 +360,82 @@ def test_compound():
         with pytest.raises(TypeError):
             view[loc] = set
         assert not n, f"{index}: {invalid_typed[index]}"
+
+
+def test_parsing():
+    valids = [
+        "{}",
+        '{""={}}',
+        '{""=""}',
+        "[1,5]",
+        '[{},{""="","text"={}}]',
+        "[{},{''='','text'={}}]",
+        '["1b","1l"]',
+        "[true,1b,4b,false]",
+        "[false,1b,4b,true]",
+        "[1b,true,4b,false]",
+        "[B;true,1b,4b,false]",
+        "[B;false,1b,4b,true]",
+        "[B;1b,true,4b,false]",
+        "[ku,geh,my]",
+        "[[[],[]],[[[]]]]",
+        "[ku,geh,'1b']",
+        "[ku,'true',le]",
+        "[ku,'{}',le]",
+        "[ku,'[]',le]",
+        "[ku,'1232',le]",
+        '"\\\\\'"',
+        "'\\\\\"'",
+        "'\\\\r'",
+        "'\\\\n'",
+    ]
+    for v in valids:
+        print(v)
+        parse_snbt(v)
+
+    invalids = [
+        "{{}}",
+        "{=}",
+        "{",
+        "}",
+        "{'key'={}}}",
+        "{'key'={}",
+        "{={}}",
+        '{"key"}',
+        '{"key="}',
+        '{""=}',
+        '[1,"1"]',
+        "[ku,geh,1b]",
+        "[ku,true,le]",
+        "[ku,{},le]",
+        "[ku,[],le]",
+        "[ku,1232,le]",
+        '["1", 1]',
+        '[1b, "1b"]',
+        '["1b", 1b]',
+        '["]',
+        "[\\]",
+        "['\\']",
+        "['\\']",
+        "[,]",
+        "[[]",
+        "[]]",
+        '"\\\'"',
+        "'\\\"'",
+        "'\\r'",
+        "'\\n'",
+    ]
+    for v in invalids:
+        print(v)
+        with pytest.raises(ValueError):
+            parse_snbt(v)
+
+    valids_str = [
+        ("[ku,geh,my]", '["ku","geh","my"]'),
+        ("{id=1,hint='nice'}", '{id=1,hint="nice"}'),
+        ("{'id'=1,\"hint\"='nice'}", '{id=1,hint="nice"}'),
+    ]
+    for v, res in valids_str:
+        print(v)
+        assert str(parse_snbt(v)) == res
+        assert str(parse_snbt(str(parse_snbt(v)))) == res
