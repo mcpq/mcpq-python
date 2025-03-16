@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
+from typing import Any
 
 from ._abc import _ServerInterface
 from ._proto import MinecraftStub
@@ -26,6 +27,7 @@ class _Server(_ServerInterface):
         self._player_cache = ThreadSafeSingeltonCache(partial(Player, self))
         self._material_cache: dict[str, Material] = {}
         self._entity_type_cache: dict[str, EntityType] = {}
+        self._server_info_cache: dict[str, Any] = {}
 
     @property
     def stub(self) -> MinecraftStub:
@@ -66,3 +68,15 @@ class _Server(_ServerInterface):
                 m.key: EntityType._build(m) for m in sorted(response.types, key=lambda m: m.key)
             }
         return self._entity_type_cache
+
+    def server_info_cache(self, force_update: bool = False) -> dict[str, Any]:
+        if not self._server_info_cache or force_update:
+            response = self.stub.getServerInfo(pb.ServerInfoRequest())
+            raise_on_error(response.status)
+            self._server_info_cache = {
+                # TODO: automatically parse all properties to dict
+                "mcversion": str(response.mcVersion),
+                "mcpqversion": str(response.mcpqVersion),
+                # _local properties may be added by _server functions
+            }
+        return self._server_info_cache

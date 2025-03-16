@@ -22,6 +22,9 @@ docs:
 proto:
 	python3 -m grpc_tools.protoc --proto_path=proto --python_out=mcpq/_proto --grpc_python_out=mcpq/_proto proto/minecraft.proto
 
+nbt_lark:
+	python3 -m lark.tools.standalone --maybe_placeholders mcpq/nbt/snbt_and_component.lark -o mcpq/nbt/_snbt_and_component.py
+
 dist:
 	rm -rf dist
 	python3 -m build

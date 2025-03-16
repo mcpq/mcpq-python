@@ -6,6 +6,7 @@ from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import CARDINAL, COLOR, DIRECTION
 from .exception import raise_on_error
+from .nbt import Block
 from .vec3 import Vec3
 
 MAX_BLOCKS = 50000  # TODO: replace with block stream
@@ -143,21 +144,17 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """True if any world on the server has pvp enabled.
         Can be set to enable or disable pvp on all worlds on the server.
         """
-        # TODO: returning if ANY world has pvp
         response = self._server.stub.accessWorlds(pb.WorldRequest())
         raise_on_error(response.status)
         return any(world.info.pvp for world in response.worlds)
 
     @pvp.setter
     def pvp(self, value: bool) -> None:
-        # TODO: setting ALL world pvp variables
-        response = self._server.stub.accessWorlds(pb.WorldRequest())
-        raise_on_error(response.status)
         response = self._server.stub.accessWorlds(
             pb.WorldRequest(
                 worlds=[
                     pb.World(name=world.name, info=pb.WorldInfo(pvp=value))
-                    for world in response.worlds
+                    for world in self._server.get_worlds()
                 ]
             )
         )
@@ -178,7 +175,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         "Equivalent to the y value of :func:`getHighestPos` with `x` and `z`."
         return self.getHighestPos(x, z).y  # type: ignore
 
-    def getBlock(self, pos: Vec3) -> str:
+    def getBlock(self, pos: Vec3) -> Block:
         """The block type/id at position `pos` in world.
 
         .. note::
@@ -188,20 +185,27 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :param pos: position to query block from
         :type pos: Vec3
         :return: block type/id at queried position
-        :rtype: str
+        :rtype: Block
         """
         pos = pos.floor()
         response = self._server.stub.getBlock(
             pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z))
         )
         raise_on_error(response.status)
-        return response.info.blockType
+        return Block(response.info.blockType)
 
-    # TODO: differentiate between block type and Block
-    # def getBlockWithData(self, pos: Vec3) -> Block:
-    #     raise NotImplementedError
+    # TODO: differentiate between block type and Block (also in all argument types)
+    def getBlockWithData(self, pos: Vec3) -> Block:
+        pos = pos.floor()
+        response = self._server.stub.getBlock(
+            pb.BlockRequest(
+                world=self._pb_world, pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z), withData=True
+            ),
+        )
+        raise_on_error(response.status)
+        return Block(response.info.blockType + response.info.nbt.snbt)
 
-    def getBlockList(self, positions: list[Vec3]) -> list[str]:
+    def getBlockList(self, positions: list[Vec3]) -> list[Block]:
         """The list of all block types/ids at given `positions` in world in the same order.
 
         .. note::
@@ -211,7 +215,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :param positions: list of positions to query
         :type positions: list[Vec3]
         :return: list of block types/ids at given positions (same order)
-        :rtype: list[str]
+        :rtype: list[Block]
         """
         # TODO: natively support this operation
         return [self.getBlock(pos) for pos in positions]

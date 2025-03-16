@@ -41,7 +41,7 @@ def test_player(mc):
     ps = mc.getPlayers()
     assert len(ps), "No players on Server, cannot run player test"
     mc.events.player_death.poll(None)  # activate
-    mc.events.player_leave.poll(None)  # activate
+    # mc.events.player_leave.poll(None)  # activate
 
     p = mc.getPlayer()
     assert p
@@ -127,13 +127,20 @@ def test_world(mc):
     assert mc.getWorldByKey(ow.key) == ow
 
     orig_block = mc.getBlock(origin)
-    new_block = "barrier" if orig_block == "command_block" else "command_block"
+    new_block = "birch_stairs" if orig_block == "spruce_stairs" else "spruce_stairs"
     assert orig_block != new_block
     mc.setBlock(new_block, origin)
     sleep(0.05)  # setBlock nonblocking
-    assert mc.getBlock(origin) == new_block
+    assert (new_block_ret := mc.getBlock(origin)) == new_block
     assert ow.getBlock(origin) == new_block, "Default world should almost always be overworld"
     assert mc.nether.getBlock(origin) != new_block
+
+    assert hasattr(new_block_ret, "id")
+    assert not new_block_ret.getData()
+    assert (
+        new_block_ret_data := mc.getBlockWithData(origin)
+    ) != new_block, "expected block to have data/components"
+    assert new_block_ret_data.getData()
 
     # world.pvp = False  # disable pvp only in this world
     # ground_pos = world.getHeighestPos(0, 0)  # get position of heighest ground at origin

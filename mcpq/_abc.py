@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import logging
+import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
@@ -46,6 +48,10 @@ class _ServerInterface(ABC):
     def entity_type_cache(self, force_update: bool = False) -> dict[str, EntityType]:
         raise NotImplementedError
 
+    @abstractmethod
+    def server_info_cache(self, force_update: bool = False) -> dict[str, Any]:
+        raise NotImplementedError
+
     def get_or_create_entity(self, entity_id: str) -> Entity:
         return self.entity_cache().get_or_create(entity_id)
 
@@ -85,3 +91,48 @@ class _ServerInterface(ABC):
         if filter is None:
             return tuple(self.entity_type_cache().values())
         return tuple(m for m in self.entity_type_cache().values() if filter(m))
+
+    def get_server_version(self) -> str:
+        full_version: str | None = self.server_info_cache().get("mcversion")
+        if full_version is not None:
+            return full_version
+        return "unknown"
+
+    def get_mc_version_string(self) -> str:
+        version: str | None = self.server_info_cache().get("_mcversion_string")
+        if version is not None:
+            return version
+        full_version: str = self.get_server_version()
+        if full_version != "unknown":
+            # spigottest = "4226-Spigot-146439e-2889b3a (MC: 1.21)"
+            # papertest = "git-Paper-196 (MC: 1.20.1)"
+            # TODO: write unit test for this
+            m = re.findall("\\(MC: (.+)\\)", full_version)
+            if m and len(m):
+                version = self.server_info_cache()["_mcversion_string"] = m[-1]
+                return version
+            logging.warning(f"Minecraft version could not be parsed from '{full_version}'")
+        return "unknown"
+
+    def get_mc_version(self) -> tuple[int, ...]:
+        version_tuple = self.server_info_cache().get("_mcversion_tuple")
+        if version_tuple is not None:
+            return version_tuple
+        versionstr = self.get_mc_version_string()
+        if versionstr != "unknown":
+            numsstr = versionstr.split(".")
+            try:
+                nums = [int(n) for n in numsstr]
+                version_tuple = self.server_info_cache()["_mcversion_tuple"] = tuple(nums)
+                return version_tuple
+            except ValueError:
+                logging.warning(
+                    f"Minecraft version '{versionstr}' could not be parsed to tuple of integers"
+                )
+        return tuple()
+
+    def get_mcpq_version(self) -> str:
+        mcpq_version = self.server_info_cache().get("mcpqversion")
+        if mcpq_version is not None:
+            return mcpq_version
+        return "unknown"
