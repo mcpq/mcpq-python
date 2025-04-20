@@ -95,24 +95,6 @@ class Block(str):
         # TODO: remove white spaces?
         return len(self.datastr) > 2
 
-    # TODO: fix this and add ComponentData
-    # def addData(
-    #     self, data: dict[str, bool | int | str] | str | Block
-    # ) -> Block:
-    #     if isinstance(data, Block):
-    #         data = data.dataDict
-    #     elif isinstance(data, str):
-    #         if len(data) < 2 or data[0] != "[" or data[-1] != "]":
-    #             raise ValueError("Expected data in form: '[key1=value1,key2=value2,...]'")
-    #         if " " in data:
-    #             raise ValueError("Did not expect spaces in data")
-    #         # TODO: more checks?
-    #         data = self._parse_data(data)
-
-    #     combined = self.dataDict | data
-    #     inner = ",".join(f"{key.lower()}={str(val).lower()}" for key, val in combined.items())
-    #     return Block(f"{self.type}[{inner}]")
-
     def getData(self) -> ComponentData:
         return parse_component(self.datastr)
 
@@ -145,3 +127,21 @@ class Block(str):
             raise ValueError(
                 f"Unknown data type {type(data)}, expected dict, str, Block,  ComponentData or None"
             )
+
+    def withMergeData(
+        self, data: dict[str, bool | int | str] | str | ComponentData | Block
+    ) -> Block:
+        if isinstance(data, Block):
+            d = data.getData()
+        elif isinstance(data, ComponentData):
+            d = data
+        elif isinstance(data, str):
+            d = parse_component(data)
+        elif isinstance(data, dict):
+            d = ComponentData(data)
+        else:
+            raise ValueError(
+                f"Unknown data type {type(data)}, expected dict, str, Block or  ComponentData"
+            )
+
+        return self.withData(self.getData() | d)
