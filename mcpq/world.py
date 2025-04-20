@@ -176,11 +176,12 @@ class _DefaultWorld(_SharedBase, _HasServer):
         return self.getHighestPos(x, z).y  # type: ignore
 
     def getBlock(self, pos: Vec3) -> Block:
-        """The block type/id at position `pos` in world.
+        """The block :class:`Block` type/id at position `pos` in world.
 
         .. note::
 
-           The function does only query the block type/id, no additional block data is included.
+           The function does only query the block type/id, no block component data is not queried.
+           To query block component data use :func:`getBlockWithData`.
 
         :param pos: position to query block from
         :type pos: Vec3
@@ -194,23 +195,31 @@ class _DefaultWorld(_SharedBase, _HasServer):
         raise_on_error(response.status)
         return Block(response.info.blockType)
 
-    # TODO: differentiate between block type and Block (also in all argument types)
     def getBlockWithData(self, pos: Vec3) -> Block:
+        """The block :class:`Block` at position `pos` in world including block component data.
+
+        :param pos: position to query block from
+        :type pos: Vec3
+        :return: block type/id and component data at queried position
+        :rtype: Block
+        """
         pos = pos.floor()
         response = self._server.stub.getBlock(
             pb.BlockRequest(
-                world=self._pb_world, pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z), withData=True
+                world=self._pb_world,
+                pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z),
+                withData=True,
             ),
         )
         raise_on_error(response.status)
-        return Block(response.info.blockType + response.info.nbt.snbt)
+        return Block(response.info.blockType + response.info.blockData)
 
     def getBlockList(self, positions: list[Vec3]) -> list[Block]:
-        """The list of all block types/ids at given `positions` in world in the same order.
+        """The list of all block :class:`Block` types/ids at given `positions` in world in the same order.
 
         .. note::
 
-           The function does only query the block types/ids, no additional block data is included.
+           The function does only query the block type/ids, no block component data is not queried.
 
         :param positions: list of positions to query
         :type positions: list[Vec3]
@@ -220,20 +229,36 @@ class _DefaultWorld(_SharedBase, _HasServer):
         # TODO: natively support this operation
         return [self.getBlock(pos) for pos in positions]
 
-    def setBlock(self, blocktype: str, pos: Vec3) -> None:
+    def getBlockListWithData(self, positions: list[Vec3]) -> list[Block]:
+        """The list of all block :class:`Block` at given `positions` in world with component data in the same order.
+
+        :param positions: list of positions to query
+        :type positions: list[Vec3]
+        :return: list of block type/ids and component data at given positions (same order)
+        :rtype: list[Block]
+        """
+        # TODO: natively support this operation
+        return [self.getBlockWithData(pos) for pos in positions]
+
+    def setBlock(self, blocktype: str | Block, pos: Vec3) -> None:
         """Change the block at position `pos` to `blocktype` in world.
         This will overwrite any block at that position.
 
-        :param blocktype: the valid block type/id to set the block to
-        :type blocktype: str
+        :param blocktype: the valid block type/id or :class:`Block` to set the block to
+        :type blocktype: str | Block
         :param pos: the position where the block should be set
         :type pos: Vec3
         """
         pos = pos.floor()
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
         response = self._server.stub.setBlock(
             pb.Block(
                 world=self._pb_world,
-                info=pb.BlockInfo(blockType=blocktype),
+                info=pb_info,
                 pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z),
             )
         )
@@ -251,23 +276,25 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """
         pos = pos.floor()
         pos2 = getattr(pos, direction)(1)
-        self.runCommand(
-            f"setblock {pos.x} {pos.y} {pos.z} {color}_bed[part=foot,facing={direction}]"
-        )
-        self.runCommand(
-            f"setblock {pos2.x} {pos2.y} {pos2.z} {color}_bed[part=head,facing={direction}]"
-        )
+        # must place head first, otherwise foot breaks
+        self.setBlock(Block(f"{color}_bed[part=head,facing={direction}]"), pos2)
+        self.setBlock(Block(f"{color}_bed[part=foot,facing={direction}]"), pos)
 
-    def setBlockList(self, blocktype: str, positions: list[Vec3]) -> None:
+    def setBlockList(self, blocktype: str | Block, positions: list[Vec3]) -> None:
         """Change all blocks at `positions` to `blocktype` in world.
         This will overwrite all blocks at the given positions.
-        This is more efficient that using :func:`setBlock` mutliple times with the same `blocktype`.
+        This is more efficient that using :func:`setBlock` multiple times with the same `blocktype`.
 
         :param blocktype: the valid block type/id to set the blocks to
-        :type blocktype: str
+        :type blocktype: str | Block
         :param positions: the positions where the blocks should be set
         :type positions: list[Vec3]
         """
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
         for chunk in (
             positions[index : index + MAX_BLOCKS] for index in range(0, len(positions), MAX_BLOCKS)
         ):
@@ -275,13 +302,13 @@ class _DefaultWorld(_SharedBase, _HasServer):
             response = self._server.stub.setBlocks(
                 pb.Blocks(
                     world=self._pb_world,
-                    info=pb.BlockInfo(blockType=blocktype),
+                    info=pb_info,
                     pos=[pb.Vec3(x=pos.x, y=pos.y, z=pos.z) for pos in floored],
                 )
             )
             raise_on_error(response)
 
-    def setBlockCube(self, blocktype: str, pos1: Vec3, pos2: Vec3) -> None:
+    def setBlockCube(self, blocktype: str | Block, pos1: Vec3, pos2: Vec3) -> None:
         """Change all blocks in a cube between the corners `pos1` and `pos2` in world to `blocktype`, where both positions are *inclusive*. meaning that both given positions/corners will be part of the cube.
         This will overwrite all blocks between the given positions.
         The positions span a cube if all their coordinates are different,
@@ -302,17 +329,22 @@ class _DefaultWorld(_SharedBase, _HasServer):
                        world.setBlock("diamond_block", start.addX(x).addY(y).addZ(z))
 
         :param blocktype: the valid block type/id to set the blocks to
-        :type blocktype: str
+        :type blocktype: str | Block
         :param pos1: the position of one corner of the cube
         :type pos1: Vec3
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
         """
         pos1, pos2 = pos1.floor(), pos2.floor()
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
         response = self._server.stub.setBlockCube(
             pb.Blocks(
                 world=self._pb_world,
-                info=pb.BlockInfo(blockType=blocktype),
+                info=pb_info,
                 pos=[
                     pb.Vec3(x=pos1.x, y=pos1.y, z=pos1.z),
                     pb.Vec3(x=pos2.x, y=pos2.y, z=pos2.z),
@@ -321,26 +353,27 @@ class _DefaultWorld(_SharedBase, _HasServer):
         )
         raise_on_error(response)
 
-    def copyBlockCube(self, pos1: Vec3, pos2: Vec3) -> list[list[list[str]]]:
+    def copyBlockCube(
+        self, pos1: Vec3, pos2: Vec3, withData: bool = False
+    ) -> list[list[list[Block]]]:
         """Get all block types in a cube between `pos1` and `pos2` inclusive.
         Should be used in conjunction with :func:`pasteBlockCube`.
-
-        .. note::
-
-           The function does only copy the block types/ids, no additional block data is included.
 
         :param pos1: the position of one corner of the cube
         :type pos1: Vec3
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
+        :param withData: whether block component data should be queried, defaults to False
+        :type withData: bool, optional
         :return: the block types in the cube given as rows of x with columns of y with slices of depth z respectively
-        :rtype: list[list[list[str]]]
+        :rtype: list[list[list[Block]]]
         """
         pos1, pos2 = pos1.map_pairwise(min, pos2), pos1.map_pairwise(max, pos2)
         pos1, pos2 = pos1.floor(), pos2.floor()
+        getfunc = self.getBlockWithData if withData else self.getBlock
         return [
             [
-                [self.getBlock(Vec3(x, y, z)) for z in range(pos1.z, pos2.z + 1)]
+                [getfunc(Vec3(x, y, z)) for z in range(pos1.z, pos2.z + 1)]
                 for y in range(pos1.y, pos2.y + 1)
             ]
             for x in range(pos1.x, pos2.x + 1)
@@ -348,7 +381,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
 
     def pasteBlockCube(
         self,
-        blocktypes: list[list[list[str]]],
+        blocktypes: list[list[list[str | Block]]],
         pos: Vec3,
         rotation: DIRECTION = "east",
         flip_x: bool = False,
@@ -358,10 +391,6 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """Paste the block types in the cube `blocktypes` into the world at position `pos` where `pos` is the negative most corner of the cube along all three axes.
         Additional options can be used to change the rotation of blocks in the copied cube, however, no matter in which way the cube is rotated and/or flipped, `pos` will also be the most negative corner.
         Should be used in conjunction with :func:`copyBlockCube`.
-
-        .. note::
-
-           The :func:`copyBlockCube` function does only copy the block types/ids, no additional block data is included.
 
         .. code-block:: python
 
@@ -376,7 +405,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
 
 
         :param blocktypes: the cube of block types/ids that should be pasted, given as rows of x with columns of y with slices of depth z respectively
-        :type blocktypes: list[list[list[str]]]
+        :type blocktypes: list[list[list[str | Block]]]
         :param pos: the most negative corner along all three axes of the cube where the cube should be pasted
         :type pos: Vec3
         :param rotation: the direction of the x axis of the cube to be pasted ("east" means copied x axis aligns with real x axis, i.e., the original orientation), defaults to "east"

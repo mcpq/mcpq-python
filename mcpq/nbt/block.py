@@ -90,6 +90,11 @@ class Block(str):
             return self[self.index("[") :]
         return "[]"
 
+    @property
+    def hasData(self) -> bool:
+        # TODO: remove white spaces?
+        return len(self.datastr) > 2
+
     # TODO: fix this and add ComponentData
     # def addData(
     #     self, data: dict[str, bool | int | str] | str | Block
@@ -111,5 +116,32 @@ class Block(str):
     def getData(self) -> ComponentData:
         return parse_component(self.datastr)
 
-    # def withData(self, data: dict[str, bool | int | str] | str | ComponentData) -> Block:
-    #     return Block(self.id).addData(data)
+    def withId(self, type_id: str | Block) -> Block:
+        dstr = self.datastr if self.hasData else ""
+        if isinstance(type_id, Block):
+            return Block(type_id.id + dstr)
+        elif isinstance(type_id, str):
+            return Block(type_id)
+        else:
+            raise ValueError(f"Unknown id type {type(type_id)}, expected str or Block")
+
+    def withData(
+        self,
+        data: dict[str, bool | int | str] | str | ComponentData | Block | None = None,
+    ) -> Block:
+        if data is None:
+            return Block(self.id)
+        elif isinstance(data, Block):
+            return Block(self.id + (data.datastr if data.hasData else ""))
+        elif isinstance(data, ComponentData):
+            return Block(self.id + (str(data) if data else ""))
+        elif isinstance(data, str):
+            d = parse_component(data)
+            return Block(self.id + (str(d) if d else ""))
+        elif isinstance(data, dict):
+            d = ComponentData(data)
+            return Block(self.id + (str(d) if d else ""))
+        else:
+            raise ValueError(
+                f"Unknown data type {type(data)}, expected dict, str, Block,  ComponentData or None"
+            )

@@ -139,8 +139,8 @@ def test_world(mc):
     assert not new_block_ret.getData()
     assert (
         new_block_ret_data := mc.getBlockWithData(origin)
-    ) != new_block, "expected block to have data/components"
-    assert new_block_ret_data.getData()
+    ) == new_block, "equals check should still succeed even with data"
+    assert new_block_ret_data.getData(), "expected block to have data/components"
 
     # world.pvp = False  # disable pvp only in this world
     # ground_pos = world.getHeighestPos(0, 0)  # get position of heighest ground at origin
