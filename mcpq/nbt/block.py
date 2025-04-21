@@ -95,6 +95,15 @@ class Block(str):
         # TODO: remove white spaces?
         return len(self.datastr) > 2
 
+    def asCommandBlockState(self) -> Block:
+        nd = ComponentData()
+        state = nd.get_or_create_nbt("block_state")
+        for key, val in self.getData().items():
+            if isinstance(val, bool):
+                val = str(val).lower()
+            state.string[key] = val
+        return Block(self.id + str(nd))
+
     def getData(self) -> ComponentData:
         return parse_component(self.datastr)
 
