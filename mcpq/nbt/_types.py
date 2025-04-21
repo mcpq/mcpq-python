@@ -353,7 +353,7 @@ class TypedCompoundView(MutableMapping):
 
 
 class NbtCompound(UserDict[str, Any]):
-    KEYVALSEP = ": "
+    KEYVALSEP = ":"
 
     def __repr__(self) -> str:
         return str(self)

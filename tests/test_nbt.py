@@ -161,16 +161,16 @@ def test_string():
     print("n[loc]:", n[loc])
     print("n:", n)
     assert s[loc] == a
-    assert str(n) == f"{{{loc}: {r}}}"
-    assert str(parse_snbt(str(n))) == f"{{{loc}: {r}}}"
+    assert str(n) == f"{{{loc}:{r}}}"
+    assert str(parse_snbt(str(n))) == f"{{{loc}:{r}}}"
 
     n.clear()
     loc = "Strange 'key' without \" or \\\\"
     locr = escape_with_double_quotes(loc)
     n[loc] = "text"
     assert n[loc] == "text"
-    assert str(n) == f'{{{locr}: "text"}}'
-    assert str(parse_snbt(str(n))) == f'{{{locr}: "text"}}'
+    assert str(n) == f'{{{locr}:"text"}}'
+    assert str(parse_snbt(str(n))) == f'{{{locr}:"text"}}'
 
     l = NbtList([a, "text", loc])
     assert l[0] == a
@@ -347,10 +347,10 @@ def test_compound():
             n.compound,
             {"key1": "value1", "key 2": 2},
             {"key1": "value1", "key 2": 2},
-            '{key1: "value1","key 2": 2}',
+            '{key1:"value1","key 2":2}',
             NbtCompound,
         ),
-        (n.compound, {"": ""}, {"": ""}, '{"": ""}', NbtCompound),
+        (n.compound, {"": ""}, {"": ""}, '{"":""}', NbtCompound),
         (n.byte_array, [1, False, 3], [1, 0, 3], "[B;1b,false,3b]", NbtByteArray),
         (n.int_array, [1, 2, 3], [1, 2, 3], "[I;1,2,3]", NbtIntArray),
         (n.long_array, [1, 2, 3], [1, 2, 3], "[L;1l,2l,3l]", NbtLongArray),
@@ -373,7 +373,7 @@ def test_compound():
             n,
             {"key1": "value1", "key 2": 2},
             {"key1": "value1", "key 2": 2},
-            '{key1: "value1","key 2": 2}',
+            '{key1:"value1","key 2":2}',
             NbtCompound,
         ),
         (n, "text", "text", '"text"', str),
@@ -390,7 +390,7 @@ def test_compound():
         assert n[loc] == get, f"{index}: {valids[index]}"
         assert type(n[loc]) is t, f"{index}: {valids[index]}"
         assert len(n) == 1, f"{index}: {valids[index]}"
-        assert str(n) == f"{{{loc}: {text}}}", f"{index}: {valids[index]}"
+        assert str(n) == f"{{{loc}:{text}}}", f"{index}: {valids[index]}"
     del n[loc]
     assert not n
     assert len(n) == 0
@@ -518,8 +518,8 @@ def test_parsing():
 
     valids_str = [
         ("[ku,geh,my]", '["ku","geh","my"]'),
-        ("{id: 1,hint: 'nice'}", '{id: 1,hint: "nice"}'),
-        ("{'id': 1,\"hint\": 'nice'}", '{id: 1,hint: "nice"}'),
+        ("{id: 1,hint: 'nice'}", '{id:1,hint:"nice"}'),
+        ("{'id':1,\"hint\": 'nice'}", '{id:1,hint:"nice"}'),
     ]
     for v, res in valids_str:
         print(v)

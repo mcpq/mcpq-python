@@ -134,7 +134,7 @@ class Block(str):
             return Block(self.id + (str(d) if d else ""))
         else:
             raise ValueError(
-                f"Unknown data type {type(data)}, expected dict, str, Block,  ComponentData or None"
+                f"Unknown data type {type(data)}, expected dict, str, Block, ComponentData or None"
             )
 
     def withMergeData(
@@ -150,7 +150,7 @@ class Block(str):
             d = ComponentData(data)
         else:
             raise ValueError(
-                f"Unknown data type {type(data)}, expected dict, str, Block or  ComponentData"
+                f"Unknown data type {type(data)}, expected dict, str, Block or ComponentData"
             )
 
         return self.withData(self.getData() | d)
