@@ -327,18 +327,70 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         self._server.update_worlds()
 
     def getBlockTypes(self) -> list[str]:
-        """The list of all block-types that can be set with :func:`setBlock`"""
+        """The list of all block-types that can be set with :func:`setBlock`.
+        Identical to :func:`getMaterials` with `is_block=True`"""
         return [m.key for m in self._server.get_materials(lambda m: m.is_block)]
 
-    def getEntityTypes(self) -> list[EntityType]:
-        return list(self._server.get_entity_types())
+    def getEntityTypes(self, is_spawnable: bool | None = None) -> list[str]:
+        if is_spawnable is not None:
+            return [
+                e.key
+                for e in self._server.get_entity_types(lambda e: e.is_spawnable is is_spawnable)
+            ]
+        return [e.key for e in self._server.get_entity_types()]
+
+    def getEntitySpawnableTypes(self) -> list[str]:
+        """The list of all entity-types that can be spawned with :func:`spawnEntity`.
+        Identical to :func:`getEntityTypes` with `is_spawnable=True`"""
+        return self.getEntityTypes(is_spawnable=True)
 
     def getItemTypes(self) -> list[str]:
-        """The list of all obtainable items"""
+        """The list of all obtainable items.
+        Identical to :func:`getMaterials` with `is_item=True`"""
         return [m.key for m in self._server.get_materials(lambda m: m.is_item)]
 
-    def getMaterials(self) -> list[Material]:
-        return list(self._server.get_materials())
+    def getMaterials(
+        self,
+        is_air: bool | None = None,
+        is_block: bool | None = None,
+        is_burnable: bool | None = None,
+        is_edible: bool | None = None,
+        is_flammable: bool | None = None,
+        is_fuel: bool | None = None,
+        is_interactable: bool | None = None,
+        is_item: bool | None = None,
+        is_occluding: bool | None = None,
+        is_solid: bool | None = None,
+        has_gravity: bool | None = None,
+    ) -> list[str]:
+        fs = []
+        if is_air is not None:
+            fs.append(lambda m: m.is_air is is_air)
+        if is_block is not None:
+            fs.append(lambda m: m.is_block is is_block)
+        if is_burnable is not None:
+            fs.append(lambda m: m.is_burnable is is_burnable)
+        if is_edible is not None:
+            fs.append(lambda m: m.is_edible is is_edible)
+        if is_flammable is not None:
+            fs.append(lambda m: m.is_flammable is is_flammable)
+        if is_fuel is not None:
+            fs.append(lambda m: m.is_fuel is is_fuel)
+        if is_interactable is not None:
+            fs.append(lambda m: m.is_interactable is is_interactable)
+        if is_item is not None:
+            fs.append(lambda m: m.is_item is is_item)
+        if is_occluding is not None:
+            fs.append(lambda m: m.is_occluding is is_occluding)
+        if is_solid is not None:
+            fs.append(lambda m: m.is_solid is is_solid)
+        if has_gravity is not None:
+            fs.append(lambda m: m.has_gravity is has_gravity)
+        if fs:
+            return [
+                m.key for m in self._server.get_materials(lambda m: all(ffunc(m) for ffunc in fs))
+            ]
+        return [m.key for m in self._server.get_materials()]
 
     def getMinecraftVersion(self) -> str:
         """The Minecraft version of the server this instance is connected to or None if the version cannot be identified."""
@@ -355,7 +407,3 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def getServerVersion(self) -> str:
         """The full name and version of the server this instance is connected to."""
         return self._server.get_server_version()
-
-    def getSpawnableEntities(self) -> list[str]:
-        """The list of all entity-types that can be spawned with :func:`spawnEntity`"""
-        return [e.key for e in self._server.get_entity_types(lambda e: e.is_spawnable)]
