@@ -270,19 +270,19 @@ class TypedListView(MutableSequence):
         return self._data.__len__()
 
     def __setitem__(self, index: int, value: Any):
-        self._data[index] = self._check_cast_type(value)
+        self._data.data[index] = self._check_cast_type(value)
 
     def __delitem__(self, index: int):
         del self._data[index]
 
     def append(self, value):
-        return self._data.append(self._check_cast_type(value))
+        return self._data.data.append(self._check_cast_type(value))
 
     def extend(self, values):
-        return self._data.extend(self._check_cast_type(value) for value in values)
+        return self._data.data.extend(self._check_cast_type(value) for value in values)
 
     def insert(self, index, value):
-        return self._data.insert(index, self._check_cast_type(value))
+        return self._data.data.insert(index, self._check_cast_type(value))
 
 
 class NbtByteArray(NbtList):

@@ -227,6 +227,77 @@ def test_list():
     n.clear()
     assert len(n) == 0
 
+    n.byte.append(9)
+    n.append(12)
+    assert str(n) == "[9b,12b]" and len(n) == 2, f"got {n} with len {len(n)}"
+    assert all(type(el) is NbtByte for el in n)
+    n.clear()
+    assert len(n) == 0
+
+    n.string.append(9)
+    n.append(12)
+    assert str(n) == '["9","12"]' and len(n) == 2, f"got {n} with len {len(n)}"
+    assert all(type(el) is str for el in n)
+    n.clear()
+    assert len(n) == 0
+
+    n.float.append(9)
+    n.append(12)
+    assert str(n) == "[9.0f,12.0f]" and len(n) == 2, f"got {n} with len {len(n)}"
+    assert all(type(el) is NbtFloat for el in n)
+    n.clear()
+    assert len(n) == 0
+
+    n.int.append(9)
+    with pytest.raises(TypeError):
+        n.string.append(12)
+    with pytest.raises(TypeError):
+        n.float.append(12)
+    assert len(n) == 1
+    n.clear()
+    assert len(n) == 0
+
+    # long array
+
+    n = NbtLongArray()
+    assert str(n) == "[L;]"
+    assert len(n) == 0
+    assert not n
+
+    with pytest.raises(TypeError):
+        n.int.append(1)
+    with pytest.raises(TypeError):
+        n.string.append("1")
+    with pytest.raises(TypeError):
+        n.float.append(1)
+    n.long.append(5)
+    n.append(9)
+    assert str(n) == "[L;5l,9l]" and len(n) == 2, f"got {n} with len {len(n)}"
+    assert all(type(el) is NbtLong for el in n)
+    n.clear()
+    assert len(n) == 0
+
+    # byte array
+
+    n = NbtByteArray()
+    assert str(n) == "[B;]"
+    assert len(n) == 0
+    assert not n
+
+    with pytest.raises(TypeError):
+        n.int.append(1)
+    with pytest.raises(TypeError):
+        n.string.append("1")
+    with pytest.raises(TypeError):
+        n.float.append(1)
+    n.bool.append(True)
+    n.byte.append(9)
+    n.append(5)
+    assert str(n) == "[B;true,9b,5b]" and len(n) == 3, f"got {n} with len {len(n)}"
+    assert all(type(el) in (NbtByte, bool) for el in n)
+    n.clear()
+    assert len(n) == 0
+
     # TODO
 
 
