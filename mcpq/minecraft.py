@@ -99,6 +99,13 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
             "Call to deprecated function registerCallbackProjectileHitEvent. Use events.projectile_hit.register instead."
         )(self.events.projectile_hit.register)
 
+        self.getPlayers = deprecated(
+            "Call to deprecated function getPlayers. Use getPlayerList instead."
+        )(self.getPlayerList)
+        self.getPlayerNames = deprecated(
+            "Call to deprecated function getPlayerNames. Use [player.name for player in self.getPlayerList()] instead."
+        )(lambda: [player.name for player in self.getPlayerList()])
+
     def __repr__(self) -> str:
         host, port = self._addr
         return f"{self.__class__.__name__}({host=}, {port=})"
@@ -137,7 +144,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         .. code-block:: python
 
            mc.postToChat("Hello Minecraft")
-           mc.postToChat("Players online:", mc.getPlayers())
+           mc.postToChat("Players online:", mc.getPlayerList())
 
         You can also use the module `mcpq.text` to color or markup your chat messages.
 
@@ -185,7 +192,34 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         """
         return self._server.get_or_create_player(name)
 
-    def getPlayers(self, names: list[str] | None = None) -> list[Player]:
+    def getPlayer(self, name: str | None = None) -> Player:
+        """Get any currently online player or get the online player with given `name`.
+        Will raise an error if either no player is online, or if the player with given `name` is not online.
+
+        If you want to check for any currently online players, use :func:`getPlayerList` instead.
+
+        .. note::
+
+           There is no guarantee that the player returned will be the same across multiple calls of this function. It may change depending on the order the players joined the server or the implementation of the server.
+
+        :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
+        :type name: str | None, optional
+        :return: the player with `name` if name is given, else any online player
+        :rtype: Player
+        """
+        if name is None:
+            players = self.getPlayerList()
+            if players:
+                return players[0]
+            else:
+                raise_on_error(pb.Status(code=pb.PLAYER_NOT_FOUND))
+                return None  # type: ignore
+        players = self.getPlayerList([name])
+        if players:
+            return players[0]
+        return None  # type: ignore
+
+    def getPlayerList(self, names: list[str] | None = None) -> list[Player]:
         """Get all currently online players on the entire server.
         If `names` is provided get all players with the given names only if they are online.
         Will raise an error if `names` is provided and at least one player with given name is offline.
@@ -201,41 +235,6 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
             response = self._server.stub.getPlayers(pb.PlayerRequest(names=names))
         raise_on_error(response.status)
         return [self._server.get_or_create_player(player.name) for player in response.players]
-
-    def getPlayerNames(self) -> list[str]:
-        """Equivalent to :func:`getPlayers` but only return their names instead.
-
-        :return: list of all currently online :class:`Player` names
-        :rtype: list[str]
-        """
-        return [player.name for player in self.getPlayers()]
-
-    def getPlayer(self, name: str | None = None) -> Player:
-        """Get any currently online player or get the online player with given `name`.
-        Will raise an error if either no player is online, or if the player with given `name` is not online.
-
-        If you want to check for any currently online players, use :func:`getPlayers` instead.
-
-        .. note::
-
-           There is no guarantee that the player returned will be the same across multiple calls of this function. It may change depending on the order the players joined the server or the implementation of the server.
-
-        :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
-        :type name: str | None, optional
-        :return: the player with `name` if name is given, else any online player
-        :rtype: Player
-        """
-        if name is None:
-            players = self.getPlayers()
-            if players:
-                return players[0]
-            else:
-                raise_on_error(pb.Status(code=pb.PLAYER_NOT_FOUND))
-                return None  # type: ignore
-        players = self.getPlayers([name])
-        if players:
-            return players[0]
-        return None  # type: ignore
 
     @property
     def worlds(self) -> tuple[World, ...]:

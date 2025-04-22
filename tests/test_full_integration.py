@@ -38,7 +38,7 @@ def mc():
 
 @pytest.mark.integration_test
 def test_player(mc):
-    ps = mc.getPlayers()
+    ps = mc.getPlayerList()
     assert len(ps), "No players on Server, cannot run player test"
     mc.events.player_death.poll(None)  # activate
     # mc.events.player_leave.poll(None)  # activate
@@ -54,7 +54,7 @@ def test_player(mc):
     with pytest.raises(PlayerNotFound):
         mc.getPlayer("thisplayerdoesnotexistontheserver")
     with pytest.raises(PlayerNotFound):
-        mc.getPlayers([p.name, "thisplayerdoesnotexistontheserver"])
+        mc.getPlayerList([p.name, "thisplayerdoesnotexistontheserver"])
     assert mc.getOfflinePlayer("thisplayerdoesnotexistontheserver")
     assert p.name in mc.getPlayerNames()
     orig_pos = p.pos

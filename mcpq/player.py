@@ -27,8 +27,8 @@ class Player(Entity, _SharedBase, _HasServer):
 
     .. code-block:: python
 
-       player = mc.getPlayer()  # get any online "default" player
-       players = mc.getPlayers()  # get list of all online players
+       player = mc.getPlayer()  # get any single online player
+       players = mc.getPlayerList()  # get list of all online players
        playerfoo = mc.getOfflinePlayer("foo")  # get player with name 'foo' even if offline
 
     Once you have your players you can use them in a multitude of ways:
@@ -58,7 +58,7 @@ class Player(Entity, _SharedBase, _HasServer):
        Players can go offline at any time and even checking with :attr:`online` before every operation will not guarantee that the player is online by the time the operation is received by the server.
        To make life easier all PlayerNotFound exceptions will be caught and ignored if ``mcpq.player.ALLOW_OFFLINE_PLAYER_OPS`` is True.
        Note that this will make it look like the operation succeeded, even if the player was (already) offline.
-       Use :class:`PlayerJoinEvent`, :class:`PlayerLeaveEvent` or update your online players regularly with ``mc.getPlayers()`` to control the state of your online players.
+       Instead, use :class:`PlayerJoinEvent`, :class:`PlayerLeaveEvent` or update your online players regularly with ``mc.getPlayerList()`` to control the state of your online players.
 
     .. note::
 

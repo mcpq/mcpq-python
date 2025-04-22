@@ -257,6 +257,13 @@ def test_list():
     n.clear()
     assert len(n) == 0
 
+    n.append(12)
+    assert len(n) == 1 and type(n[0]) is NbtInt, f"{n=}, {len(n)=}"
+    with pytest.raises(ValueError):
+        n.append(2**63 + 2)
+    n.clear()
+    assert len(n) == 0
+
     # long array
 
     n = NbtLongArray()
