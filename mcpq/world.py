@@ -6,7 +6,7 @@ from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import CARDINAL, COLOR, DIRECTION
 from .exception import raise_on_error
-from .nbt import Block
+from .nbt import NBT, Block
 from .vec3 import Vec3
 
 MAX_BLOCKS = 50000  # TODO: replace with block stream
@@ -264,22 +264,6 @@ class _DefaultWorld(_SharedBase, _HasServer):
         )
         raise_on_error(response)
 
-    def setBed(self, pos: Vec3, direction: CARDINAL = "east", color: COLOR = "red") -> None:
-        """Place a bed at `pos` in `direction` with `color`, which is composed of two placed blocks with specific block data.
-
-        :param pos: the position of foot part of bed
-        :type pos: Vec3
-        :param direction: direction in which to place head part of bed, defaults to "east"
-        :type direction: CARDINAL, optional
-        :param color: color of bed, defaults to "red"
-        :type color: COLOR, optional
-        """
-        pos = pos.floor()
-        pos2 = getattr(pos, direction)(1)
-        # must place head first, otherwise foot breaks
-        self.setBlock(Block(f"{color}_bed[part=head,facing={direction}]"), pos2)
-        self.setBlock(Block(f"{color}_bed[part=foot,facing={direction}]"), pos)
-
     def setBlockList(self, blocktype: str | Block, positions: list[Vec3]) -> None:
         """Change all blocks at `positions` to `blocktype` in world.
         This will overwrite all blocks at the given positions.
@@ -352,6 +336,128 @@ class _DefaultWorld(_SharedBase, _HasServer):
             )
         )
         raise_on_error(response)
+
+    def setBed(self, pos: Vec3, direction: CARDINAL = "east", color: COLOR = "red") -> None:
+        """Place a bed at `pos` in `direction` with `color`, which is composed of two placed blocks with specific block data.
+
+        :param pos: the position of foot part of bed
+        :type pos: Vec3
+        :param direction: direction in which to place head part of bed, defaults to "east"
+        :type direction: CARDINAL, optional
+        :param color: color of bed, defaults to "red"
+        :type color: COLOR, optional
+        """
+        pos = pos.floor()
+        pos2 = getattr(pos, direction)(1)
+        # must place head first, otherwise foot breaks
+        self.setBlock(Block(f"{color}_bed[part=head,facing={direction}]"), pos2)
+        self.setBlock(Block(f"{color}_bed[part=foot,facing={direction}]"), pos)
+
+    def setSign(
+        self,
+        pos: Vec3,
+        text: list[str | NBT | dict] | str,
+        *,
+        color: COLOR = "black",
+        glowing: bool = False,
+        direction: CARDINAL | int = "south",
+        sign_block: str | Block = "oak_sign",
+    ) -> None:
+        """Place a sign block at `pos` with `text` overwriting any block there.
+        `text` can be a list of at most 8 elements, where each element is a line of text on the sign; the first 4 on the front and the second 4 on the back.
+        List with fewer than 8 elements are allowed and result in empty following lines.
+        `text` may also be a string in which case the above list is built by splitting the string on newlines.
+        The elements in the list may also be :class:`NBT` instances of the form:
+        `{selector: "@p", color: "red", bold: false, italic: false, underlined: false, strikethrough: false, obfuscated: false, text: "A Line of Text"}`
+        The material and type of sign can be set with `sign_block` - it can be a sign, wall_sign, or hanging_sign of any given wood material.
+
+        .. code-block:: python
+
+           pos = Vec3(0, 120, 0) # position where to place sign
+           mc.setSign(pos, "Hello Minecraft") # front line 1
+           mc.setSign(pos, "Hello\nMinecraft") # front line 1 and 2
+           mc.setSign(pos, ["Hello", "Minecraft"]) # front line 1 and 2
+           mc.setSign(pos, ["", "Hello", "Minecraft"]) # front line 2 and 3
+           # back line 6 and 7
+           mc.setSign(pos, ["", "", "", "",  "", "Hello", "Minecraft"])
+           # everything beyond line 8 (back line 4) is not on sign anymore
+           mc.setSign(pos, ["", "", "", "",  "", "", "", "",  "NOT ON SIGN"])
+           # line-wise customization with NBT compounds or dicts
+           mc.setSign(pos, [{"text": "Hello", "color": "red"}, NBT({"text": "Minecraft", "bold": True})])
+
+           valid_signs = list(filter(lambda b: b.endswith("_sign"), mc.getBlockTypes()))
+           mc.setSign(..., sign_block="spruce_sign")
+           mc.setSign(..., sign_block="jungle_wall_sign")
+           mc.setSign(..., sign_block="acacia_hanging_sign")
+           mc.setSign(..., sign_block="acacia_hanging_sign[attached=true]")
+           mc.setSign(..., sign_block=Block("oak_sign").withData({"waterlogged": True}))
+
+           mc.setSign(pos, "\nHello\nMinecraft\n", direction="east", color="green", glowing=True)
+
+        :param pos: the position where the sign should be set
+        :type pos: Vec3
+        :param text: the text to put on sign either as list of at most 8 elements, where the first 4 are text on the front and the second set of 4 are the text on the back of the sign, or as a string, where said list is produced by splitting on newlines. Elements of the list may also be NBT compounds instead of strings.
+        :type text: list[str | NBT | dict[str, Any]] | str
+        :param color: the base color of the text on the sign, can be overwritten on a per-line basis by providing `NBT({"text":"...","color":"red"})` NBT compounds, defaults to "black"
+        :type color: COLOR, optional
+        :param glowing: whether or not the text should use the glowing effect, defaults to False
+        :type glowing: bool, optional
+        :param direction: the cardinal direction the sign should be facing, for non-wall signs can also be an integer between 0-15, defaults to "south"
+        :type direction: CARDINAL | int, optional
+        :param sign_block: the block type/id of the sign that should be placed, should end with "_sign", defaults to "oak_sign"
+        :type sign_block: str | Block, optional
+        """
+        # TODO: mc version
+        pos = pos.floor()
+        if isinstance(text, str):
+            text = text.split("\n")
+        else:
+            text = list(text)
+        if not isinstance(sign_block, Block):
+            sign_block = Block(sign_block)
+        if direction is not None:
+            facing = sign_block.getData()
+            if sign_block.type.endswith("_wall_sign"):
+                # use 'facing' (CARDINAL)
+                if not isinstance(direction, str):
+                    raise TypeError(
+                        f"Wall signs can only face a cardinal direction expected type str got {type(direction)}"
+                    )
+                facing.string["facing"] = direction
+            else:
+                # use 'rotation' (int 0-15)
+                if isinstance(direction, str):
+                    direction = {"south": 0, "west": 4, "north": 8, "east": 12}[direction]
+                facing.int["rotation"] = direction
+            sign_block = sign_block.withData(facing)
+
+        messages = []
+        for msg in text[:8]:
+            if isinstance(msg, NBT):
+                messages.append(msg)
+            elif isinstance(msg, dict):
+                messages.append(NBT(msg))
+            else:
+                n = NBT()
+                n.string["text"] = msg
+                messages.append(n)
+        messages.extend([NBT({"text": ""})] * (8 - len(messages)))
+        assert len(messages) == 8
+
+        nbt = NBT()
+        front = nbt.get_or_create_nbt("front_text")
+        back = nbt.get_or_create_nbt("back_text")
+        front.get_or_create_list("messages").string.extend(messages[:4])
+        back.get_or_create_list("messages").string.extend(messages[4:8])
+        front.byte["has_glowing_text"] = 1 if glowing else 0
+        back.byte["has_glowing_text"] = 1 if glowing else 0
+        front.string["color"] = color
+        back.string["color"] = color
+        # using /setblock will not change nbt data if identical block is already there
+        # cmd = f"setblock {pos.x} {pos.y} {pos.z} {sign_block}{nbt} replace"
+        cmd = f"data merge block {pos.x} {pos.y} {pos.z} {nbt}"
+        self.setBlock(sign_block, pos)
+        self.runCommand(cmd)
 
     def copyBlockCube(
         self, pos1: Vec3, pos2: Vec3, withData: bool = False

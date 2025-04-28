@@ -95,7 +95,7 @@ class Block(str):
         # TODO: remove white spaces?
         return len(self.datastr) > 2
 
-    def asCommandBlockState(self) -> Block:
+    def asBlockStateForItem(self) -> Block:
         nd = ComponentData()
         state = nd.get_or_create_nbt("block_state")
         for key, val in self.getData().items():
@@ -112,7 +112,7 @@ class Block(str):
         if isinstance(type_id, Block):
             return Block(type_id.id + dstr)
         elif isinstance(type_id, str):
-            return Block(type_id)
+            return Block(type_id + dstr)
         else:
             raise ValueError(f"Unknown id type {type(type_id)}, expected str or Block")
 
