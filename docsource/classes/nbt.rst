@@ -3,16 +3,17 @@ NBT
 
 .. autoclass:: mcpq.nbt.NBT
 
------
-
-.. autoclass:: mcpq.nbt.ComponentData
-    :exclude-members: KEYVALSEP
 
 -----
 
 .. autoclass:: mcpq.nbt.NbtCompound
     :exclude-members: KEYVALSEP, update
 .. autoclass:: mcpq.nbt._types.TypedCompoundView
+
+-----
+
+.. autoclass:: mcpq.nbt.ComponentData
+    :exclude-members: KEYVALSEP, asComponentData
 
 -----
 

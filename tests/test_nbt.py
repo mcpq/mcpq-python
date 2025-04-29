@@ -1,6 +1,7 @@
 import pytest
 
 from mcpq.nbt import (
+    ComponentData,
     NbtByte,
     NbtByteArray,
     NbtCompound,
@@ -533,6 +534,33 @@ def test_parsing():
         assert str(parse_snbt(v)) == res
         assert str(parse_snbt(str(parse_snbt(v)))) == res
 
+    compounds = ['{key:1,list:[1,2,3],"hello 1":"nice"}']
+    for c in compounds:
+        nbt = NbtCompound.parse(c)
+        assert nbt
+        assert str(NbtCompound.parse(str(nbt))) == str(nbt)
+    for c in ["1", "[1,2,3]", '"hi"', "1.4f"]:
+        with pytest.raises(TypeError):
+            NbtCompound.parse(c)
+
+
+def test_component_data():
+    nbt_str = '{key:1,list:[1,2,3],hello1:"nice"}'
+    nbt = NbtCompound.parse(nbt_str)
+    component_data = nbt.asComponentData()
+    assert isinstance(component_data, ComponentData)
+    assert str(component_data) == "[" + nbt_str.replace(":", "=")[1:-1] + "]"
+    assert component_data.asCompound() == nbt
+
+    compounds = ['[key=1,list=[1,2,3],hello1="nice"]']
+    for c in compounds:
+        nbt = ComponentData.parse(c)
+        assert nbt
+        assert str(ComponentData.parse(str(nbt))) == str(nbt)
+    for c in ["1", "[1,2,3]", '"hi"', "1.4f", "{key:1}"]:
+        with pytest.raises(TypeError):
+            ComponentData.parse(c)
+
 
 @pytest.mark.skip
 def test_parsing_todos():
@@ -550,6 +578,6 @@ def test_parsing_todos():
 
 def test_player_data():
     data = """{seenCredits: 0b, DeathTime: 0s, Bukkit.updateLevel: 2, foodTickTimer: 0, recipeBook: {isBlastingFurnaceFilteringCraftable: 0b, isGuiOpen: 0b, toBeDisplayed: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"], isSmokerGuiOpen: 0b, isBlastingFurnaceGuiOpen: 0b, isFurnaceFilteringCraftable: 0b, isFurnaceGuiOpen: 0b, isFilteringCraftable: 0b, isSmokerFilteringCraftable: 0b, recipes: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"]}, XpTotal: 0, OnGround: 0b, AbsorptionAmount: 0.0f, playerGameType: 1, Attributes: [{Name: "minecraft:generic.max_health", Base: 20.0d}, {Name: "minecraft:generic.movement_speed", Base: 0.10000000149011612d}], Invulnerable: 0b, SelectedItemSlot: 0, Brain: {memories: {}}, bukkit: {newTotalExp: 0, newLevel: 0, newExp: 0, keepLevel: 0b, lastPlayed: 1742115166782L, firstPlayed: 1727295819566L, expToDrop: 0, lastKnownName: "Tester"}, Dimension: "minecraft:overworld", Paper.Origin: [-1.5d, 96.0d, -3.5d], abilities: {walkSpeed: 0.1f, flySpeed: 0.05f, instabuild: 1b, flying: 1b, mayfly: 1b, invulnerable: 1b, mayBuild: 1b}, Score: 0, Rotation: [88.80469f, 20.399933f], HurtByTimestamp: 0, foodSaturationLevel: 5.0f, WorldUUIDMost: -324847824704549623L, SelectedItem: {id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, Paper.OriginWorld: [I; -75634529, -496153335, -1855661986, -2106814127], Paper: {LastLogin: 1742110050816L, LastSeen: 1742115166782L}, EnderItems: [], foodLevel: 20, Air: 300s, XpSeed: -776347013, XpLevel: 0, Motion: [0.0d, 0.0d, 0.0d], UUID: [I; -1406999311, -101697727, -1525262829, 331660734], Spigot.ticksLived: 345851, Inventory: [{Slot: 0b, id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, {Slot: 1b, id: "minecraft:acacia_boat", tag: {asd: "\\' "}, Count: 1b}, {Slot: 2b, id: "minecraft:acacia_boat", tag: {asd: "\\n "}, Count: 1b}], WorldUUIDLeast: -7970007540112256687L, FallDistance: 0.0f, DataVersion: 3465, SleepTimer: 0s, XpP: 0.0f, warden_spawn_tracker: {ticks_since_last_warning: 9823, warning_level: 0, cooldown_ticks: 0}, previousPlayerGameType: 0, Pos: [129.2085770903654d, 81.24618693923294d, -100.51093785797983d], Health: 20.0f, HurtTime: 0s, FallFlying: 0b, Fire: -20s, PortalCooldown: 0, foodExhaustionLevel: 0.0f, Paper.SpawnReason: "DEFAULT"}"""
-    nbt = parse_snbt(data)
+    nbt = NbtCompound.parse(data)
     assert nbt["seenCredits"] == 0
     assert nbt["bukkit"]["lastKnownName"] == "Tester"

@@ -12,7 +12,7 @@ from .entity import Entity
 from .events import *  # All Events
 from .exception import *  # All Exceptions
 from .minecraft import Minecraft
-from .nbt import NBT, Block, parse_component, parse_snbt
+from .nbt import NBT, Block
 from .player import Player
 from .vec3 import Vec3
 from .world import World

@@ -9,6 +9,8 @@ NONQUOTABLE_STR = string.digits + string.ascii_letters + "_-.+"
 
 
 class NbtByte(int):
+    """Signed 8-bit integer and subclass of :class:`int`"""
+
     _max = 2**7
     _end = "b"
 
@@ -33,6 +35,8 @@ class NbtByte(int):
 
 
 class NbtShort(int):
+    """Signed 16-bit integer and subclass of :class:`int`"""
+
     _max = 2**15
     _end = "s"
 
@@ -57,6 +61,8 @@ class NbtShort(int):
 
 
 class NbtInt(int):
+    """Signed 32-bit integer and subclass of :class:`int`"""
+
     _max = 2**31
 
     def __new__(cls, value, base=None):
@@ -72,6 +78,8 @@ class NbtInt(int):
 
 
 class NbtLong(int):
+    """Signed 64-bit integer and subclass of :class:`int`"""
+
     _max = 2**63
     _end = "l"
 
@@ -96,6 +104,8 @@ class NbtLong(int):
 
 
 class NbtFloat(float):
+    """Signed float with limit +-(3.4 * 10**38) and subclass of :class:`float`"""
+
     _max = 3.4 * 10**38
     _end = "f"
 
@@ -116,6 +126,8 @@ class NbtFloat(float):
 
 
 class NbtDouble(float):
+    """Subclass of :class:`float`"""
+
     # has a limit, but not implemented here
     _end = "d"  # optional
 
@@ -132,6 +144,10 @@ class NbtDouble(float):
 
 
 class NbtList(UserList):
+    """:class:`NbtList` behaves like a python :class:`list` with the exception that all its elements must have the same nbt type.
+    When the list is empty any nbt type can be added but once an element was added the list (and conversions) are defined by the first element's type.
+    """
+
     def _convert_same_type(self, value):
         dtype = self.dtype
         if dtype is None:
@@ -249,7 +265,7 @@ class NbtList(UserList):
 
 
 class TypedListView(MutableSequence):
-    """A generic view of :class:`NbtList` that enforces values to be of a specific type."""
+    """A generic view of :class:`NbtList` that enforces values to be of a specific type and subclass of :class:`list`."""
 
     def __init__(self, data: NbtList, dtype: type[NbtType]):
         self._data = data
@@ -286,6 +302,8 @@ class TypedListView(MutableSequence):
 
 
 class NbtByteArray(NbtList):
+    """Subclass of :class:`NbtList`."""
+
     def _convert_same_type(self, value):
         # bool also allowed
         if not isinstance(value, (NbtByte, bool)):
@@ -303,6 +321,8 @@ class NbtByteArray(NbtList):
 
 
 class NbtIntArray(NbtList):
+    """Subclass of :class:`NbtList`."""
+
     def __str__(self) -> str:
         inner = ",".join(str(item) for item in iter(self))
         return f"[I;{inner}]"
@@ -313,6 +333,8 @@ class NbtIntArray(NbtList):
 
 
 class NbtLongArray(NbtList):
+    """Subclass of :class:`NbtList`."""
+
     def __str__(self) -> str:
         inner = ",".join(str(item) for item in iter(self))
         return f"[L;{inner}]"
@@ -323,7 +345,7 @@ class NbtLongArray(NbtList):
 
 
 class TypedCompoundView(MutableMapping):
-    """A generic view of :class:`NbtCompound` that enforces values to be of a specific type."""
+    """A generic view of :class:`NbtCompound` that enforces values to be of a specific type and subclass of :class:`dict`."""
 
     def __init__(self, compound: NbtCompound, dtype: type[NbtType]):
         self._compound = compound
@@ -353,7 +375,7 @@ class TypedCompoundView(MutableMapping):
 
 
 class NbtCompound(UserDict[str, Any]):
-    """The definitive class for parsing and manipulating NBT-format_.
+    """The definitive class for parsing and manipulating NBT-format_ data.
     It can be used like a python :class:`dict` with the exception that its keys must be strings.
     It can also be passed a dict at initialization which will be automatically converted (see convertion rules below).
 
@@ -401,6 +423,31 @@ class NbtCompound(UserDict[str, Any]):
     """
 
     KEYVALSEP = ":"
+
+    @classmethod
+    def parse(cls, string: str) -> NbtCompound:
+        """Parse `string` of a compound in SNBT-format to :class:`NBT`.
+
+        .. code::
+
+           from mcpq import Minecraft, Vec3, NBT
+           nbt = NBT.parse('{key1:"value1",key2:2}')
+           same_nbt = NBT.parse(str(nbt))
+
+        :param string: the string of a compound in SNBT-format
+        :type string: str
+        :return: the parsed compound
+        :rtype: NbtCompound
+        """
+        from ._parser_wrapper import parse_compound
+
+        return parse_compound(string)
+
+    def asComponentData(self) -> ComponentData:
+        """Convert `self` of type :class:`NbtCompound` to :class:`ComponentData`.
+        Note, keys must not contain characters that would have to be quoted.
+        """
+        return ComponentData(self)
 
     def __repr__(self) -> str:
         return str(self)
@@ -517,7 +564,7 @@ class NbtCompound(UserDict[str, Any]):
 
 
 class ComponentData(NbtCompound):
-    """:class:`ComponentData` is and behaves exactly like :class:`NBT` with the only difference being its string representation:
+    """:class:`ComponentData` subclasses and behaves exactly like :class:`NBT` with the only difference being its string representation:
     Instead of ``{key1:value1,key2:value2}`` it is represented as ``[key1=value1,key2=value2]``, allowing it to represent the component-format_ on item, item stacks and block entities.
     Additionally, the keys of :class:`ComponentData` may not contain characters that have to be quoted in NBT format and must be strings.
 
@@ -527,6 +574,20 @@ class ComponentData(NbtCompound):
     """
 
     KEYVALSEP = "="
+
+    @classmethod
+    def parse(cls, string: str) -> ComponentData:
+        """Parse `string` of a component-data block to :class:`ComponentData`."""
+        from ._parser_wrapper import parse_component
+
+        return parse_component(string)
+
+    def asComponentData(self):
+        return self
+
+    def asCompound(self) -> NbtCompound:
+        """Convert `self` of type :class:`ComponentData` to :class:`NbtCompound`"""
+        return NbtCompound(self)
 
     def __str__(self):
         compound = super().__str__()

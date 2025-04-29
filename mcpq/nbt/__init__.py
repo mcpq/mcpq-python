@@ -1,4 +1,4 @@
-from ._parser_wrapper import parse_component, parse_snbt
+from ._parser_wrapper import parse_snbt
 from ._types import (
     ComponentData,
     NbtByte,
@@ -37,7 +37,6 @@ __all__ = [
     "NbtType",
     "NbtNumberType",
     "parse_snbt",
-    "parse_component",
     "Block",
     "NBT",
 ]
