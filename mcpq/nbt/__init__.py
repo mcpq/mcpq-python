@@ -20,6 +20,7 @@ from .block import Block
 # TODO: in the future, make NBT a builder with helper functions
 NBT = NbtCompound
 
+
 __all__ = [
     "NbtByte",
     "NbtByteArray",

@@ -3,7 +3,7 @@ from __future__ import annotations
 import string
 from collections import UserDict, UserList
 from collections.abc import Mapping
-from typing import Any, Iterable, Literal, MutableMapping, MutableSequence, TypeAlias
+from typing import Any, Iterable, MutableMapping, MutableSequence, TypeAlias
 
 NONQUOTABLE_STR = string.digits + string.ascii_letters + "_-.+"
 
@@ -196,55 +196,55 @@ class NbtList(UserList):
         self.data.insert(index, self._convert_same_type(item))
 
     @property
-    def bool(self):
+    def bool(self) -> TypedListView[bool]:
         return TypedListView(self, bool)
 
     @property
-    def byte(self):
+    def byte(self) -> TypedListView[NbtByte]:
         return TypedListView(self, NbtByte)
 
     @property
-    def short(self):
+    def short(self) -> TypedListView[NbtShort]:
         return TypedListView(self, NbtShort)
 
     @property
-    def int(self):
+    def int(self) -> TypedListView[NbtInt]:
         return TypedListView(self, NbtInt)
 
     @property
-    def long(self):
+    def long(self) -> TypedListView[NbtLong]:
         return TypedListView(self, NbtLong)
 
     @property
-    def float(self):
+    def float(self) -> TypedListView[NbtFloat]:
         return TypedListView(self, NbtFloat)
 
     @property
-    def double(self):
+    def double(self) -> TypedListView[NbtDouble]:
         return TypedListView(self, NbtDouble)
 
     @property
-    def string(self):
+    def string(self) -> TypedListView[str]:
         return TypedListView(self, str)
 
     @property
-    def list(self):
+    def list(self) -> TypedListView[NbtList]:
         return TypedListView(self, NbtList)
 
     @property
-    def compound(self):
+    def compound(self) -> TypedListView[NbtCompound]:
         return TypedListView(self, NbtCompound)
 
     @property
-    def byte_array(self):
+    def byte_array(self) -> TypedListView[NbtByteArray]:
         return TypedListView(self, NbtByteArray)
 
     @property
-    def int_array(self):
+    def int_array(self) -> TypedListView[NbtIntArray]:
         return TypedListView(self, NbtIntArray)
 
     @property
-    def long_array(self):
+    def long_array(self) -> TypedListView[NbtLongArray]:
         return TypedListView(self, NbtLongArray)
 
 
@@ -353,6 +353,53 @@ class TypedCompoundView(MutableMapping):
 
 
 class NbtCompound(UserDict[str, Any]):
+    """The definitive class for parsing and manipulating NBT-format_.
+    It can be used like a python :class:`dict` with the exception that its keys must be strings.
+    It can also be passed a dict at initialization which will be automatically converted (see convertion rules below).
+
+    Alias :class:`NBT` of :class:`NbtCompound`.
+
+    .. _NBT-format: https://minecraft.wiki/w/NBT_format
+
+    .. code::
+
+       from mcpq import Minecraft, Vec3, NBT
+       mc = Minecraft()
+       nbt = NBT()  # create new NBT dictionary, called a compound in NBT format
+       # its keys must always be strings
+       nbt["bool_key"] = True  # will be converted to byte 1 (=`true`)
+       nbt["int_key"] = 1  # will be converted to int (or long if number is too large)
+       nbt["double_key"] = 1.4  # will be converted to double
+       # for lists and dicts: all internal values will be recursively converted
+       nbt["list_key"] = [1,2,3]  # will be converted to nbt-list of int
+       nbt["compound_key"] = {"waterlogged": True}  # will be converted to compound
+
+       # to easier convert to different number types, string-numbers will be parsed like so:
+       nbt["bool_key"] = "true"  # will be converted to byte 1 (=`true`)
+       nbt["byte_key"] = "1b"  # will be converted to byte 1
+       nbt["short_key"] = "1s"  # will be converted to short 1
+       nbt["int_key"] = "1"  # will be converted to int 1
+       nbt["long_key"] = "1l"  # will be converted to long 1
+       nbt["float_key"] = "1.4f"  # will be converted to float 1.4
+       nbt["double_key"] = "1.4"  # will be converted to double 1.4
+
+       # to enforce a certain type during conversion use the corresponding property:
+       nbt.string["string_key"] = "1b"  # will STAY a string `"1b"` and not be converted
+       nbt.string["key"] = {"text": "hi"}  # will be converted to string, not compound
+       nbt.byte_array["key"] = [1,2,3]  # will be converted to byte-array instead of nbt-list of int
+       nbt.short["short_key"] = 1  # will be converted to short, not int
+
+       snbt = str(nbt)  # convert to snbt (string NBT)
+       print(str(NBT({"key1": "value1", "key 2": 2})))
+       # >>> '{key1:"value1","key 2":2}'
+
+       # this can then be used for commands or other operations, for example:
+       # to remove the AI and remove sound from a cow spawned at 0 0
+       nbt = NBT({"NoAI": "1b", "Silent": "1b"})
+       cow = mc.spawnEntity("cow", mc.getHeighestPos(0, 0).up())
+       cow.runCommand(f"data merge entity @s {nbt}")
+    """
+
     KEYVALSEP = ":"
 
     def __repr__(self) -> str:
@@ -390,70 +437,95 @@ class NbtCompound(UserDict[str, Any]):
         for k, v in iterable.items() if isinstance(iterable, Mapping) else iterable:
             self[k] = v
 
-    def get_or_create_nbt(self, name: str) -> NbtCompound:
-        if name not in self or not isinstance(self[name], NbtCompound):
-            self[name] = NbtCompound()
-        return self[name]
+    def get_or_create_nbt(self, key: str) -> NbtCompound:
+        """Get an existing or create a :class:`NbtCompound` at key `key`.
+        Equivalent to ``self[key]`` if key is a :class:`NbtCompound`, otherwise overwrite with new compound and return it.
 
-    def get_or_create_list(self, name: str) -> NbtList:
-        if name not in self or not isinstance(self[name], NbtList):
-            self[name] = NbtList()
-        return self[name]
+        :param key: key to get or create compound at
+        :type key: str
+        :return: existing compound if key had one else new (overwritten) compound
+        :rtype: NbtCompound
+        """
+        if key not in self or not isinstance(self[key], NbtCompound):
+            self[key] = NbtCompound()
+        return self[key]
+
+    def get_or_create_list(self, key: str) -> NbtList:
+        """Get an existing or create a :class:`NbtList` at key `key`.
+        Equivalent to ``self[key]`` if key is a :class:`NbtList`, otherwise overwrite with new list and return it.
+
+        :param key: key to get or create list at
+        :type key: str
+        :return: existing list if key had one else new (overwritten) list
+        :rtype: NbtList
+        """
+        if key not in self or not isinstance(self[key], NbtList):
+            self[key] = NbtList()
+        return self[key]
 
     @property
-    def bool(self):
+    def bool(self) -> TypedCompoundView[bool]:
         return TypedCompoundView(self, bool)
 
     @property
-    def byte(self):
+    def byte(self) -> TypedCompoundView[NbtByte]:
         return TypedCompoundView(self, NbtByte)
 
     @property
-    def short(self):
+    def short(self) -> TypedCompoundView[NbtShort]:
         return TypedCompoundView(self, NbtShort)
 
     @property
-    def int(self):
+    def int(self) -> TypedCompoundView[NbtInt]:
         return TypedCompoundView(self, NbtInt)
 
     @property
-    def long(self):
+    def long(self) -> TypedCompoundView[NbtLong]:
         return TypedCompoundView(self, NbtLong)
 
     @property
-    def float(self):
+    def float(self) -> TypedCompoundView[NbtFloat]:
         return TypedCompoundView(self, NbtFloat)
 
     @property
-    def double(self):
+    def double(self) -> TypedCompoundView[NbtDouble]:
         return TypedCompoundView(self, NbtDouble)
 
     @property
-    def string(self):
+    def string(self) -> TypedCompoundView[str]:
         return TypedCompoundView(self, str)
 
     @property
-    def list(self):
+    def list(self) -> TypedCompoundView[NbtList]:
         return TypedCompoundView(self, NbtList)
 
     @property
-    def compound(self):
+    def compound(self) -> TypedCompoundView[NbtCompound]:
         return TypedCompoundView(self, NbtCompound)
 
     @property
-    def byte_array(self):
+    def byte_array(self) -> TypedCompoundView[NbtByteArray]:
         return TypedCompoundView(self, NbtByteArray)
 
     @property
-    def int_array(self):
+    def int_array(self) -> TypedCompoundView[NbtIntArray]:
         return TypedCompoundView(self, NbtIntArray)
 
     @property
-    def long_array(self):
+    def long_array(self) -> TypedCompoundView[NbtLongArray]:
         return TypedCompoundView(self, NbtLongArray)
 
 
 class ComponentData(NbtCompound):
+    """:class:`ComponentData` is and behaves exactly like :class:`NBT` with the only difference being its string representation:
+    Instead of ``{key1:value1,key2:value2}`` it is represented as ``[key1=value1,key2=value2]``, allowing it to represent the component-format_ on item, item stacks and block entities.
+    Additionally, the keys of :class:`ComponentData` may not contain characters that have to be quoted in NBT format and must be strings.
+
+    Checkout :class:`Block` for an explanation and example on how to parse and write component data directly.
+
+    .. _component-format: https://minecraft.wiki/w/Data_component_format
+    """
+
     KEYVALSEP = "="
 
     def __str__(self):

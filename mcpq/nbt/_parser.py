@@ -113,4 +113,4 @@ def parse_component(text: str) -> ComponentData:
     )
 
 
-#! python3 -m lark.tools.standalone --maybe_placeholders mcpq/_nbt/snbt_and_component.lark -o mcpq/_nbt/#! python3 -m lark.tools.standalone --maybe_placeholders mcpq/_nbt/snbt_and_component.lark -o mcpq/_nbt/_snbt_and_component.py
+#! python3 -m lark.tools.standalone --maybe_placeholders mcpq/_nbt/snbt_and_component.lark -o mcpq/_nbt/_snbt_and_component.py

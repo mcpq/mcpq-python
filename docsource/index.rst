@@ -13,4 +13,6 @@ MCPQ documentation
    classes/world
    classes/events
    classes/vec3
+   classes/block
+   classes/nbt
    classes/turtle

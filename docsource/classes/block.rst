@@ -1,0 +1,1 @@
+.. autoclass:: mcpq.nbt.Block

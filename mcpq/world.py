@@ -365,17 +365,17 @@ class _DefaultWorld(_SharedBase, _HasServer):
     ) -> None:
         """Place a sign block at `pos` with `text` overwriting any block there.
         `text` can be a list of at most 8 elements, where each element is a line of text on the sign; the first 4 on the front and the second 4 on the back.
-        List with fewer than 8 elements are allowed and result in empty following lines.
+        Lists with fewer than 8 elements are allowed and result in empty following lines.
         `text` may also be a string in which case the above list is built by splitting the string on newlines.
         The elements in the list may also be :class:`NBT` instances of the form:
-        `{selector: "@p", color: "red", bold: false, italic: false, underlined: false, strikethrough: false, obfuscated: false, text: "A Line of Text"}`
+        ``{selector: "@p", color: "red", bold: false, italic: false, underlined: false, strikethrough: false, obfuscated: false, text: "A Line of Text"}``
         The material and type of sign can be set with `sign_block` - it can be a sign, wall_sign, or hanging_sign of any given wood material.
 
         .. code-block:: python
 
            pos = Vec3(0, 120, 0) # position where to place sign
            mc.setSign(pos, "Hello Minecraft") # front line 1
-           mc.setSign(pos, "Hello\nMinecraft") # front line 1 and 2
+           mc.setSign(pos, "Hello\\nMinecraft") # front line 1 and 2
            mc.setSign(pos, ["Hello", "Minecraft"]) # front line 1 and 2
            mc.setSign(pos, ["", "Hello", "Minecraft"]) # front line 2 and 3
            # back line 6 and 7
@@ -392,7 +392,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
            mc.setSign(..., sign_block="acacia_hanging_sign[attached=true]")
            mc.setSign(..., sign_block=Block("oak_sign").withData({"waterlogged": True}))
 
-           mc.setSign(pos, "\nHello\nMinecraft\n", direction="east", color="green", glowing=True)
+           mc.setSign(pos, "\\nHello\\nMinecraft\\n", direction="east", color="green", glowing=True)
 
         :param pos: the position where the sign should be set
         :type pos: Vec3
