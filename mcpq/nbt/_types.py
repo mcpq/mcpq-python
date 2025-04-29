@@ -392,9 +392,14 @@ class NbtCompound(UserDict[str, Any]):
        nbt["bool_key"] = True  # will be converted to byte 1 (=`true`)
        nbt["int_key"] = 1  # will be converted to int (or long if number is too large)
        nbt["double_key"] = 1.4  # will be converted to double
+       nbt["string_key"] = "not a number text"  # will stay a string (see number conversion below)
        # for lists and dicts: all internal values will be recursively converted
        nbt["list_key"] = [1,2,3]  # will be converted to nbt-list of int
        nbt["compound_key"] = {"waterlogged": True}  # will be converted to compound
+       # compounds and lists can also be created/got and directly returned like so:
+       inner_compound = nbt.get_or_create_nbt("compound_key")  # get compound set above
+       inner_compound["waterlogged"] = False  # overwrite nbt["compound_key"]["waterlogged"]
+       nbt.get_or_create_list("list_key").extend([4,5,6])  # append to upper list
 
        # to easier convert to different number types, string-numbers will be parsed like so:
        nbt["bool_key"] = "true"  # will be converted to byte 1 (=`true`)
