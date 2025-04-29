@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Mapping
+
 from ._parser_wrapper import parse_component
 from ._types import ComponentData
 
@@ -58,9 +60,9 @@ class Block(str):
 
     @property
     def type(self) -> str:
-        """The type string of namespace:type without the namespace.
+        """The type string of namespace:type without the 'minecraft:' namespace but including non-vanilla namespaces.
 
-        :return: the string type of namespace:type of given block
+        :return: the string type of minecraft:type of given block or the id if non-vanilla block
         :rtype: str
         """
         if "[" in self:
@@ -110,9 +112,9 @@ class Block(str):
     def withId(self, type_id: str | Block) -> Block:
         dstr = self.datastr if self.hasData else ""
         if isinstance(type_id, Block):
-            return Block(type_id.id + dstr)
+            return Block(type_id.type + dstr)
         elif isinstance(type_id, str):
-            return Block(type_id + dstr)
+            return Block(Block(type_id).type + dstr)
         else:
             raise ValueError(f"Unknown id type {type(type_id)}, expected str or Block")
 
@@ -129,12 +131,12 @@ class Block(str):
         elif isinstance(data, str):
             d = parse_component(data)
             return Block(self.id + (str(d) if d else ""))
-        elif isinstance(data, dict):
+        elif isinstance(data, Mapping):
             d = ComponentData(data)
             return Block(self.id + (str(d) if d else ""))
         else:
             raise ValueError(
-                f"Unknown data type {type(data)}, expected dict, str, Block, ComponentData or None"
+                f"Unknown data type {type(data).__name__}, expected dict, str, Block, ComponentData or None"
             )
 
     def withMergeData(
