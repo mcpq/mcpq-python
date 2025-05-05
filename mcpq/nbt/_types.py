@@ -9,7 +9,8 @@ NONQUOTABLE_STR = string.digits + string.ascii_letters + "_-.+"
 
 
 class NbtByte(int):
-    """Signed 8-bit integer and subclass of :class:`int`"""
+    """Signed 8-bit integer and subclass of :class:`int`.
+    Both 1b == True and 0b == False are true as booleans just represent 0 and 1 byte."""
 
     _max = 2**7
     _end = "b"
@@ -104,7 +105,7 @@ class NbtLong(int):
 
 
 class NbtFloat(float):
-    """Signed float with limit +-(3.4 * 10**38) and subclass of :class:`float`"""
+    """Signed float with limit ±3.4e+38 and subclass of :class:`float`"""
 
     _max = 3.4 * 10**38
     _end = "f"
@@ -144,7 +145,7 @@ class NbtDouble(float):
 
 
 class NbtList(UserList):
-    """:class:`NbtList` behaves like a python :class:`list` with the exception that all its elements must have the same nbt type.
+    """:class:`NbtList` behaves like a python list with the exception that all its elements must have the same nbt type.
     When the list is empty any nbt type can be added but once an element was added the list (and conversions) are defined by the first element's type.
     """
 
@@ -161,6 +162,35 @@ class NbtList(UserList):
         super().__init__()
         if iterable is not None:
             self.extend(iterable)
+
+    def __eq__(self, value: object) -> bool:
+        if id(self) == id(value):
+            return True
+        if type(self) is not type(value):
+            if isinstance(value, (list, UserList)):
+                try:
+                    value = self.__class__(value)
+                except Exception:
+                    return False
+            else:
+                return False
+        if len(self) != len(value):
+            return False
+        for v, o in zip(self, value):
+            if isinstance(v, bool) and isinstance(o, NbtByte):
+                if (v is True and o != 1) or (v is False and o != 0):
+                    break
+            elif isinstance(v, NbtByte) and isinstance(o, bool):
+                if (v != 1 and o is True) or (v != 0 and o is False):
+                    break
+            elif type(v) is not type(o):
+                break
+            else:
+                if v != o:
+                    break
+        else:
+            return True
+        return False
 
     def __str__(self) -> str:
         dtype = self.dtype
@@ -376,7 +406,7 @@ class TypedCompoundView(MutableMapping):
 
 class NbtCompound(UserDict[str, Any]):
     """The definitive class for parsing and manipulating NBT-format_ data.
-    It can be used like a python :class:`dict` with the exception that its keys must be strings.
+    It can be used like a python dict with the exception that its keys must be strings.
     It can also be passed a dict at initialization which will be automatically converted (see convertion rules below).
 
     Alias :class:`NBT` of :class:`NbtCompound`.
@@ -416,6 +446,17 @@ class NbtCompound(UserDict[str, Any]):
        nbt.byte_array["key"] = [1,2,3]  # will be converted to byte-array instead of nbt-list of int
        nbt.short["short_key"] = 1  # will be converted to short, not int
 
+       # types are also checked on equality checks of compounds and lists:
+       NBT({"check": True}) == NBT({"check": "1b"})  # true (true == 1b)
+       NBT({"check": True}) == NBT({"check": "true"})  # true (true == true)
+       NBT({"check": 1}) == NBT({"check": "1s"})  # false
+       NBT({"check": "1.4d"}) == NBT({"check": "1.4f"})  # false
+       # but NOT for primitive type checks, there the base type comparison is used:
+       NBT({"check": True})["check"] == NBT({"check": "1b"})["check"]  # true (int compare)
+       NBT({"check": True})["check"] == NBT({"check": "true"})["check"]  # true (int compare)
+       NBT({"check": 1})["check"] == NBT({"check": "1s"})["check"]  # true (int compare)
+       NBT({"check": "1.4d"})["check"] == NBT({"check": "1.4f"})["check"]  # true (float compare)
+
        snbt = str(nbt)  # convert to snbt (string NBT)
        print(str(NBT({"key1": "value1", "key 2": 2})))
        # >>> '{key1:"value1","key 2":2}'
@@ -454,8 +495,43 @@ class NbtCompound(UserDict[str, Any]):
         """
         return ComponentData(self)
 
+    def deepcopy(self) -> NbtCompound:
+        import copy
+
+        return copy.deepcopy(self)
+
     def __repr__(self) -> str:
         return str(self)
+
+    def __eq__(self, value: object) -> bool:
+        if id(self) == id(value):
+            return True
+        if type(self) is not type(value):
+            if isinstance(value, (dict, UserDict)):
+                try:
+                    value = self.__class__(value)
+                except Exception:
+                    return False
+            else:
+                return False
+        if self.keys() != value.keys():
+            return False
+        for k, v in self.items():
+            o = value[k]
+            if isinstance(v, bool) and isinstance(o, NbtByte):
+                if (v is True and o != 1) or (v is False and o != 0):
+                    break
+            elif isinstance(v, NbtByte) and isinstance(o, bool):
+                if (v != 1 and o is True) or (v != 0 and o is False):
+                    break
+            elif type(v) is not type(o):
+                break
+            else:
+                if v != o:
+                    break
+        else:
+            return True
+        return False
 
     def __str__(self) -> str:
         inner = []

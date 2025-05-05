@@ -1,6 +1,7 @@
 import pytest
 
 from mcpq.nbt import (
+    Block,
     ComponentData,
     NbtByte,
     NbtByteArray,
@@ -15,6 +16,82 @@ from mcpq.nbt import (
     NbtShort,
     parse_snbt,
 )
+
+
+def test_block():
+    block = Block("namespace:type[componentkey1=componentvalue1]")
+    block = Block("acacia_stairs[facing=east]")
+    assert str(block) == "acacia_stairs[facing=east]"
+
+    # block comparison and ordering is always done on the id:
+    bs = [
+        Block("minecraft:stone"),
+        Block("other:block_name"),
+        Block("acacia_stairs"),
+        Block("another:type"),
+    ]
+    assert sorted(bs) == [
+        Block("another:type"),
+        Block("acacia_stairs"),
+        Block("minecraft:stone"),
+        Block("other:block_name"),
+    ]
+    block = Block("acacia_stairs[facing=east]")
+    assert block == "acacia_stairs" and block == "minecraft:acacia_stairs"
+    assert not block.equals("acacia_stairs")
+    assert not block.equals("acacia_stairs[half=top,facing=east]")
+    assert block.equals("acacia_stairs[facing=east]")
+
+    assert block.getData()
+    assert block.getData() == {"facing": "east"}
+
+    b = Block("acacia_stairs[waterlogged=true]")
+    sb = Block("oak_sign")
+    assert b.withId("oak_sign") == "oak_sign[waterlogged=true]"
+    assert b.withId("oak_sign").equals("oak_sign[waterlogged=true]")
+    assert b.withId(sb) == "oak_sign[waterlogged=true]"
+    assert b.withId(sb).equals("oak_sign[waterlogged=true]")
+
+    b = Block("acacia_stairs[facing=east]")
+    wb = Block("other_block[waterlogged=true]")
+    assert b.withData({"waterlogged": True}) == "acacia_stairs[waterlogged=true]"
+    assert b.withData({"waterlogged": True}).equals("acacia_stairs[waterlogged=true]")
+    assert b.withData("[waterlogged=true]") == "acacia_stairs[waterlogged=true]"
+    assert b.withData("[waterlogged=true]").equals("acacia_stairs[waterlogged=true]")
+    assert b.withData(wb) == "acacia_stairs[waterlogged=true]"
+    assert b.withData(wb).equals("acacia_stairs[waterlogged=true]")
+    assert b.withData(wb.getData()) == "acacia_stairs[waterlogged=true]"
+    assert b.withData(wb.getData()).equals("acacia_stairs[waterlogged=true]")
+    assert b.withData() == "acacia_stairs"
+    assert b.withData().equals("acacia_stairs")
+    assert b.withData() != "acacia_stairs[]"
+    assert b.withData().equals("acacia_stairs[]")
+
+    b = Block("acacia_stairs[facing=east,half=top]")
+    wb = Block("other_block[waterlogged=true,half=bottom]")
+    assert b.withMergeData({"waterlogged": True, "half": "bottom"}).equals(
+        "acacia_stairs[facing=east,half=bottom,waterlogged=true]"
+    )
+    assert (
+        b.withMergeData({"waterlogged": True, "half": "bottom"})
+        == 'acacia_stairs[facing="east",half="bottom",waterlogged=true]'
+    )
+    assert b.withMergeData("[waterlogged=true,half=bottom]").equals(
+        "acacia_stairs[facing=east,half=bottom,waterlogged=true]"
+    )
+    assert (
+        b.withMergeData("[waterlogged=true,half=bottom]")
+        == 'acacia_stairs[facing="east",half="bottom",waterlogged=true]'
+    )
+    assert b.withMergeData(wb).equals("acacia_stairs[facing=east,half=bottom,waterlogged=true]")
+    assert b.withMergeData(wb) == 'acacia_stairs[facing="east",half="bottom",waterlogged=true]'
+    assert b.withMergeData(wb.getData()).equals(
+        "acacia_stairs[facing=east,half=bottom,waterlogged=true]"
+    )
+    assert (
+        b.withMergeData(wb.getData())
+        == 'acacia_stairs[facing="east",half="bottom",waterlogged=true]'
+    )
 
 
 def test_bytes():
@@ -34,6 +111,9 @@ def test_bytes():
         with pytest.raises(ValueError):
             NbtByte(f"{v}B")
     assert NbtByte("0101b", 2) == 5  # not required for real nbt
+
+    assert NbtByte(1) == True
+    assert NbtByte(0) == False
 
 
 def test_short():
@@ -69,6 +149,22 @@ def test_int():
         with pytest.raises(ValueError):
             NbtInt(f"{v}")
     assert NbtInt("0101", 2) == 5  # not required for real nbt
+
+    assert NbtInt(0) == False
+    assert NbtInt(1) == True
+    for v in [NbtDouble(1), NbtFloat(1), 1, NbtByte(1), NbtShort(1), NbtLong(1)]:
+        assert NbtInt(1) == v
+    for v in [
+        NbtDouble(2),
+        NbtFloat(2),
+        2,
+        NbtByte(2),
+        NbtShort(2),
+        NbtLong(2),
+        False,
+        None,
+    ]:
+        assert NbtInt(1) != v
 
 
 def test_long():
@@ -113,6 +209,11 @@ def test_float():
             NbtFloat(f"{v}f")
         with pytest.raises(ValueError):
             NbtFloat(f"{v}F")
+
+    for v in [NbtDouble(1.4), NbtFloat(1.4), 1.4]:
+        assert NbtFloat(1.4) == v
+    for v in [NbtDouble(1.45), NbtFloat(1.45), 1.45, True, False, None]:
+        assert NbtFloat(1.4) != v
 
 
 def test_double():
@@ -374,7 +475,9 @@ def test_compound():
         (n, "1.0d", 1, "1.0", NbtDouble),
         (n, [], [], "[]", NbtList),
         (n, [1, 2, 3], [1, 2, 3], "[1,2,3]", NbtList),
-        (n, ["0b", True, "2b"], [0, True, 2], "[0b,true,2b]", NbtList),
+        # TODO: special case, using [0, True, 2] would be converted to wrong types
+        (n, ["0b", True, "2b"], ["0b", True, "2b"], "[0b,true,2b]", NbtList),
+        # not a problem here as False as first value makes list a byte list
         (n, [False, "1b", "2b"], [False, 1, 2], "[false,1b,2b]", NbtList),
         (n, {}, {}, "{}", NbtCompound),
         (
@@ -440,6 +543,29 @@ def test_compound():
         with pytest.raises(TypeError):
             view[loc] = set
         assert not n, f"{index}: {invalid_typed[index]}"
+
+    # test type equality on equal check:
+    a = NbtCompound({"waterlogged": True, "distance": [4, 3, 2], "deep": {"hi": 5}})
+    for e in [
+        a,
+        a.asComponentData(),  # should be converted back
+        NbtCompound({"waterlogged": True, "distance": [4, 3, 2], "deep": {"hi": 5}}),
+        NbtCompound({"waterlogged": True, "distance": NbtList([4, 3, 2]), "deep": {"hi": 5}}),
+        NbtCompound({"distance": [4, 3, 2], "deep": {"hi": 5}, "waterlogged": True}),
+        NbtCompound({"distance": [4, 3, 2], "deep": {"hi": 5}, "waterlogged": "1b"}),
+        {"distance": [4, 3, 2], "deep": {"hi": 5}, "waterlogged": "1b"},
+        {"waterlogged": "true", "distance": [4, 3, 2], "deep": {"hi": 5}},
+    ]:
+        assert a == e, f"{a=} != {e=}"
+    for e in [
+        NbtCompound({"distance": [4, 3, 2], "deep": {"hi": 5}, "waterlogged": "1"}),
+        NbtCompound({"distance": [4, 3, 2], "deep": {"hi": 5}, "waterlogged": 1}),
+        NbtCompound({"waterlogged": False, "distance": [4, 3, 2], "deep": {"hi": 5}}),
+        NbtCompound({"waterlogged": True, "distance": [4, 3, 2], "deep": {}}),
+        NbtCompound({"waterlogged": True, "distance": NbtIntArray([4, 3, 2]), "deep": {"hi": 5}}),
+        {"waterlogged": "True", "distance": [4, 3, 2], "deep": {"hi": 5}},
+    ]:
+        assert a != e, f"{a=} == {e=}"
 
 
 def test_parsing():

@@ -9,20 +9,11 @@ With the package `pytest-integration` run pytest with `pytest --without-integrat
 
 from time import sleep
 
-import grpc._channel
+import grpc
 import pytest
 
-from mcpq import (
-    Entity,
-    Event,
-    MCPQError,
-    Minecraft,
-    Player,
-    PlayerNotFound,
-    Vec3,
-    World,
-    WorldNotFound,
-)
+import mcpq
+from mcpq import NBT, Minecraft, PlayerNotFound, Vec3, WorldNotFound
 
 
 @pytest.fixture
@@ -162,3 +153,106 @@ def test_world(mc):
     # world.setBed(ground_pos.up(1))  # place a bed on top of diamond block
 
     mc.setBlock(orig_block, origin)
+
+
+@pytest.mark.integration_test
+def test_entity(mc):
+    etype = "spider"
+    mc.removeEntities(etype)
+    spawn = Vec3().up(1000)
+    mc.runCommandBlocking("setworldspawn 0 0 0 150")  # to load chunks there
+    e = mc.spawnEntity(etype, spawn)
+    e.giveEffect("slow_falling", 9999, 5)
+    assert e.type == etype, f"Not a {etype}, but {e}"
+    assert e.loaded, f"{etype} was not loaded"
+    assert (
+        last_dist := e.pos.distance(spawn)
+    ) < 300, f"{etype} was at {e.pos}, far away from spawn at {spawn}"
+    sleep(mcpq.entity.CACHE_ENTITY_TIME + 0.1)
+    new_dist = e.pos.distance(spawn)
+    assert new_dist > last_dist, f"{etype} did not fall at all {new_dist=} !> {last_dist=}"
+    assert (
+        last_dist + 50 > new_dist
+    ), f"{etype} moved very far with slow falling {last_dist=} + 50 !> {new_dist=}"
+
+    def check_execute(cmd: str):
+        block_pos = Vec3().floor()
+        initial_block = last_block = mc.getBlock(block_pos)
+        new_block = "diamond_block" if last_block == "emerald_block" else "emerald_block"
+        if cmd and (not cmd.startswith("execute") or not cmd.endswith("run")):
+            raise ValueError(cmd)
+
+        e.runCommandBlocking(
+            (f"{cmd} " if cmd else "")
+            + f"setblock {block_pos.x} {block_pos.y} {block_pos.z} {new_block}"
+        )
+        last_block = mc.getBlock(block_pos)
+        mc.runCommandBlocking(
+            f"setblock {block_pos.x} {block_pos.y} {block_pos.z} {initial_block}"
+        )
+        assert last_block == new_block, f"{cmd} failed or {e} did not exist"
+
+    def getNbtData(entity) -> NBT:
+        res: str = entity.runCommandBlocking("data get entity @s")
+        if res:
+            # supports vanilla return!
+            # looks like: "type" has the following entity data: {...}
+            # or like: no entity was found
+            if "{" in res and "}" in res:
+                nbt_string = res[res.index("{") : res.rindex("}")]
+                return NBT.parse(nbt_string)
+            print("No entity (nbt data) found")
+            return NBT()
+        print("runCommandBlocking not impl. for vanilla commands")
+        return NBT()
+
+    # check if entity is even there
+    check_execute("")
+    # check type of entity via command
+    check_execute(f"execute as @e[type={e.type},limit=1,sort=nearest] run")
+    nbt1 = NBT({"NoAI": "1b"})
+    assert str(nbt1) == "{NoAI:1b}"
+    nbt0 = NBT({"NoAI": "0b"})
+    # check if "NoAI" is not set either way
+    check_execute(f"execute as @s[nbt=!{nbt0}] run")
+    check_execute(f"execute as @s[nbt=!{nbt1}] run")
+    # set nbt data
+    e.runCommandBlocking(f"data merge entity @s {nbt1}")
+    # then check if set correctly
+    check_execute(f"execute as @s[nbt=!{nbt0}] run")
+    check_execute(f"execute as @s[nbt={nbt1}] run")
+
+    e_nbt = getNbtData(e)
+    if not e_nbt:
+        print("runCommandBlocking not impl. for vanilla commands!")
+    else:
+        assert e_nbt.get("NoAI", None) is None
+        effects = e_nbt["active_effects"]
+        assert effects and any(
+            ef["id"] == "minecraft:slow_falling" for ef in effects
+        ), f"{effects=}"
+        armor = e_nbt["ArmorItems"]
+        assert len(armor) == 4, f"{armor=}"
+        assert all(a == {} for a in armor), f"{armor=}"
+        e.replaceHelmet(
+            unbreakable=False, binding=False, vanishing=False, color=False
+        )  # TODO: test enchants and color
+        sleep(0.05)
+        e_nbt = getNbtData()
+        assert e_nbt
+        armor = e_nbt["ArmorItems"]
+        assert len(armor) == 4, f"{armor=}"
+        assert not all(a == {} for a in armor), f"{armor=}"
+
+    old_pos = e.pos
+    assert len((es := mc.getEntitiesAround(old_pos, 5, etype))) == 1, f"{es}"
+    e.pos = spawn = spawn.up(20)
+    sleep(0.05)
+    assert len((es := mc.getEntitiesAround(old_pos, 5, etype))) == 0, f"{es}"
+    assert len((es := mc.getEntitiesAround(spawn, 5, etype))) == 1, f"{es}"
+
+    e.remove()
+    # e.runCommandBlocking("kill")
+    # sleep(1)
+    # e._update()
+    # assert not e.loaded, f"{e} still exists"
