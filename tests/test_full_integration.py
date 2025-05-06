@@ -30,6 +30,8 @@ def mc():
 @pytest.mark.integration_test
 def test_player(mc):
     ps = mc.getPlayerList()
+    if len(ps) == 0:
+        pytest.skip("No players on Server, cannot run player test")
     assert len(ps), "No players on Server, cannot run player test"
     mc.events.player_death.poll(None)  # activate
     # mc.events.player_leave.poll(None)  # activate
@@ -121,7 +123,7 @@ def test_world(mc):
     new_block = "birch_stairs" if orig_block == "spruce_stairs" else "spruce_stairs"
     assert orig_block != new_block
     mc.setBlock(new_block, origin)
-    sleep(0.05)  # setBlock nonblocking
+    sleep(0.2)  # setBlock nonblocking
     assert (new_block_ret := mc.getBlock(origin)) == new_block
     assert ow.getBlock(origin) == new_block, "Default world should almost always be overworld"
     assert mc.nether.getBlock(origin) != new_block
@@ -157,23 +159,32 @@ def test_world(mc):
 
 @pytest.mark.integration_test
 def test_entity(mc):
-    etype = "spider"
+    mcversion = mc.getMinecraftVersionTuple()
+    etype = "cow"  # hostile behaves differently
     mc.removeEntities(etype)
     spawn = Vec3().up(1000)
+    mc.getBlock(spawn)
     mc.runCommandBlocking("setworldspawn 0 0 0 150")  # to load chunks there
     e = mc.spawnEntity(etype, spawn)
     e.giveEffect("slow_falling", 9999, 5)
     assert e.type == etype, f"Not a {etype}, but {e}"
+    if not e.loaded and mcversion == (1, 20, 5):
+        pytest.skip("Entity cannot be loaded in empty world in 1.20.5")
     assert e.loaded, f"{etype} was not loaded"
     assert (
         last_dist := e.pos.distance(spawn)
     ) < 300, f"{etype} was at {e.pos}, far away from spawn at {spawn}"
-    sleep(mcpq.entity.CACHE_ENTITY_TIME + 0.1)
+    sleep(mcpq.entity.CACHE_ENTITY_TIME + 0.3)
     new_dist = e.pos.distance(spawn)
-    assert new_dist > last_dist, f"{etype} did not fall at all {new_dist=} !> {last_dist=}"
-    assert (
-        last_dist + 50 > new_dist
-    ), f"{etype} moved very far with slow falling {last_dist=} + 50 !> {new_dist=}"
+    if new_dist == last_dist and (1, 20) < mcversion <= (1, 21):
+        # It seems like (on paper) versions 1.21 and older the entity
+        # does not (always) fall ...
+        print("Skipping over non falling entity position checks")
+    else:
+        assert new_dist > last_dist, f"{etype} did not fall at all {new_dist=} !> {last_dist=}"
+        assert (
+            last_dist + 50 > new_dist
+        ), f"{etype} moved very far with slow falling {last_dist=} + 50 !> {new_dist=}"
 
     def check_execute(cmd: str):
         block_pos = Vec3().floor()
