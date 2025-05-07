@@ -8,7 +8,7 @@ from ._proto import minecraft_pb2 as pb
 from ._types import COLOR
 from .colors import color_codes
 from .exception import raise_on_error
-from .nbt import NBT
+from .nbt import NBT, Block
 from .vec3 import Vec3
 from .world import World
 
@@ -266,7 +266,7 @@ class Entity(_SharedBase, _HasServer):
 
     def replaceHelmet(
         self,
-        armortype: str = "leather_helmet",
+        armortype: Block | str = "leather_helmet",
         unbreakable: bool = True,
         binding: bool = True,
         vanishing: bool = False,
@@ -274,19 +274,40 @@ class Entity(_SharedBase, _HasServer):
         nbt: NBT | None = None,
     ) -> None:
         nbt = nbt or NBT()
-        if binding:
-            nbt.add_binding_curse()
-        if vanishing:
-            nbt.add_vanishing_curse()
-        if unbreakable:
-            nbt.set_unbreakable()
+        mcversion = self._server.get_mc_version()
         if isinstance(color, str) and color in color_codes:
-            nbt.get_or_create_nbt("display")["color"] = color_codes[color]
-        elif isinstance(color, int):
-            nbt.get_or_create_nbt("display")["color"] = color
-        self.replaceItem("armor.head", armortype, nbt=nbt)
+            color = color_codes[color]
+        if not isinstance(armortype, Block):
+            armortype = Block(armortype)
+        if mcversion and mcversion < (1, 20, 5):
+            if binding:
+                nbt.get_or_create_list("Enchantments").compound.append(
+                    {"id": "minecraft:binding_curse", "lvl": "1s"}
+                )
+            if vanishing:
+                nbt.get_or_create_list("Enchantments").compound.append(
+                    {"id": "minecraft:vanishing_curse", "lvl": "1s"}
+                )
+            if unbreakable:
+                nbt.byte["Unbreakable"] = 1
+            if color is not None:  # only works on leather_helmet
+                nbt.get_or_create_nbt("display").int["color"] = color
+            armortype = armortype.withData()  # components did not exist
+            self.replaceItem("armor.head", armortype, nbt=nbt)
+        else:
+            if binding:
+                nbt.get_or_create_nbt("enchantments").int["minecraft:binding_curse"] = 1
+            if vanishing:
+                nbt.get_or_create_nbt("enchantments").int["minecraft:vanishing_curse"] = 1
+            if unbreakable:
+                nbt.compound["unbreakable"] = {}
+            if color is not None:  # only works on leather_helmet
+                nbt.int["dyed_color"] = color
+            self.replaceItem("armor.head", armortype.withMergeData(nbt.asComponentData()))
 
-    def replaceItem(self, where: str, item: str, amount: int = 1, nbt: NBT | None = None) -> None:
+    def replaceItem(
+        self, where: str, item: Block | str, amount: int = 1, nbt: NBT | None = None
+    ) -> None:
         if nbt is None:
             self.runCommand(f"item replace entity @s {where} with {item} {amount}")
         else:

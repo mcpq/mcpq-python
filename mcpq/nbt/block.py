@@ -275,7 +275,7 @@ class Block(str):
             d = data
         elif isinstance(data, str):
             d = ComponentData.parse(data)
-        elif isinstance(data, dict):
+        elif isinstance(data, Mapping):
             d = ComponentData(data)
         else:
             raise ValueError(
