@@ -4,11 +4,12 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from ._proto import minecraft_pb2 as pb
+from .nbt import Block
 
 
 @dataclass(order=True, frozen=True)
 class Material:
-    key: str
+    key: Block
     is_air: bool = field(repr=False, hash=False, compare=False, kw_only=True)
     is_block: bool = field(repr=False, hash=False, compare=False, kw_only=True)
     is_burnable: bool = field(repr=False, hash=False, compare=False, kw_only=True)
@@ -30,7 +31,7 @@ class Material:
     @classmethod
     def _build(cls, buffer: pb.Material) -> Material:
         return cls(
-            buffer.key,
+            Block(buffer.key.removeprefix("minecraft:")),
             is_air=buffer.isAir,
             is_block=buffer.isBlock,
             is_burnable=buffer.isBurnable,
