@@ -144,30 +144,35 @@ class MaterialFilter(_HasServer, Sequence):
             self._server, self._filters + [lambda m: (m.key.namespace == "minecraft") is value]
         )
 
-    def namespace(self, s: str, /, negate: bool = False) -> MaterialFilter:
+    def namespace(self, namespace: str, /, negate: bool = False) -> MaterialFilter:
         return self.__class__(
-            self._server, self._filters + [lambda m: (m.key.namespace == s) is not negate]
+            self._server, self._filters + [lambda m: (m.key.namespace == namespace) is not negate]
         )
 
     # additional key filters
 
-    def equals(self, *s: str, negate: bool = False) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: (m.key in s) is not negate])
-
-    def contains(self, *s: str, negate: bool = False) -> MaterialFilter:
+    def equals(self, *strings: str, negate: bool = False) -> MaterialFilter:
         return self.__class__(
-            self._server, self._filters + [lambda m: any(sub in m.key for sub in s) is not negate]
+            self._server, self._filters + [lambda m: (m.key in strings) is not negate]
         )
 
-    def startswith(self, *s: str, negate: bool = False) -> MaterialFilter:
+    def contains(self, *substrings: str, negate: bool = False) -> MaterialFilter:
+        return self.__class__(
+            self._server,
+            self._filters + [lambda m: any(sub in m.key for sub in substrings) is not negate],
+        )
+
+    def startswith(self, *substrings: str, negate: bool = False) -> MaterialFilter:
         # TODO: ignore namespace: on startswith (add function to Block)
         return self.__class__(
             self._server,
-            self._filters + [lambda m: any(m.key.startswith(sub) for sub in s) is not negate],
+            self._filters
+            + [lambda m: any(m.key.startswith(sub) for sub in substrings) is not negate],
         )
 
-    def endswith(self, *s: str, negate: bool = False) -> MaterialFilter:
+    def endswith(self, *substrings: str, negate: bool = False) -> MaterialFilter:
         return self.__class__(
             self._server,
-            self._filters + [lambda m: any(m.key.endswith(sub) for sub in s) is not negate],
+            self._filters
+            + [lambda m: any(m.key.endswith(sub) for sub in substrings) is not negate],
         )
