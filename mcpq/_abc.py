@@ -5,15 +5,15 @@ import re
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable
 
-from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
-from ._util import ThreadSafeSingeltonCache
-from .entitytype import EntityType
 from .exception import raise_on_error
-from .material import Material
 
 if TYPE_CHECKING:
+    from ._proto import MinecraftStub
+    from ._util import ThreadSafeSingeltonCache
     from .entity import Entity
+    from .entitytype import EntityType
+    from .material import Material
     from .player import Player
     from .world import World
 

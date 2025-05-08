@@ -11,11 +11,9 @@ from ._proto import minecraft_pb2 as pb
 from ._server import _Server
 from ._util import deprecated
 from .entity import Entity
-from .entitytype import EntityType
 from .events import EventHandler
 from .exception import raise_on_error
-from .material import Material
-from .nbt import Block
+from .material import MaterialFilter
 from .player import Player
 from .world import World, _DefaultWorld
 
@@ -128,6 +126,10 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         """The :class:`EventHandler` for receiving events from the server.
         Checkout the :class:`EventHandler` class for examples for receiving events."""
         return self._event_handler
+
+    @property
+    def materials(self) -> MaterialFilter:
+        return MaterialFilter(self._server, [])
 
     @property
     def host(self) -> str:
@@ -327,59 +329,6 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         """
         self._server.update_worlds()
 
-    def getBlockTypes(
-        self,
-        *key_equals: str,
-        # material properties
-        is_air: bool | None = None,
-        is_burnable: bool | None = None,
-        is_edible: bool | None = None,
-        is_flammable: bool | None = None,
-        is_fuel: bool | None = None,
-        is_interactable: bool | None = None,
-        is_item: bool | None = None,
-        is_occluding: bool | None = None,
-        is_solid: bool | None = None,
-        has_gravity: bool | None = None,
-        # additional infered properties
-        is_vanilla: bool | None = None,
-        # additional key filters
-        key_contains: str | list[str] | None = None,
-        key_contains_all: str | list[str] | None = None,
-        key_startswith: str | list[str] | None = None,
-        key_endswith: str | list[str] | None = None,
-        key_not_contains: str | list[str] | None = None,
-        key_not_startswith: str | list[str] | None = None,
-        key_not_endswith: str | list[str] | None = None,
-        # custom filter
-        custom_material_filter: Callable[[Material], bool] | None = None,
-    ) -> list[Block]:
-        """The list of all block-types that can be set with :func:`setBlock`.
-        Identical to :func:`getMaterialKeys` with `is_block=True`"""
-        return self.getMaterialKeys(
-            *key_equals,
-            is_air=is_air,
-            is_block=True,
-            is_burnable=is_burnable,
-            is_edible=is_edible,
-            is_flammable=is_flammable,
-            is_fuel=is_fuel,
-            is_interactable=is_interactable,
-            is_item=is_item,
-            is_occluding=is_occluding,
-            is_solid=is_solid,
-            has_gravity=has_gravity,
-            is_vanilla=is_vanilla,
-            key_contains=key_contains,
-            key_contains_all=key_contains_all,
-            key_startswith=key_startswith,
-            key_endswith=key_endswith,
-            key_not_contains=key_not_contains,
-            key_not_startswith=key_not_startswith,
-            key_not_endswith=key_not_endswith,
-            custom_material_filter=custom_material_filter,
-        )
-
     def getEntityTypes(self, is_spawnable: bool | None = None) -> list[str]:
         if is_spawnable is not None:
             return [
@@ -392,160 +341,6 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         """The list of all entity-types that can be spawned with :func:`spawnEntity`.
         Identical to :func:`getEntityTypes` with `is_spawnable=True`"""
         return self.getEntityTypes(is_spawnable=True)
-
-    def getItemTypes(
-        self,
-        *key_equals: str,
-        # material properties
-        is_air: bool | None = None,
-        is_block: bool | None = None,
-        is_burnable: bool | None = None,
-        is_edible: bool | None = None,
-        is_flammable: bool | None = None,
-        is_fuel: bool | None = None,
-        is_interactable: bool | None = None,
-        is_occluding: bool | None = None,
-        is_solid: bool | None = None,
-        has_gravity: bool | None = None,
-        # additional infered properties
-        is_vanilla: bool | None = None,
-        # additional key filters
-        key_contains: str | list[str] | None = None,
-        key_contains_all: str | list[str] | None = None,
-        key_startswith: str | list[str] | None = None,
-        key_endswith: str | list[str] | None = None,
-        key_not_contains: str | list[str] | None = None,
-        key_not_startswith: str | list[str] | None = None,
-        key_not_endswith: str | list[str] | None = None,
-        # custom filter
-        custom_material_filter: Callable[[Material], bool] | None = None,
-    ) -> list[Block]:
-        """The list of all obtainable items.
-        Identical to :func:`getMaterialKeys` with `is_item=True`"""
-        return self.getMaterialKeys(
-            *key_equals,
-            is_air=is_air,
-            is_block=is_block,
-            is_burnable=is_burnable,
-            is_edible=is_edible,
-            is_flammable=is_flammable,
-            is_fuel=is_fuel,
-            is_interactable=is_interactable,
-            is_item=True,
-            is_occluding=is_occluding,
-            is_solid=is_solid,
-            has_gravity=has_gravity,
-            is_vanilla=is_vanilla,
-            key_contains=key_contains,
-            key_contains_all=key_contains_all,
-            key_startswith=key_startswith,
-            key_endswith=key_endswith,
-            key_not_contains=key_not_contains,
-            key_not_startswith=key_not_startswith,
-            key_not_endswith=key_not_endswith,
-            custom_material_filter=custom_material_filter,
-        )
-
-    def getMaterialKeys(
-        self,
-        *key_equals: str,
-        # material properties
-        is_air: bool | None = None,
-        is_block: bool | None = None,
-        is_burnable: bool | None = None,
-        is_edible: bool | None = None,
-        is_flammable: bool | None = None,
-        is_fuel: bool | None = None,
-        is_interactable: bool | None = None,
-        is_item: bool | None = None,
-        is_occluding: bool | None = None,
-        is_solid: bool | None = None,
-        has_gravity: bool | None = None,
-        # additional infered properties
-        is_vanilla: bool | None = None,
-        # additional key filters
-        key_contains: str | list[str] | None = None,
-        key_contains_all: str | list[str] | None = None,
-        key_startswith: str | list[str] | None = None,
-        key_endswith: str | list[str] | None = None,
-        key_not_contains: str | list[str] | None = None,
-        key_not_startswith: str | list[str] | None = None,
-        key_not_endswith: str | list[str] | None = None,
-        # custom filter
-        custom_material_filter: Callable[[Material], bool] | None = None,
-    ) -> list[Block]:
-        fs = []
-        if key_equals:
-            fs.append(lambda m: m.key in key_equals)
-        if is_air is not None:
-            fs.append(lambda m: m.is_air is is_air)
-        if is_block is not None:
-            fs.append(lambda m: m.is_block is is_block)
-        if is_burnable is not None:
-            fs.append(lambda m: m.is_burnable is is_burnable)
-        if is_edible is not None:
-            fs.append(lambda m: m.is_edible is is_edible)
-        if is_flammable is not None:
-            fs.append(lambda m: m.is_flammable is is_flammable)
-        if is_fuel is not None:
-            fs.append(lambda m: m.is_fuel is is_fuel)
-        if is_interactable is not None:
-            fs.append(lambda m: m.is_interactable is is_interactable)
-        if is_item is not None:
-            fs.append(lambda m: m.is_item is is_item)
-        if is_occluding is not None:
-            fs.append(lambda m: m.is_occluding is is_occluding)
-        if is_solid is not None:
-            fs.append(lambda m: m.is_solid is is_solid)
-        if has_gravity is not None:
-            fs.append(lambda m: m.has_gravity is has_gravity)
-        if is_vanilla is not None:
-            if is_vanilla:
-                fs.append(lambda m: m.key.namespace == "minecraft")
-            else:
-                fs.append(lambda m: m.key.namespace != "minecraft")
-        if key_contains is not None:
-            if isinstance(key_contains, str):
-                fs.append(lambda m: key_contains in m.key)
-            else:
-                fs.append(lambda m: any(sub in m.key for sub in key_contains))
-        if key_contains_all is not None:
-            if isinstance(key_contains_all, str):
-                fs.append(lambda m: key_contains_all in m.key)
-            else:
-                fs.append(lambda m: all(sub in m.key for sub in key_contains_all))
-        if key_startswith is not None:
-            if isinstance(key_startswith, str):
-                fs.append(lambda m: m.key.startswith(key_startswith))
-            else:
-                fs.append(lambda m: any(m.key.startswith(sub) for sub in key_startswith))
-        if key_endswith is not None:
-            if isinstance(key_endswith, str):
-                fs.append(lambda m: m.key.endswith(key_endswith))
-            else:
-                fs.append(lambda m: any(m.key.endswith(sub) for sub in key_endswith))
-        if key_not_contains is not None:
-            if isinstance(key_not_contains, str):
-                fs.append(lambda m: key_not_contains not in m.key)
-            else:
-                fs.append(lambda m: not any(sub in m.key for sub in key_not_contains))
-        if key_not_startswith is not None:
-            if isinstance(key_not_startswith, str):
-                fs.append(lambda m: not m.key.startswith(key_not_startswith))
-            else:
-                fs.append(lambda m: not any(m.key.startswith(sub) for sub in key_not_startswith))
-        if key_not_endswith is not None:
-            if isinstance(key_not_endswith, str):
-                fs.append(lambda m: not m.key.endswith(key_not_endswith))
-            else:
-                fs.append(lambda m: not any(m.key.endswith(sub) for sub in key_not_endswith))
-        if custom_material_filter is not None:
-            fs.append(custom_material_filter)
-        if fs:
-            return [
-                m.key for m in self._server.get_materials(lambda m: all(ffunc(m) for ffunc in fs))
-            ]
-        return [m.key for m in self._server.get_materials()]
 
     def getMinecraftVersion(self) -> str:
         """The Minecraft version of the server this instance is connected to or None if the version cannot be identified."""
