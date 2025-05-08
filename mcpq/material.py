@@ -7,6 +7,7 @@ from typing import Any, Callable, Iterator
 
 from ._base import _HasServer
 from ._proto import minecraft_pb2 as pb
+from .exception import raise_on_error
 from .nbt import Block
 
 
@@ -72,6 +73,12 @@ class MaterialFilter(_HasServer, Sequence):
 
     def get(self) -> list[Block]:
         return self._filtered()[:]  # copy of cached list
+
+    def getById(self, id: str) -> Block:
+        element = self.equals(id).first()
+        if element is None:
+            raise_on_error(pb.Status(code=pb.BLOCK_TYPE_NOT_FOUND, extra=id))
+        return element
 
     def first(self) -> Block | None:
         if len(self):
