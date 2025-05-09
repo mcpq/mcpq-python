@@ -51,10 +51,28 @@ class Material:
 
 
 class MaterialFilter(_HasServer, Sequence):
-    def __init__(self, server, filters: list[Callable[[Material], bool]]):
+    def __init__(self, server, filters: list[Callable[[Material], bool]], next_or: bool = False):
         super().__init__(server)
         self._filters = filters
         self._filtered_materials: list[Block] | None = None
+        self._next_or: bool = next_or
+
+    # logic operations
+
+    def _add_filter(self, func: Callable[[Material], bool]) -> MaterialFilter:
+        if self._next_or and self._filters:
+            filters = self._filters[:]
+            last_filter = filters[-1]
+            filters[-1] = lambda m: last_filter(m) or func(m)
+            return self.__class__(self._server, filters)
+        return self.__class__(self._server, self._filters + [func])
+
+    @property
+    def or_(self) -> MaterialFilter:
+        return self.__class__(self._server, self._filters, True)
+
+    def __call__(self):  # supports .or_ AND .or_()
+        return self
 
     # apply filters
 
@@ -108,71 +126,58 @@ class MaterialFilter(_HasServer, Sequence):
     # material properties
 
     def air(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_air is value])
+        return self._add_filter(lambda m: m.is_air is value)
 
     def block(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_block is value])
+        return self._add_filter(lambda m: m.is_block is value)
 
     def burnable(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_burnable is value])
+        return self._add_filter(lambda m: m.is_burnable is value)
 
     def edible(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_edible is value])
+        return self._add_filter(lambda m: m.is_edible is value)
 
     def flammable(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_flammable is value])
+        return self._add_filter(lambda m: m.is_flammable is value)
 
     def fuel(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_fuel is value])
+        return self._add_filter(lambda m: m.is_fuel is value)
 
     def interactable(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_interactable is value])
+        return self._add_filter(lambda m: m.is_interactable is value)
 
     def item(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_item is value])
+        return self._add_filter(lambda m: m.is_item is value)
 
     def occluding(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_occluding is value])
+        return self._add_filter(lambda m: m.is_occluding is value)
 
     def solid(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(self._server, self._filters + [lambda m: m.is_solid is value])
+        return self._add_filter(lambda m: m.is_solid is value)
 
     # additional infered properties
 
     def vanilla(self, value: bool = True, /) -> MaterialFilter:
-        return self.__class__(
-            self._server, self._filters + [lambda m: (m.key.namespace == "minecraft") is value]
-        )
+        return self._add_filter(lambda m: (m.key.namespace == "minecraft") is value)
 
     def namespace(self, namespace: str, /, negate: bool = False) -> MaterialFilter:
-        return self.__class__(
-            self._server, self._filters + [lambda m: (m.key.namespace == namespace) is not negate]
-        )
+        return self._add_filter(lambda m: (m.key.namespace == namespace) is not negate)
 
     # additional key filters
 
     def equals(self, *strings: str, negate: bool = False) -> MaterialFilter:
-        return self.__class__(
-            self._server, self._filters + [lambda m: (m.key in strings) is not negate]
-        )
+        return self._add_filter(lambda m: (m.key in strings) is not negate)
 
     def contains(self, *substrings: str, negate: bool = False) -> MaterialFilter:
-        return self.__class__(
-            self._server,
-            self._filters + [lambda m: any(sub in m.key for sub in substrings) is not negate],
-        )
+        return self._add_filter(lambda m: any(sub in m.key for sub in substrings) is not negate)
 
     def startswith(self, *substrings: str, negate: bool = False) -> MaterialFilter:
         # TODO: ignore namespace: on startswith (add function to Block)
-        return self.__class__(
-            self._server,
-            self._filters
-            + [lambda m: any(m.key.startswith(sub) for sub in substrings) is not negate],
+        return self._add_filter(
+            lambda m: any(m.key.startswith(sub) for sub in substrings) is not negate
         )
 
     def endswith(self, *substrings: str, negate: bool = False) -> MaterialFilter:
-        return self.__class__(
-            self._server,
-            self._filters
-            + [lambda m: any(m.key.endswith(sub) for sub in substrings) is not negate],
+        return self._add_filter(
+            lambda m: any(m.key.endswith(sub) for sub in substrings) is not negate
         )
