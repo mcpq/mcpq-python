@@ -1,5 +1,5 @@
-grpcio
-protobuf
+grpcio>=1.65.4
+protobuf>=3.20
 # optional only for imagequantizer
 imageio
 numpy

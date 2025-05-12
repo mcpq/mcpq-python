@@ -49,7 +49,7 @@ def test_player(mc):
     with pytest.raises(PlayerNotFound):
         mc.getPlayerList([p.name, "thisplayerdoesnotexistontheserver"])
     assert mc.getOfflinePlayer("thisplayerdoesnotexistontheserver")
-    assert p.name in mc.getPlayerNames()
+    assert p in mc.getPlayerList()
     orig_pos = p.pos
     assert p.pos != Vec3()
     p.pos = Vec3()

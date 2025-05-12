@@ -48,11 +48,17 @@ class _SharedBase(_HasServer):
 
            response = mc.runCommand("locate biome mushroom_fields")
 
+        .. caution::
+
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output,
+           specifically the capturing of output of vanilla commands.
+           Instead it only supports the capturing of Bukkit commands, which can be seen with ``mc.runCommandBlocking("help Bukkit").split("\\n")``
+
         :param command: the command without the slash ``/``
         :type command: str
+        :return: the console output of the command
+        :rtype: str
         """
-        # TODO: output=True once implemented by server
-        # TODO: works ONLY for Bukkit commands! Vanilla are not intercepted
         response = self._server.stub.runCommandWithOptions(
             pb.CommandRequest(command=command, blocking=True, output=True)
         )

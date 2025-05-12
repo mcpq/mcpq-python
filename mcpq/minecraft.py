@@ -372,7 +372,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         This should only be called if the loaded worlds on the server change, for example, with the Multiverse Core Plugin.
         By default, the worlds will be refreshed on first use only.
         """
-        self._server.update_worlds()
+        self._server.world_by_name_cache(force_update=True)
 
     def getMinecraftVersion(self) -> str:
         """The Minecraft version of the server this instance is connected to or None if the version cannot be identified."""

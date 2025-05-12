@@ -35,8 +35,8 @@ repos:
             pytest-integration,
             pytest-mock,
             pytest-timeout,
-            grpcio,
-            protobuf,
+            grpcio>=1.65.4,
+            protobuf>=3.20,
           ]
         always_run: true
         pass_filenames: false

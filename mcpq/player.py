@@ -135,7 +135,7 @@ class Player(Entity, _SharedBase, _HasServer):
         else:
             raise RuntimeError("Player could not be updated and no error was raised by response")
 
-    def _update_on_check(self, allow_offline: bool = ALLOW_OFFLINE_PLAYER_OPS) -> bool:
+    def _update_on_check(self, allow_offline: bool = ALLOW_OFFLINE_PLAYER_OPS) -> None:
         if self._should_update():
             self._update(allow_offline=allow_offline)
 
@@ -169,20 +169,26 @@ class Player(Entity, _SharedBase, _HasServer):
         """Equivalent to :func:`gamemode` with argument ``"survival"``"""
         self.gamemode("survival")
 
-    def giveItems(self, type: str, amount: int = 1, *, nbt: NBT | None = None) -> None:
-        """Put items into the player's inventory
+    def giveItems(self, item: str, amount: int = 1, *, nbt: NBT | None = None) -> None:
+        """Put `amount` of certain `item` into the player's inventory.
+        The item can be a string or a :class:`~mcpq.nbt.Block` with component data:
 
-        :param type: id of item or block to receive
-        :type type: str
-        :param amount: amount of items to receive, defaults to 1
-        :type amount: int, optional
-        :param nbt: additional nbt data of items, defaults to None
-        :type nbt: NBT | None, optional
+        .. code::
+
+           mc.getPlayer().giveItems("snowball", 64)  # give player 64 snowballs (4 stacks of 16)
+           sword = mc.materials.getById("diamond_sword").withData({"enchantments": {"sharpness": 5}})
+           mc.getPlayer().giveItems(sword)  # give player enchanted sword
+           b = mc.blocks.getById("acacia_stairs").withData({"waterlogged": True})
+           mc.getPlayer().giveItems(b.asBlockStateForItem())  # give player already waterlogged stairs
+
+        .. note::
+
+           `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `item`.
         """
         if nbt is None:
-            self.runCommand(f"give @s {type} {amount}")
+            self.runCommand(f"give @s {item} {amount}")
         else:
-            self.runCommand(f"give @s {type}{nbt} {amount}")
+            self.runCommand(f"give @s {item}{nbt} {amount}")
 
     def postToChat(self, *objects, sep: str = " ") -> None:
         """Print `objects` in chat separated by `sep` and *only visible to player*.
@@ -203,7 +209,7 @@ class Player(Entity, _SharedBase, _HasServer):
         :param sep: the separator between each object, defaults to " "
         :type sep: str, optional
         """
-        response = self._stub.postToChat(
+        response = self._server.stub.postToChat(
             pb.ChatPostRequest(
                 message=sep.join(map(str, objects)), player=pb.Player(name=self.name)
             )

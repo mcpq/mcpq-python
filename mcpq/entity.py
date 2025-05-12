@@ -216,7 +216,7 @@ class Entity(_SharedBase, _HasServer):
             e = response.entities[0]
             return self._inject_update(e)
 
-    def _update_on_check(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> bool:
+    def _update_on_check(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> None:
         if self._should_update():
             self._update(allow_dead=allow_dead)
 
@@ -252,11 +252,8 @@ class Entity(_SharedBase, _HasServer):
         :type particles: bool, optional
         """
         pbool = str(not bool(particles)).lower()
-        if not seconds:
-            seconds = "infinite"
-        else:
-            seconds = int(seconds)
-        self.runCommand(f"effect give @s {effect} {seconds} {amplifier} {pbool}")
+        duration = "infinite" if not seconds else int(seconds)
+        self.runCommand(f"effect give @s {effect} {duration} {amplifier} {pbool}")
 
     def kill(self) -> None:
         "Kill this entity"
@@ -283,7 +280,13 @@ class Entity(_SharedBase, _HasServer):
 
         .. note::
 
-           `nbt` is only used for servers prior to 1.20.5 an will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `armortype`.
+           `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `armortype`.
+
+           .. code::
+
+              # enchant helmet with protection 4 (in addition to curse_of_binding)
+              helmet = mc.materials.getById("leather_helmet").withData({"enchantments": {"protection": 4}})
+              mc.getPlayer().replaceHelmet(helmet)
 
         This can be used to separate the players into any number of separate teams, like so:
 
@@ -299,13 +302,13 @@ class Entity(_SharedBase, _HasServer):
               player.replaceHelmet(color=color)
               player.postToChat("You are in team:", color)
         """
-        nbt = nbt or NBT()
         mcversion = self._server.get_mc_version()
         if isinstance(color, str) and color in color_codes:
             color = color_codes[color]
         if not isinstance(armortype, Block):
             armortype = Block(armortype)
         if mcversion and mcversion < (1, 20, 5):
+            nbt = nbt or NBT()
             if binding:
                 nbt.get_or_create_list("Enchantments").compound.append(
                     {"id": "minecraft:binding_curse", "lvl": "1s"}
@@ -321,19 +324,33 @@ class Entity(_SharedBase, _HasServer):
             armortype = armortype.withData()  # components did not exist
             self.replaceItem("armor.head", armortype, nbt=nbt)
         else:
+            component = armortype.getData()
             if binding:
-                nbt.get_or_create_nbt("enchantments").int["minecraft:binding_curse"] = 1
+                component.get_or_create_nbt("enchantments").int["minecraft:binding_curse"] = 1
             if vanishing:
-                nbt.get_or_create_nbt("enchantments").int["minecraft:vanishing_curse"] = 1
+                component.get_or_create_nbt("enchantments").int["minecraft:vanishing_curse"] = 1
             if unbreakable:
-                nbt.compound["unbreakable"] = {}
+                component.compound["unbreakable"] = {}
             if color is not None:  # only works on leather_helmet
-                nbt.int["dyed_color"] = color
-            self.replaceItem("armor.head", armortype.withMergeData(nbt.asComponentData()))
+                component.int["dyed_color"] = color
+            self.replaceItem("armor.head", armortype.withData(component))
 
     def replaceItem(
         self, where: str, item: Block | str, amount: int = 1, *, nbt: NBT | None = None
     ) -> None:
+        """Replace an inventory location `where` with a given `item`.
+        The location can be something like ``armor.[head|chest|legs|feet|body]``, ``weapon.[mainhand|offhand]``, ``hotbar.[0-8]``, ``inventory.[0-26]``, ``enderchest.[0-26]`` or ``container.[0-52]``.
+        The item can be a string or a :class:`~mcpq.nbt.Block` with component data:
+
+        .. code::
+
+           sword = mc.materials.getById("diamond_sword").withData({"enchantments": {"sharpness": 5}})
+           mc.getPlayer().replaceItem("weapon.mainhand", sword)
+
+        .. note::
+
+           `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `item`.
+        """
         if nbt is None:
             self.runCommand(f"item replace entity @s {where} with {item} {amount}")
         else:
@@ -362,8 +379,16 @@ class Entity(_SharedBase, _HasServer):
 
            response = entity.runCommandBlocking("data get entity @s")  # @s refers to this entity
 
+        .. caution::
+
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output,
+           specifically the capturing of output of vanilla commands.
+           Instead it only supports the capturing of Bukkit commands, which can be seen with ``mc.runCommandBlocking("help Bukkit").split("\\n")``
+
         :param command: the command without the slash ``/``
         :type command: str
+        :return: the console output of the command
+        :rtype: str
         """
         command = f"execute as {self.id} at @s run " + command
         return super().runCommandBlocking(command)

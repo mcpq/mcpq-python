@@ -771,8 +771,16 @@ class World(_DefaultWorld, _SharedBase, _HasServer):
 
            response = world.runCommandBlocking("locate biome mushroom_fields")
 
+        .. caution::
+
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output,
+           specifically the capturing of output of vanilla commands.
+           Instead it only supports the capturing of Bukkit commands, which can be seen with ``mc.runCommandBlocking("help Bukkit").split("\\n")``
+
         :param command: the command without the slash ``/``
         :type command: str
+        :return: the console output of the command
+        :rtype: str
         """
         command = f"execute in {self.key} run " + command
         return super().runCommandBlocking(command)

@@ -125,7 +125,7 @@ class EntityTypeFilter(_HasServer, Sequence):
         element = self.equals(id).first()
         if element is None:
             raise_on_error(pb.Status(code=pb.ENTITY_TYPE_NOT_FOUND, extra=id))
-        return element
+        return element  # type: ignore
 
     def first(self) -> EntityType | None:
         if len(self):

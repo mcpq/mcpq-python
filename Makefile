@@ -20,13 +20,16 @@ docs:
 	@cp -a ./docsource/_build/html/. ./docs
 
 proto:
+	python3 -m grpc_tools.protoc --version
+	@echo Make sure to have the correct version of grpcio and grpcio-tools installed
 	python3 -m grpc_tools.protoc --proto_path=proto --python_out=mcpq/_proto --grpc_python_out=mcpq/_proto proto/minecraft.proto
+	@echo Run 'nox' to make sure your dependencies are still compatible
 
 nbt_lark:
 	python3 -m lark.tools.standalone --maybe_placeholders mcpq/nbt/snbt_and_component.lark -o mcpq/nbt/_snbt_and_component.py
 
 dist:
-	rm -rf dist
+	rm -rf dist build *.egg-info
 	python3 -m build
 	python3 -m twine check dist/*
 
@@ -34,6 +37,7 @@ upload:
 	@test -f ~/.pypirc || echo "~/.pypirc does not exist, add PyPi and TestPyPi tokens!"
 	@test -f ~/.pypirc
 	@test -f /tmp/mcpq_warnup || echo "Do NOT forget to first 'git tag vX.Y.Z', then 'make all', then 'git commit' (to commit docs)!"
+	@test -f /tmp/mcpq_warnup || echo "Also, check if the version was bumped! (Has to be done manually)"
 	@test -f /tmp/mcpq_warnup || (touch /tmp/mcpq_warnup && test)
 	python3 -m twine check dist/*
 	@test ! -f /tmp/mcpq_testup || echo "Package will now be uploaded to REAL PyPi!"

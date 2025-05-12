@@ -213,7 +213,7 @@ class MaterialFilter(_HasServer, Sequence):
         element = self.equals(id).first()
         if element is None:
             raise_on_error(pb.Status(code=pb.BLOCK_TYPE_NOT_FOUND, extra=id))
-        return element
+        return element  # type: ignore
 
     def first(self) -> Block | None:
         "Apply all filters and return the first element if one exists else None"
