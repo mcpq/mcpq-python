@@ -8,9 +8,9 @@ from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
 from ._util import ThreadSafeSingeltonCache
 from .entity import Entity
-from .entitytype import EntityType
+from .entitytype import _EntityTypeInternal
 from .exception import raise_on_error
-from .material import Material
+from .material import _MaterialInternal
 from .player import Player
 from .world import World
 
@@ -25,8 +25,8 @@ class _Server(_ServerInterface):
         self._world_by_name_cache = ThreadSafeSingeltonCache(None)
         self._entity_cache = ThreadSafeSingeltonCache(partial(Entity, self), use_weakref=True)
         self._player_cache = ThreadSafeSingeltonCache(partial(Player, self))
-        self._material_cache: dict[str, Material] = {}
-        self._entity_type_cache: dict[str, EntityType] = {}
+        self._material_cache: dict[str, _MaterialInternal] = {}
+        self._entity_type_cache: dict[str, _EntityTypeInternal] = {}
         self._server_info_cache: dict[str, Any] = {}
 
     @property
@@ -51,21 +51,23 @@ class _Server(_ServerInterface):
                 )
         return self._world_by_name_cache
 
-    def material_cache(self, force_update: bool = False) -> dict[str, Material]:
+    def material_cache(self, force_update: bool = False) -> dict[str, _MaterialInternal]:
         if not self._material_cache or force_update:
             response = self.stub.getMaterials(pb.MaterialRequest())
             raise_on_error(response.status)
             self._material_cache = {
-                m.key: Material._build(m) for m in sorted(response.materials, key=lambda m: m.key)
+                m.key: _MaterialInternal._build(m)
+                for m in sorted(response.materials, key=lambda m: m.key)
             }
         return self._material_cache
 
-    def entity_type_cache(self, force_update: bool = False) -> dict[str, EntityType]:
+    def entity_type_cache(self, force_update: bool = False) -> dict[str, _EntityTypeInternal]:
         if not self._entity_type_cache or force_update:
             response = self.stub.getEntityTypes(pb.EntityTypeRequest())
             raise_on_error(response.status)
             self._entity_type_cache = {
-                m.key: EntityType._build(m) for m in sorted(response.types, key=lambda m: m.key)
+                m.key: _EntityTypeInternal._build(m)
+                for m in sorted(response.types, key=lambda m: m.key)
             }
         return self._entity_type_cache
 

@@ -135,6 +135,41 @@ def test_world(mc):
     ) == new_block, "equals check should still succeed even with data"
     assert new_block_ret_data.getData(), "expected block to have data/components"
 
+    # test filters
+    assert mc.materials.len() == len(mc.materials)
+    assert mc.materials.len() > 900
+    assert mc.blocks.len() == mc.materials.block().len()
+    assert mc.blocks.len() < mc.materials.len()
+    assert (
+        mc.materials.block().contains("wool", "concrete").contains("yellow", negate=True).len()
+        == mc.materials.block()
+        .contains("wool")
+        .or_.contains("concrete")
+        .contains("yellow", negate=True)
+        .len()
+        == (
+            (mc.materials.contains("wool", "concrete") & ~mc.materials.contains("yellow")).block()
+        ).len()
+        == (
+            (mc.materials.block().contains("wool") | mc.materials.block().contains("concrete"))
+            & ~mc.materials.contains("yellow")
+        ).len()
+        > 0
+    )
+    assert set(mc.materials.item()) & set(mc.materials.block())
+    assert (
+        mc.materials.len()
+        > (mc.materials.item() | mc.materials.solid()).len()
+        > mc.materials.item().len()
+        > (mc.materials.item() & mc.materials.solid()).len()
+        > 0
+    )
+    assert "tnt" in mc.blocks and "tnt" in mc.spawnables
+    assert list(mc.blocks) == mc.blocks.get()
+    for i in range(20):
+        b = mc.blocks.choice()
+        mc.setBlock(b, origin)
+
     # world.pvp = False  # disable pvp only in this world
     # ground_pos = world.getHeighestPos(0, 0)  # get position of heighest ground at origin
     # block = world.getBlock(ground_pos)  # get the block type there

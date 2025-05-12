@@ -385,7 +385,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
            # line-wise customization with NBT compounds or dicts
            mc.setSign(pos, [{"text": "Hello", "color": "red"}, NBT({"text": "Minecraft", "bold": True})])
 
-           valid_signs = list(filter(lambda b: b.endswith("_sign"), mc.getBlockTypes()))
+           valid_signs = mc.blocks.endswith("_sign")
            mc.setSign(..., sign_block="spruce_sign")
            mc.setSign(..., sign_block="jungle_wall_sign")
            mc.setSign(..., sign_block="acacia_hanging_sign")

@@ -223,28 +223,28 @@ class Entity(_SharedBase, _HasServer):
     def getEntitiesAround(
         self, distance: float, type: str | None = None, only_spawnable: bool = True
     ) -> list[Entity]:
-        """Get all other entities in a certain radius around `self`
+        """Get all other entities in a certain radius around this one
 
-        :param distance: the radius around `self` in which to get other entities
+        :param distance: the radius around this entity in which to get other entities
         :type distance: float
         :param type: the type of entitiy to get, get all types if None, defaults to None
         :type type: str | None, optional
         :param only_spawnable: if True get only entities that can spawn, otherwise also get things like projectiles and drops, defaults to True
         :type only_spawnable: bool, optional
-        :return: list of filtered entities with distance from `self` less or equal to `distance`
+        :return: list of filtered entities with distance from this one less or equal to `distance`
         :rtype: list[Entity]
         """
         entities = self.world.getEntitiesAround(self.pos, distance, type, only_spawnable)
         return [e for e in entities if e is not self]
 
     def giveEffect(
-        self, effect: str, seconds: int = 30, amplifier: int = 0, particles: bool = True
+        self, effect: str, seconds: int = 0, amplifier: int = 0, particles: bool = True
     ) -> None:
-        """Give `self` a (potion) effect
+        """Give this entity a (potion) effect
 
         :param effect: the name of the effect, e.g., ``"glowing"``
         :type effect: str
-        :param seconds: the number of seconds the effect should persist, defaults to 30
+        :param seconds: the number of seconds the effect should persist or infinite duration if 0, defaults to 0
         :type seconds: int, optional
         :param amplifier: the strength of the effect, `amplifier` + 1 is the level of the effect, defaults to 0
         :type amplifier: int, optional
@@ -252,7 +252,11 @@ class Entity(_SharedBase, _HasServer):
         :type particles: bool, optional
         """
         pbool = str(not bool(particles)).lower()
-        self.runCommand(f"effect give @s {effect} {int(seconds)} {amplifier} {pbool}")
+        if not seconds:
+            seconds = "infinite"
+        else:
+            seconds = int(seconds)
+        self.runCommand(f"effect give @s {effect} {seconds} {amplifier} {pbool}")
 
     def kill(self) -> None:
         "Kill this entity"
@@ -271,8 +275,30 @@ class Entity(_SharedBase, _HasServer):
         binding: bool = True,
         vanishing: bool = False,
         color: COLOR | int | None = None,
+        *,
         nbt: NBT | None = None,
     ) -> None:
+        """Replace whatever the entity has on their head with the given `armortype`, default to ``leather_helmet`` with `color` if given.
+        May set the helment as `unbreakable` and/or enchant the helmet with `binding` or `vanishing` respectively.
+
+        .. note::
+
+           `nbt` is only used for servers prior to 1.20.5 an will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `armortype`.
+
+        This can be used to separate the players into any number of separate teams, like so:
+
+        .. code::
+
+           from mcpq import Minecraft
+           from itertools import cycle
+           mc = Minecraft()
+           colors = ["red", "blue"]
+           teams = {color: [] for color in colors}
+           for player, color in zip(mc.getPlayerList(), cycle(colors)):
+              teams[color].append(player)
+              player.replaceHelmet(color=color)
+              player.postToChat("You are in team:", color)
+        """
         nbt = nbt or NBT()
         mcversion = self._server.get_mc_version()
         if isinstance(color, str) and color in color_codes:
@@ -306,7 +332,7 @@ class Entity(_SharedBase, _HasServer):
             self.replaceItem("armor.head", armortype.withMergeData(nbt.asComponentData()))
 
     def replaceItem(
-        self, where: str, item: Block | str, amount: int = 1, nbt: NBT | None = None
+        self, where: str, item: Block | str, amount: int = 1, *, nbt: NBT | None = None
     ) -> None:
         if nbt is None:
             self.runCommand(f"item replace entity @s {where} with {item} {amount}")

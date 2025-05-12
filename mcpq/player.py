@@ -169,7 +169,7 @@ class Player(Entity, _SharedBase, _HasServer):
         """Equivalent to :func:`gamemode` with argument ``"survival"``"""
         self.gamemode("survival")
 
-    def giveItems(self, type: str, amount: int = 1, nbt: NBT | None = None) -> None:
+    def giveItems(self, type: str, amount: int = 1, *, nbt: NBT | None = None) -> None:
         """Put items into the player's inventory
 
         :param type: id of item or block to receive
@@ -200,7 +200,7 @@ class Player(Entity, _SharedBase, _HasServer):
            from mcpq import text
            p.postToChat(text.RED + text.BOLD + "super " + text.RESET + text.BLUE + "cool!")
 
-        :param sep: the separated between each object, defaults to " "
+        :param sep: the separator between each object, defaults to " "
         :type sep: str, optional
         """
         response = self._stub.postToChat(

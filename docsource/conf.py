@@ -54,6 +54,7 @@ autodoc_default_options = {
     # "show-inheritance": False, # False shows Bases?
 }
 add_module_names = False
+# nitpicky = True
 
 # The full version, including alpha/beta/rc tags.
 release = mcpq.__version__

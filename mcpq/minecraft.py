@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
 
 import grpc
 
@@ -11,6 +10,7 @@ from ._proto import minecraft_pb2 as pb
 from ._server import _Server
 from ._util import deprecated
 from .entity import Entity
+from .entitytype import EntityTypeFilter
 from .events import EventHandler
 from .exception import raise_on_error
 from .material import MaterialFilter
@@ -34,7 +34,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
        from mcpq import Minecraft
        mc = Minecraft()  # connect to localhost
-       mc.postToChat("Hello Minecraft")  # send  message in chat
+       mc.postToChat("Hello Minecraft")  # send message in chat
 
     .. note::
 
@@ -47,8 +47,23 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
        For security reasons it is recommended to connect from the same host as the server is running on. By default, the plugin does only allow connections from ``localhost`` to prevent access from third parties.
 
 
-    The :class:`Minecraft` instance is also the default :class:`World` and can be used to query :class:`Entity`, :class:`Player` and :class:`Event` objects from the server.
+    The :class:`Minecraft` instance is also the default :class:`~mcpq.world.World` and can be used to query :class:`~mcpq.entity.Entity`, :class:`~mcpq.player.Player` and :class:`Event <mcpq.events.EventHandler>` objects from the server.
     Checkout the corresponding classes for more information.
+
+    .. code::
+
+       from mcpq import Minecraft, Vec3
+       mc = Minecraft()  # connect to localhost
+       mc.postToChat("Players online:", mc.getPlayerList())  # show online players
+       mc.events.block_hit.register(mc.postToChat)  # print whenever a player hits a block to chat
+       mc.setBlock("obsidian", Vec3(0, 0, 0))  # set obsidian block at origin
+       pos = mc.getHighestPos(0, 0).up(1)  # get position above highest ground at 0 0
+       stairs = mc.blocks.endswith("_stairs").choice()  # get random block ending in "_stairs"
+       mc.setBlock(stairs.withData({"waterlogged": True}), pos)  # set waterlogged stairs above ground
+       creeper = mc.spawnEntity("creeper", pos.up(1))  # spawn creeper on stairs
+       creeper.giveEffect("invisibility")  # give creeper permanent invisibility effect
+       creeper.pos = mc.getPlayer().pos  # teleport creeper to player position
+       # and many more ...
     """
 
     def __init__(self, host: str = "localhost", port: int = 1789) -> None:
@@ -122,16 +137,6 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         self._cleanup()
 
     @property
-    def events(self) -> EventHandler:
-        """The :class:`EventHandler` for receiving events from the server.
-        Checkout the :class:`EventHandler` class for examples for receiving events."""
-        return self._event_handler
-
-    @property
-    def materials(self) -> MaterialFilter:
-        return MaterialFilter(self._server, [])
-
-    @property
     def host(self) -> str:
         """The Minecraft server host address this instance is connected to."""
         return self._addr[0]
@@ -140,6 +145,46 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def port(self) -> int:
         """The Minecraft server port this instance is connected to."""
         return self._addr[1]
+
+    @property
+    def events(self) -> EventHandler:
+        """The :class:`~mcpq.events.EventHandler` for receiving events from the server.
+        Checkout the :class:`~mcpq.events.EventHandler` class for examples for receiving events."""
+        return self._event_handler
+
+    @property
+    def blocks(self) -> MaterialFilter:
+        """The :class:`~mcpq.material.MaterialFilter` containing all types of blocks on the server.
+        Equivalent to ``mc.materials.block()``.
+        Checkout the :class:`~mcpq.material.MaterialFilter` class for examples on filtering.
+        """
+        return self.materials.block()
+
+    @property
+    def materials(self) -> MaterialFilter:
+        """The :class:`~mcpq.material.MaterialFilter` containing all materials on the server, including types of blocks, items and more.
+        Checkout the :class:`~mcpq.material.MaterialFilter` class for examples on filtering.
+        """
+        return MaterialFilter(self._server, [])
+
+    @property
+    def entity_types(self) -> EntityTypeFilter:
+        """The :class:`~mcpq.entitytype.EntityTypeFilter` containing all entity-types on the server.
+        Checkout the :class:`~mcpq.entitytype.EntityTypeFilter` class for examples on filtering.
+
+        .. note::
+
+           You probably want to use :attr:`.spawnables` to get spawnable entity-types
+        """
+        return EntityTypeFilter(self._server, [])
+
+    @property
+    def spawnables(self) -> EntityTypeFilter:
+        """The :class:`~mcpq.entitytype.EntityTypeFilter` containing all entity-types on the server that can be spawned with :func:`spawnEntity`.
+        Equivalent to ``mc.entity_types.spawnable()``.
+        Checkout the :class:`~mcpq.entitytype.EntityTypeFilter` class for examples on filtering.
+        """
+        return self.entity_types.spawnable()
 
     def postToChat(self, *objects, sep: str = " ") -> None:
         """Print `objects` in chat separated by `sep`.
@@ -186,7 +231,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         return entity
 
     def getOfflinePlayer(self, name: str) -> Player:
-        """Get the :class:`Player` with the given `name` no matter if the player is online or not.
+        """Get the :class:`~mcpq.player.Player` with the given `name` no matter if the player is online or not.
         Does not raise any errors if the player is offline.
 
         :param name: player name/id
@@ -206,7 +251,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
            There is no guarantee that the player returned will be the same across multiple calls of this function. It may change depending on the order the players joined the server or the implementation of the server.
 
-        :param name: name of the online :class:`Player` that should be returned, or None if any online player will do, defaults to None
+        :param name: name of the online :class:`~mcpq.player.Player` that should be returned, or None if any online player will do, defaults to None
         :type name: str | None, optional
         :return: the player with `name` if name is given, else any online player
         :rtype: Player
@@ -254,7 +299,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def overworld(self) -> World:
         """Identical to :func:`getWorldByKey` with key ``"minecraft:overworld"``.
 
-        :return: The overworld world :class:`World` object
+        :return: The overworld world :class:`~mcpq.world.World` object
         :rtype: World
         """
         return self.getWorldByKey("minecraft:overworld")
@@ -263,7 +308,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def nether(self) -> World:
         """Identical to :func:`getWorldByKey` with key ``"minecraft:the_nether"``.
 
-        :return: The nether world :class:`World` object
+        :return: The nether world :class:`~mcpq.world.World` object
         :rtype: World
         """
         return self.getWorldByKey("minecraft:the_nether")
@@ -272,7 +317,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def end(self) -> World:
         """Identical to :func:`getWorldByKey` with key ``"minecraft:the_end"``.
 
-        :return: The end world :class:`World` object
+        :return: The end world :class:`~mcpq.world.World` object
         :rtype: World
         """
         return self.getWorldByKey("minecraft:the_end")
@@ -293,7 +338,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
         :param key: Internal name/id of the world, such as ``"minecraft:the_nether"`` or ``"the_nether"``
         :type key: str
-        :return: The corresponding :class:`World` object
+        :return: The corresponding :class:`~mcpq.world.World` object
         :rtype: World
         """
         return self._server.get_world_by_key(key)
@@ -317,7 +362,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
         :param name: Foldername the world is saved in, such as ``world``
         :type name: str
-        :return: The corresponding :class:`World` object
+        :return: The corresponding :class:`~mcpq.world.World` object
         :rtype: World
         """
         return self._server.get_world_by_name(name)
@@ -328,19 +373,6 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         By default, the worlds will be refreshed on first use only.
         """
         self._server.update_worlds()
-
-    def getEntityTypes(self, is_spawnable: bool | None = None) -> list[str]:
-        if is_spawnable is not None:
-            return [
-                e.key
-                for e in self._server.get_entity_types(lambda e: e.is_spawnable is is_spawnable)
-            ]
-        return [e.key for e in self._server.get_entity_types()]
-
-    def getEntitySpawnableTypes(self) -> list[str]:
-        """The list of all entity-types that can be spawned with :func:`spawnEntity`.
-        Identical to :func:`getEntityTypes` with `is_spawnable=True`"""
-        return self.getEntityTypes(is_spawnable=True)
 
     def getMinecraftVersion(self) -> str:
         """The Minecraft version of the server this instance is connected to or None if the version cannot be identified."""

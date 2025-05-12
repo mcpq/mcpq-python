@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from typing import Mapping
 
-from ._types import ComponentData
+from ._types import ComponentData, NbtCompound
 
 
-# TODO: use BlockKey for materials/block types (add nbt as well)
 class Block(str):
     """:class:`Block` is a subtype of python `str`, so supports all standard string operations.
-    Additionally, it supports methods to manipulate block :class:`ComponentData` in component-format_ and type and namespace parts of a block.
+    Additionally, it supports methods to manipulate block :class:`ComponentData` in component-format_ and name and namespace parts of a block.
 
     .. _component-format: https://minecraft.wiki/w/Data_component_format
 
     .. note::
 
-       While the class is called `Block` it can also be used for items, item stacks and even entities in commands or for serialization.`
+       While the class is called `Block` it can also be used for items, item stacks and even entities in commands or for serialization.
 
     .. code::
 
@@ -22,17 +21,17 @@ class Block(str):
        mc = Minecraft()
 
        # you can turn a normal string into a block like so:
-       block = Block("namespace:type[componentkey1=componentvalue1]")
+       block = Block("namespace:name[componentkey1=componentvalue1]")
        block = Block("acacia_stairs[facing=east]")  # namespace 'minecraft:' can be ommited
        print(block)
        # >>> "acacia_stairs[facing=east]"  # note, 'Block()' is not shown, direct string
 
        # block comparison and ordering is always done on the id:
-       bs = [Block("minecraft:stone"), Block("other:block_name"), Block("air"), Block("another:type")]
+       bs = [Block("minecraft:stone"), Block("other:block_name"), Block("air"), Block("another:name")]
        print(sorted(bs))
-       # >>> ['another:type', 'air', 'stone', 'other:block_name']
+       # >>> ['another:name', 'air', 'stone', 'other:block_name']
        # sorted first by namespace: 'another', 'minecraft' and 'other'
-       # and then by type, so 'air' < 'stone'
+       # and then by name, so 'air' < 'stone'
 
        # similarly comparison to strings with or without namespace will succeed
        # while component data is ignored for normal comparison
@@ -44,7 +43,23 @@ class Block(str):
        block.equals("acacia_stairs[facing=east]")  # true
        block.equals('acacia_stairs[facing="east"]')  # true
 
+    Note that constructing a :class:`Block` using the ``Block(...)`` constructor does *not* perform any checking at all, such that invalid or unknown blocks could be constructed.
+    To actually check if the type of the block exists on the server, use the :class:`MaterialFilter` class and use :func:`withData` and :func:`withMergeData` for setting component data on blocks:
 
+    .. code::
+
+       from mcpq import Minecraft
+       mc = Minecraft()
+
+       # returns the block and raises an error if the block does not exist
+       block = mc.blocks.getById("acacia_stairs")
+       # similarly, if you want "any wool block" you could use
+       wool_block = mc.blocks.endswith("wool").first()  # returns None if no block exists
+
+       # afterwards you can set the component data directly
+       waterlogged_block = block.withData({"waterlogged": True})
+
+    Checkout :func:`withData` and :func:`withMergeData` for more examples regarding component data.
     """
 
     def __repr__(self) -> str:
@@ -52,10 +67,10 @@ class Block(str):
             return f"'{self.type}{self.datastr}'"
         return f"'{self.type}'"
 
-    # TODO: repr/str
+    def __hash__(self):
+        return hash(self.id)
 
     def __eq__(self, value: object) -> bool:
-        # TODO: is this good equal?
         if isinstance(value, Block):
             return self.id == value.id
         if isinstance(value, str):
@@ -87,9 +102,9 @@ class Block(str):
 
     @property
     def id(self) -> str:
-        """Namespace and type as namespace:type string.
+        """The full ``namespace:name`` of the block as string.
 
-        :return: the string namespace:type of given block
+        :return: the string ``namespace:name`` of given block (including "minecraft" prefix)
         :rtype: str
         """
         rest = self[: self.index("[")] if "[" in self else self[:]
@@ -99,9 +114,9 @@ class Block(str):
 
     @property
     def type(self) -> str:
-        """The type string of namespace:type without the 'minecraft:' namespace but including non-vanilla namespaces.
+        """Similar to the :attr:`.id` but excluding the "minecraft" namespace but including non-vanilla namespaces. This is a valid block id as the "minecraft" namespace is assumed by default if no namespace is provided.
 
-        :return: the string type of minecraft:type of given block or the id if non-vanilla block
+        :return: the block :attr:`.name` of ``namespace:name`` of given vanilla block or the :attr:`.id` of non-vanilla block
         :rtype: str
         """
         if "[" in self:
@@ -109,10 +124,27 @@ class Block(str):
         return self.removeprefix("minecraft:")
 
     @property
-    def namespace(self) -> str:
-        """The namespace string of namespace:type. Is 'minecraft' if block is vanilla.
+    def name(self) -> str:
+        """The name string of ``namespace:name`` excluding the namespace.
 
-        :return: the string namespace of namespace:type of given block
+        .. caution::
+
+           The returned string might not be a valid block id without its namespace if the namespace is something other than "minecraft"!
+           Use :attr:`.type` instead, which will remove the "minecraft" prefix but not other namespaces.
+
+        :return: the string type of ``namespace:name`` of given block without the namespace
+        :rtype: str
+        """
+        t = self.type
+        if ":" in t:
+            return t[t.index(":") :]
+        return t
+
+    @property
+    def namespace(self) -> str:
+        """The namespace string of ``namespace:name``. This returns "minecraft" for vanilla blocks.
+
+        :return: the string namespace of ``namespace:name`` of given block
         :rtype: str
         """
         if ":" in self:
@@ -124,7 +156,7 @@ class Block(str):
         """The data/components string of given block in form '[component1=value1,component2=value2]'.
         Looks like ``'[]'`` if this block has no component data.
 
-        :return: the string data/components of namespace:type[component1=value1,...] of given block
+        :return: the string data/components of ``namespace:name[component1=value1,...]`` of given block
         :rtype: str
         """
         if "[" in self:
@@ -133,10 +165,20 @@ class Block(str):
 
     @property
     def hasData(self) -> bool:
+        """Check if the string has component data, but does not actually parse the data. For that use :func:`getData`."""
         # TODO: remove white spaces?
         return len(self.datastr) > 2
 
     def asBlockStateForItem(self) -> Block:
+        """Return the current Block with its data as a ``block_state`` component. This can be used to give players placeable blocks as items with certain component data.
+
+        .. code::
+
+           from mcpq import Minecraft
+           mc = Minecraft()
+           b = mc.blocks.endswith("_stairs").first().withData({"waterlogged": True})
+           mc.getPlayer().giveItems(b.asBlockStateForItem())  # give player a waterlogged stair to place
+        """
         nd = ComponentData()
         state = nd.get_or_create_nbt("block_state")
         # TODO: block_state seemingly only accepts string type values...
@@ -166,7 +208,7 @@ class Block(str):
         return super().__eq__(value)
 
     def getData(self) -> ComponentData:
-        """Parse and return :class:`datastr` as :class:`ComponentData`.
+        """Parse and return :attr:`datastr` as :class:`ComponentData`.
         Is equivalent to ``ComponentData.parse(self.datastr)``.
 
         :return: this block's parsed string component data
@@ -202,7 +244,12 @@ class Block(str):
 
     def withData(
         self,
-        data: dict[str, bool | int | str] | str | ComponentData | Block | None = None,
+        data: dict[str, bool | int | str]
+        | str
+        | ComponentData
+        | NbtCompound
+        | Block
+        | None = None,
     ) -> Block:
         """Return a new :class:`Block` with the `id` of this block but replace the :class:`ComponentData` of the form ``[key1=value1,key2=value2]`` on this block with the given data.
         The given data may have the form of a dict, :class:`ComponentData`, :class:`Block` or string and will be parsed and/or converted as required.
@@ -210,14 +257,16 @@ class Block(str):
 
         .. code::
 
-           from mcpq import Block
+           from mcpq import Block, NBT
            b = Block("acacia_stairs[facing=east]")
-           wb = Block("other_block[waterlogged=true]")
            waterstairs = b.withData({"waterlogged": True})  # convert to component data
            waterstairs = b.withData("[waterlogged=true]")  # parse string and use component data
+           wb = Block("other_block[waterlogged=true]")
            waterstairs = b.withData(wb)  # id of b + data of wb
            waterstairs = b.withData(wb.getData())  # use data of wb
-           print(waterstairs)  # in all 4 cases: ('facing=east' is overwritten)
+           nbt = NBT({"waterlogged": True})
+           waterstairs = b.withData(nbt.asComponentData())  # convert nbt to component data
+           print(waterstairs)  # in all 5 cases: ('facing=east' is overwritten)
            # >>> "acacia_stairs[waterlogged=true]"
 
            # to delete the component data
@@ -235,6 +284,8 @@ class Block(str):
             return Block(self.type + (data.datastr if data.hasData else ""))
         elif isinstance(data, ComponentData):
             return Block(self.type + (str(data) if data else ""))
+        elif isinstance(data, NbtCompound):
+            return Block(self.type + (str(data.asComponentData()) if data else ""))
         elif isinstance(data, str):
             d = ComponentData.parse(data)
             return Block(self.type + (str(d) if d else ""))
@@ -254,14 +305,16 @@ class Block(str):
 
         .. code::
 
-           from mcpq import Block
+           from mcpq import Block, NBT
            b = Block("acacia_stairs[facing=east,half=top]")
-           wb = Block("other_block[waterlogged=true,half=bottom]")
            newstairs = b.withMergeData({"waterlogged": True, "half": "bottom"})  # convert to component data
            newstairs = b.withMergeData("[waterlogged=true,half=bottom]")  # parse string and use component data
+           wb = Block("other_block[waterlogged=true,half=bottom]")
            newstairs = b.withMergeData(wb)  # id of b + merge data of wb
            newstairs = b.withMergeData(wb.getData())  # merge data of wb
-           print(newstairs)  # in all 4 cases:
+           nbt = NBT({"waterlogged": True, "half": "bottom"})
+           newstairs = b.withMergeData(nbt.asComponentData())  # convert nbt to component data
+           print(newstairs)  # in all 5 cases:
            # >>> 'acacia_stairs[facing="east",half="bottom",waterlogged=true]'
 
         :param data: component data that should be merged onto this block's
@@ -273,6 +326,8 @@ class Block(str):
             d = data.getData()
         elif isinstance(data, ComponentData):
             d = data
+        elif isinstance(data, NbtCompound):
+            d = data.asComponentData()
         elif isinstance(data, str):
             d = ComponentData.parse(data)
         elif isinstance(data, Mapping):

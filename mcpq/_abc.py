@@ -12,8 +12,8 @@ if TYPE_CHECKING:
     from ._proto import MinecraftStub
     from ._util import ThreadSafeSingeltonCache
     from .entity import Entity
-    from .entitytype import EntityType
-    from .material import Material
+    from .entitytype import _EntityTypeInternal
+    from .material import _MaterialInternal
     from .player import Player
     from .world import World
 
@@ -41,11 +41,11 @@ class _ServerInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def material_cache(self, force_update: bool = False) -> dict[str, Material]:
+    def material_cache(self, force_update: bool = False) -> dict[str, _MaterialInternal]:
         raise NotImplementedError
 
     @abstractmethod
-    def entity_type_cache(self, force_update: bool = False) -> dict[str, EntityType]:
+    def entity_type_cache(self, force_update: bool = False) -> dict[str, _EntityTypeInternal]:
         raise NotImplementedError
 
     @abstractmethod
@@ -79,15 +79,15 @@ class _ServerInterface(ABC):
         return world
 
     def get_materials(
-        self, filter: Callable[[Material], bool] | None = None
-    ) -> tuple[Material, ...]:
+        self, filter: Callable[[_MaterialInternal], bool] | None = None
+    ) -> tuple[_MaterialInternal, ...]:
         if filter is None:
             return tuple(self.material_cache().values())
         return tuple(m for m in self.material_cache().values() if filter(m))
 
     def get_entity_types(
-        self, filter: Callable[[EntityType], bool] | None = None
-    ) -> tuple[EntityType, ...]:
+        self, filter: Callable[[_EntityTypeInternal], bool] | None = None
+    ) -> tuple[_EntityTypeInternal, ...]:
         if filter is None:
             return tuple(self.entity_type_cache().values())
         return tuple(m for m in self.entity_type_cache().values() if filter(m))
