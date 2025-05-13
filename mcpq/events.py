@@ -17,6 +17,7 @@ from ._proto import minecraft_pb2 as pb
 from ._types import DIRECTION
 from ._util import ReentrantRWLock, ThreadSafeSingeltonCache
 from .entity import Entity
+from .nbt import Block, EntityType
 from .player import Player
 from .vec3 import Vec3
 
@@ -47,9 +48,10 @@ EventType = TypeVar("EventType")
     frozen=True, slots=True, order=True
 )  # TODO: order does not work between different Type of events?
 class Event:
+    #: The timestamp when the event was received. Used for sorting events of same type
     timestamp: float = field(
         init=False, repr=False, compare=True, hash=False, default_factory=time.time
-    )  #: The timestamp when the event was received. Used for sorting events of same type
+    )
 
     @classmethod
     def _build(cls, server: _ServerInterface, event: pb.Event):
@@ -102,18 +104,28 @@ class ChatEvent(Event):
 
 @dataclass(frozen=True, slots=True, order=True)
 class BlockHitEvent(Event):
-    player: Player  #: The :class:`Player` who clicked on a block
-    right_hand: bool  #: Whether the player used their right hand instead of their left
-    held_item: str  #: The item held in that players hand that clicked the block
-    pos: Vec3  #: The :class:`Vec3` position of the block that was clicked
-    face: DIRECTION  #: The face/side of the block that was clicked
+    #: The :class:`Player` who hit the block
+    player: Player
+    #: Whether the player used their right hand instead of their left
+    right_hand: bool
+    #: The item held by the player when the block was hit or None if no item was held
+    held_item: Block | None
+    #: The :class:`Vec3` position of the block that was hit
+    pos: Vec3
+    #: The face/side of the block that was hit
+    face: DIRECTION
+
+    @property
+    def pos_front(self) -> Vec3:
+        "The :class:`Vec3` position *in front* of the hit block on the side the block was hit from."
+        return getattr(self.pos, self.face)()
 
     @classmethod
     def _build(cls, server: _ServerInterface, event: pb.Event):
         return cls(
             server.get_or_create_player(event.blockHit.trigger.name),
             event.blockHit.right_hand,
-            event.blockHit.item_type,
+            Block(event.blockHit.item_type) if event.blockHit.item_type else None,
             Vec3(event.blockHit.pos.x, event.blockHit.pos.y, event.blockHit.pos.z),
             event.blockHit.face,
         )
@@ -121,21 +133,21 @@ class BlockHitEvent(Event):
 
 @dataclass(frozen=True, slots=True, order=True)
 class ProjectileHitEvent(Event):
-    player: Player  #: The :class:`Player` that shot/used the projectile
-    target: (
-        Player | Entity | str
-    )  #: The target hit, use `target_block`, `target_entity` and `target_player` for details what was hit
-    projectile_type: str  #: The type of projectile that was used
-    pos: Vec3  #: The :class:`Vec3` position where the projectile hit something. In case a block was hit, this is the block position that was hit
-    face: (
-        DIRECTION | None
-    )  #: The face/side of the block hit, None if an entity or player was hit instead
+    #: The :class:`Player` that shot/used the projectile
+    player: Player
+    #: The target hit, use :attr:`target_block`, :attr:`target_entity` and :attr:`target_player` for details what was hit
+    target: Player | Entity | Block
+    #: The type of projectile that was used
+    projectile_type: Block
+    #: The :class:`Vec3` position where the projectile hit something. In case a block was hit, this is the block position that was hit
+    pos: Vec3
+    #: The face/side of the block hit, None if an entity or player was hit instead
+    face: DIRECTION | None
 
     @property
     def target_player(self) -> Player | None:
         "The target :class:`Player` if a player was hit, None otherwise"
         if isinstance(self.target, Player):
-            # assert self.face is None
             return self.target
         return None
 
@@ -143,16 +155,21 @@ class ProjectileHitEvent(Event):
     def target_entity(self) -> Entity | None:
         "The target :class:`Entity` if a *non-player* entity was hit, None otherwise"
         if isinstance(self.target, Entity) and self.target_player is None:
-            # assert self.face is None
             return self.target
         return None
 
     @property
-    def target_block(self) -> str | None:
-        "The target block id if a block was hit, None otherwise"
-        if isinstance(self.target, str):
-            # assert self.face is not None
+    def target_block(self) -> Block | None:
+        "The target :class:`Block` if a block was hit, None otherwise"
+        if isinstance(self.target, Block):
             return self.target
+        return None
+
+    @property
+    def pos_front(self) -> Vec3 | None:
+        "The :class:`Vec3` position *in front* of the hit block on the side the block was hit from, or None if no block was hit."
+        if self.face is not None:
+            return getattr(self.pos, self.face)()
         return None
 
     @classmethod
@@ -163,15 +180,15 @@ class ProjectileHitEvent(Event):
             else (
                 server.get_or_create_entity(event.projectileHit.entity.id)
                 if event.projectileHit.HasField("entity")
-                else event.projectileHit.block
+                else Block(event.projectileHit.block)
             )
         )
         if event.projectileHit.HasField("entity"):
-            target._type = event.projectileHit.entity.type
+            target._type = EntityType(event.projectileHit.entity.type)
         return cls(
             server.get_or_create_player(event.projectileHit.trigger.name),
             target,
-            event.projectileHit.projectile,
+            Block(event.projectileHit.projectile),
             Vec3(
                 event.projectileHit.pos.x,
                 event.projectileHit.pos.y,

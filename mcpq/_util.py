@@ -10,6 +10,16 @@ from typing import Callable, Generator, Generic, Hashable, TypeVar
 __all__ = ["ReentrantRWLock", "ThreadSafeSingeltonCache"]
 
 
+def warning(message: str):
+    warnings.simplefilter("always", Warning)  # turn off filter
+    warnings.warn(
+        message,
+        category=Warning,
+        stacklevel=2,
+    )
+    warnings.simplefilter("default", Warning)  # reset filter
+
+
 def deprecated(message: str | None = None):
     def inner(func):
         """This is a decorator which can be used to mark functions

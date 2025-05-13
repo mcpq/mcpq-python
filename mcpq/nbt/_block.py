@@ -62,6 +62,11 @@ class Block(str):
     Checkout :func:`withData` and :func:`withMergeData` for more examples regarding component data.
     """
 
+    def __new__(cls, value):
+        if isinstance(value, str):
+            return super().__new__(cls, value.removeprefix("minecraft:"))
+        return super().__new__(cls, str(value).removeprefix("minecraft:"))
+
     def __repr__(self) -> str:
         if "[" in self:
             return f"'{self.type}{self.datastr}'"
@@ -119,9 +124,10 @@ class Block(str):
         :return: the block :attr:`.name` of ``namespace:name`` of given vanilla block or the :attr:`.id` of non-vanilla block
         :rtype: str
         """
+        # prefix removed in __new__
         if "[" in self:
-            return self[: self.index("[")].removeprefix("minecraft:")
-        return self.removeprefix("minecraft:")
+            return self[: self.index("[")]
+        return str(self)
 
     @property
     def name(self) -> str:

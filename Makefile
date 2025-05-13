@@ -56,4 +56,5 @@ upload:
 	@sleep 10
 	@test ! -f /tmp/mcpq_testup || python3 -m twine upload dist/*
 	@test -f /tmp/mcpq_testup || python3 -m twine upload --repository testpypi dist/*
+	@test -f /tmp/mcpq_testup || echo "remember to try to install the package with: pip install --index-url https://pypi.org/simple --extra-index-url https://test.pypi.org/simple mcpq"
 	@rm /tmp/mcpq_testup 2> /dev/null || touch /tmp/mcpq_testup

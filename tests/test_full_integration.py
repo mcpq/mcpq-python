@@ -20,7 +20,7 @@ from mcpq import NBT, Minecraft, PlayerNotFound, Vec3, WorldNotFound
 def mc():
     client = Minecraft()
     try:
-        assert client.getMinecraftVersion()
+        assert client.getMinecraftVersionTuple()
     except grpc.RpcError:
         raise ConnectionError("Connection to server is required for integration tests")
     yield client

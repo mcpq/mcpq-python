@@ -5,8 +5,9 @@ from ._abc import _ServerInterface
 from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import CARDINAL, COLOR, DIRECTION
+from ._util import warning
 from .exception import raise_on_error
-from .nbt import NBT, Block
+from .nbt import NBT, Block, EntityType
 from .vec3 import Vec3
 
 MAX_BLOCKS = 50000  # TODO: replace with block stream
@@ -113,8 +114,10 @@ class _DefaultWorld(_SharedBase, _HasServer):
             return self.setBlock(blocktype, Vec3(x, y, z))
 
     def _fetch_entities(
-        self, include_non_spawnable: bool, with_locations: bool, entity_type: str
+        self, include_non_spawnable: bool, with_locations: bool, entity_type: str | EntityType
     ) -> list[entity.Entity]:
+        if entity_type and not isinstance(entity_type, EntityType):
+            entity_type = EntityType(entity_type).type
         request = pb.EntityRequest(
             worldwide=pb.EntityRequest.WorldEntities(
                 world=self._pb_world,
@@ -135,7 +138,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
                 nativeE._inject_update(e)
             else:
                 # update only type
-                nativeE._type = e.type
+                nativeE._type = EntityType(e.type)
             entities.append(nativeE)
         return entities
 
@@ -569,21 +572,25 @@ class _DefaultWorld(_SharedBase, _HasServer):
                         Vec3(pos.x + xindex, pos.y + yindex, pos.z + zindex),
                     )
 
-    def spawnEntity(self, type: str, pos: Vec3) -> entity.Entity:
+    def spawnEntity(self, type: str | EntityType, pos: Vec3) -> entity.Entity:
         """Spawn and return a new entitiy of given `type` at position `pos` in world.
         The entity has default settings and behavior.
 
         :param type: the valid entity type that should be spawned (must be spawnable without additional parameters)
-        :type type: str
+        :type type: str | EntityType
         :param pos: the position where to spawn the entitiy in the world
         :type pos: Vec3
         :return: the :class:`Entity` entity spawned
         :rtype: entity.Entity
         """
         pos = pos.map(float)
+        if isinstance(type, EntityType) and type.hasData:
+            raise NotImplementedError(
+                f"spawnEntity does not support additional component data on entity: {type}"
+            )
         response = self._server.stub.spawnEntity(
             pb.Entity(
-                type=type,
+                type=type.type if isinstance(type, EntityType) else type,
                 location=pb.EntityLocation(
                     world=self._pb_world, pos=pb.Vec3f(x=pos.x, y=pos.y, z=pos.z)
                 ),
@@ -591,26 +598,39 @@ class _DefaultWorld(_SharedBase, _HasServer):
         )
         raise_on_error(response.status)
         entity = self._server.get_or_create_entity(response.entity.id)
-        entity._type = response.entity.type
+        entity._type = EntityType(response.entity.type)
         return entity
 
-    def spawnItems(self, pos: Vec3, type: str, amount: int = 1) -> None:
+    def spawnItems(self, type: str | Block, pos: Vec3, amount: int = 1) -> None:
         """Spawn `amount` many collectable items of `type` at `pos`.
 
+        :param type: the item type as string or :class:`Block`, e.g., ``"minecraft:arrow"`` with potential component data
+        :type type: str | Block
         :param pos: position where to spawn the items
         :type pos: Vec3
-        :param type: the item type, e.g., ``"minecraft:arrow"``
-        :type type: str
         :param amount: number of items to spawn, defaults to 1
         :type amount: int, optional
         """
+        if isinstance(type, Vec3) and isinstance(pos, str):
+            warning(
+                "Used spawnItems with wrong parameter order, expected first type: str | Block then pos: Vec3"
+            )
+            type, pos = pos, type
         pos = pos.floor()
-        self.runCommand(
-            f'summon item {pos.x} {pos.y} {pos.z} {{Item:{{id:"{type}", Count:{amount}}}}}'
-        )
+        if not isinstance(type, Block):
+            type = Block(type)
+        mc_version = self._server.get_mc_version()
+        if mc_version and mc_version < (1, 20, 5):
+            nbt = NBT({"Item": {"id": type.type, "Count": f"{int(amount)}b"}})
+        else:
+            nbt = NBT({"Item": {"id": type.type, "Count": int(amount)}})
+            data = type.getData()
+            if data:
+                nbt["Item"]["components"] = data.asCompound()
+        self.runCommand(f"summon item {pos.x} {pos.y} {pos.z} {nbt}")
 
     def getEntities(
-        self, type: str | None = None, only_spawnable: bool = True
+        self, type: str | EntityType | None = None, only_spawnable: bool = True
     ) -> list[entity.Entity]:
         """Get all (loaded) entities in the world.
         If a `type` is provided, only entities of that type are returned.
@@ -618,7 +638,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         To get all entities (except players) set ``only_spawnable=False``, which will also return non-spawnable entities such as e.g. ``"falling_block"`` or ``"dropped_item"``.
 
         :param type: if provided returns only entities of that type, returns all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if False, will also return non-spawnable entities, defaults to True
         :type only_spawnable: bool, optional
         :return: list of (loaded and filtered) entities in the world
@@ -630,7 +650,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         self,
         pos: Vec3,
         distance: float,
-        type: str | None = None,
+        type: str | EntityType | None = None,
         only_spawnable: bool = True,
     ) -> list[entity.Entity]:
         """Equivalent to :func:`getEntities`, however, is filtered to only return entities within `distance` around `pos`. Is more efficient that filtering the list manually.
@@ -640,7 +660,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         :param distance: the maximum distance entities returned have around `pos`
         :type distance: float
         :param type: if provided returns only entities of that type, returns all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if False, will also return non-spawnable entities, defaults to True
         :type only_spawnable: bool, optional
         :return: list of (loaded and filtered) entities in the world closer than `distance` to `pos`
@@ -649,17 +669,20 @@ class _DefaultWorld(_SharedBase, _HasServer):
         entities = self._fetch_entities(not only_spawnable, True, type if type else "")
         return [e for e in entities if pos.distance(e.pos) <= distance]
 
-    def removeEntities(self, type: str | None = None) -> None:
+    def removeEntities(self, type: str | EntityType | None = None) -> None:
         """Remove all entities (except players) from the world, they do not drop anything.
         If `type` is provided remove only entities of that type.
 
         :param type: if provided removes only entities of that type, otherwise remove all entities, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         """
         # TODO: support natively
         if type is None:
             self.runCommand("tp @e[type=!player] 0 -50000 0")
             self.runCommand("kill @e[type=!player]")
+        elif isinstance(type, EntityType):
+            self.runCommand(f"tp @e[type={type.type}] 0 -50000 0")
+            self.runCommand(f"kill @e[type={type.type}]")
         elif isinstance(type, str):
             self.runCommand(f"tp @e[type={type}] 0 -50000 0")
             self.runCommand(f"kill @e[type={type}]")

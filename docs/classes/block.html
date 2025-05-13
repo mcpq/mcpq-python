@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NBT" href="nbt.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="vec3.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="vec3.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |
+          <a href="nbt.html" title="NBT"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.nbt.EntityType">
+<span class="sig-name descname"><span class="pre">EntityType</span></span><a class="headerlink" href="#mcpq.nbt.EntityType" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a></p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.Block">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.Block" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> is a subtype of python <cite>str</cite>, so supports all standard string operations.
+Additionally, it supports methods to manipulate block <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> in <a class="reference external" href="https://minecraft.wiki/w/Data_component_format">component-format</a> and name and namespace parts of a block.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While the class is called <cite>Block</cite> it can also be used for items, item stacks and even entities in commands or for serialization.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span><span class="p">,</span> <span class="n">Block</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+
+<span class="c1"># you can turn a normal string into a block like so:</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;namespace:name[componentkey1=componentvalue1]&quot;</span><span class="p">)</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[facing=east]&quot;</span><span class="p">)</span>  <span class="c1"># namespace &#39;minecraft:&#39; can be ommited</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; &quot;acacia_stairs[facing=east]&quot;  # note, &#39;Block()&#39; is not shown, direct string</span>
+
+<span class="c1"># block comparison and ordering is always done on the id:</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;minecraft:stone&quot;</span><span class="p">),</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;other:block_name&quot;</span><span class="p">),</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;air&quot;</span><span class="p">),</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;another:name&quot;</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">bs</span><span class="p">))</span>
+<span class="c1"># &gt;&gt;&gt; [&#39;another:name&#39;, &#39;air&#39;, &#39;stone&#39;, &#39;other:block_name&#39;]</span>
+<span class="c1"># sorted first by namespace: &#39;another&#39;, &#39;minecraft&#39; and &#39;other&#39;</span>
+<span class="c1"># and then by name, so &#39;air&#39; &lt; &#39;stone&#39;</span>
+
+<span class="c1"># similarly comparison to strings with or without namespace will succeed</span>
+<span class="c1"># while component data is ignored for normal comparison</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[facing=east]&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">block</span> <span class="o">==</span> <span class="s2">&quot;acacia_stairs&quot;</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">==</span> <span class="s2">&quot;minecraft:acacia_stairs&quot;</span>
+<span class="c1"># if you want to compare component data as well, use equals()</span>
+<span class="n">block</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">)</span>  <span class="c1"># false</span>
+<span class="n">block</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[half=top,facing=east]&quot;</span><span class="p">)</span>  <span class="c1"># false</span>
+<span class="n">block</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[facing=east]&quot;</span><span class="p">)</span>  <span class="c1"># true</span>
+<span class="n">block</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="s1">&#39;acacia_stairs[facing=&quot;east&quot;]&#39;</span><span class="p">)</span>  <span class="c1"># true</span>
+</pre></div>
+</div>
+<p>Note that constructing a <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> using the <code class="docutils literal notranslate"><span class="pre">Block(...)</span></code> constructor does <em>not</em> perform any checking at all, such that invalid or unknown blocks could be constructed.
+To actually check if the type of the block exists on the server, use the <code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code> class and use <a class="reference internal" href="#mcpq.nbt.Block.withData" title="mcpq.nbt.Block.withData"><code class="xref py py-func docutils literal notranslate"><span class="pre">withData()</span></code></a> and <a class="reference internal" href="#mcpq.nbt.Block.withMergeData" title="mcpq.nbt.Block.withMergeData"><code class="xref py py-func docutils literal notranslate"><span class="pre">withMergeData()</span></code></a> for setting component data on blocks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+
+<span class="c1"># returns the block and raises an error if the block does not exist</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">getById</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">)</span>
+<span class="c1"># similarly, if you want &quot;any wool block&quot; you could use</span>
+<span class="n">wool_block</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>  <span class="c1"># returns None if no block exists</span>
+
+<span class="c1"># afterwards you can set the component data directly</span>
+<span class="n">waterlogged_block</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Checkout <a class="reference internal" href="#mcpq.nbt.Block.withData" title="mcpq.nbt.Block.withData"><code class="xref py py-func docutils literal notranslate"><span class="pre">withData()</span></code></a> and <a class="reference internal" href="#mcpq.nbt.Block.withMergeData" title="mcpq.nbt.Block.withMergeData"><code class="xref py py-func docutils literal notranslate"><span class="pre">withMergeData()</span></code></a> for more examples regarding component data.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.nbt.Block.id" title="Link to this definition">¶</a></dt>
+<dd><p>The full <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> of the block as string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the string <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> of given block (including “minecraft” prefix)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.nbt.Block.type" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to the <a class="reference internal" href="#mcpq.nbt.Block.id" title="mcpq.nbt.Block.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a> but excluding the “minecraft” namespace but including non-vanilla namespaces. This is a valid block id as the “minecraft” namespace is assumed by default if no namespace is provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the block <a class="reference internal" href="#mcpq.nbt.Block.name" title="mcpq.nbt.Block.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> of <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> of given vanilla block or the <a class="reference internal" href="#mcpq.nbt.Block.id" title="mcpq.nbt.Block.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a> of non-vanilla block</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.nbt.Block.name" title="Link to this definition">¶</a></dt>
+<dd><p>The name string of <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> excluding the namespace.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The returned string might not be a valid block id without its namespace if the namespace is something other than “minecraft”!
+Use <a class="reference internal" href="#mcpq.nbt.Block.type" title="mcpq.nbt.Block.type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a> instead, which will remove the “minecraft” prefix but not other namespaces.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the string type of <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> of given block without the namespace</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.namespace">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.nbt.Block.namespace" title="Link to this definition">¶</a></dt>
+<dd><p>The namespace string of <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code>. This returns “minecraft” for vanilla blocks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the string namespace of <code class="docutils literal notranslate"><span class="pre">namespace:name</span></code> of given block</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.datastr">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datastr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.nbt.Block.datastr" title="Link to this definition">¶</a></dt>
+<dd><p>The data/components string of given block in form ‘[component1=value1,component2=value2]’.
+Looks like <code class="docutils literal notranslate"><span class="pre">'[]'</span></code> if this block has no component data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the string data/components of <code class="docutils literal notranslate"><span class="pre">namespace:name[component1=value1,...]</span></code> of given block</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.hasData">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hasData</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mcpq.nbt.Block.hasData" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the string has component data, but does not actually parse the data. For that use <a class="reference internal" href="#mcpq.nbt.Block.getData" title="mcpq.nbt.Block.getData"><code class="xref py py-func docutils literal notranslate"><span class="pre">getData()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.asBlockStateForItem">
+<span class="sig-name descname"><span class="pre">asBlockStateForItem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.nbt.Block.asBlockStateForItem" title="Link to this definition">¶</a></dt>
+<dd><p>Return the current Block with its data as a <code class="docutils literal notranslate"><span class="pre">block_state</span></code> component. This can be used to give players placeable blocks as items with certain component data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_stairs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">getPlayer</span><span class="p">()</span><span class="o">.</span><span class="n">giveItems</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">asBlockStateForItem</span><span class="p">())</span>  <span class="c1"># give player a waterlogged stair to place</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mcpq.nbt.Block.equals" title="Link to this definition">¶</a></dt>
+<dd><p>Check if <cite>value</cite> equals self, i.e., compare id and component data.
+Component data will be parsed and compared via equality for this.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Normal equality <code class="docutils literal notranslate"><span class="pre">==</span></code> will only compare id for checking against strings.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>object</em>) – the string or <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> to compare against</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>whether the supplied Block has the same id and component data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.getData">
+<span class="sig-name descname"><span class="pre">getData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt._types.ComponentData"><span class="pre">ComponentData</span></a></span></span><a class="headerlink" href="#mcpq.nbt.Block.getData" title="Link to this definition">¶</a></dt>
+<dd><p>Parse and return <a class="reference internal" href="#mcpq.nbt.Block.datastr" title="mcpq.nbt.Block.datastr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">datastr</span></code></a> as <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.
+Is equivalent to <code class="docutils literal notranslate"><span class="pre">ComponentData.parse(self.datastr)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>this block’s parsed string component data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData">ComponentData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.withId">
+<span class="sig-name descname"><span class="pre">withId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.nbt.Block.withId" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> with the given <cite>type_id</cite> as its id but with the (copied) <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> of this block.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[waterlogged=true]&quot;</span><span class="p">)</span>
+<span class="n">sb</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;oak_sign&quot;</span><span class="p">)</span>
+<span class="n">watersign</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withId</span><span class="p">(</span><span class="s2">&quot;oak_sign&quot;</span><span class="p">)</span>
+<span class="n">watersign</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withId</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>  <span class="c1"># replace the id of b with id of sb</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">watersign</span><span class="p">)</span>  <span class="c1"># in both cases:</span>
+<span class="c1"># &gt;&gt;&gt; &quot;oak_sign[waterlogged=true]&quot;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type_id</strong> (<em>str</em><em> | </em><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – the (block) id that should replace this block’s</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a new block with this block’s component data and the new id</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.withData">
+<span class="sig-name descname"><span class="pre">withData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt._types.ComponentData"><span class="pre">ComponentData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nbt.html#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.nbt.Block.withData" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> with the <cite>id</cite> of this block but replace the <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> of the form <code class="docutils literal notranslate"><span class="pre">[key1=value1,key2=value2]</span></code> on this block with the given data.
+The given data may have the form of a dict, <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>, <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> or string and will be parsed and/or converted as required.
+If <cite>data</cite> is None the component data is deleted instead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">NBT</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[facing=east]&quot;</span><span class="p">)</span>
+<span class="n">waterstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>  <span class="c1"># convert to component data</span>
+<span class="n">waterstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">(</span><span class="s2">&quot;[waterlogged=true]&quot;</span><span class="p">)</span>  <span class="c1"># parse string and use component data</span>
+<span class="n">wb</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;other_block[waterlogged=true]&quot;</span><span class="p">)</span>
+<span class="n">waterstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">(</span><span class="n">wb</span><span class="p">)</span>  <span class="c1"># id of b + data of wb</span>
+<span class="n">waterstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">(</span><span class="n">wb</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>  <span class="c1"># use data of wb</span>
+<span class="n">nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">waterstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">(</span><span class="n">nbt</span><span class="o">.</span><span class="n">asComponentData</span><span class="p">())</span>  <span class="c1"># convert nbt to component data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">waterstairs</span><span class="p">)</span>  <span class="c1"># in all 5 cases: (&#39;facing=east&#39; is overwritten)</span>
+<span class="c1"># &gt;&gt;&gt; &quot;acacia_stairs[waterlogged=true]&quot;</span>
+
+<span class="c1"># to delete the component data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">withData</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; &quot;acacia_stairs&quot;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>bool</em><em>  |  </em><em>int</em><em>  |  </em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><em>ComponentData</em></a><em> | </em><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – component data that should replace this block’s, defaults to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a new block with this block’s id and the new component data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.Block.withMergeData">
+<span class="sig-name descname"><span class="pre">withMergeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt._types.ComponentData"><span class="pre">ComponentData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.nbt.Block.withMergeData" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> with the <cite>id</cite> of this block but merge the given <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> of the form <code class="docutils literal notranslate"><span class="pre">[key1=value1,key2=value2]</span></code> onto the one on this block.
+The given data may have the form of a dict, <a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>, <a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> or string and will be parsed and/or converted as required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">NBT</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs[facing=east,half=top]&quot;</span><span class="p">)</span>
+<span class="n">newstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withMergeData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;half&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">})</span>  <span class="c1"># convert to component data</span>
+<span class="n">newstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withMergeData</span><span class="p">(</span><span class="s2">&quot;[waterlogged=true,half=bottom]&quot;</span><span class="p">)</span>  <span class="c1"># parse string and use component data</span>
+<span class="n">wb</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s2">&quot;other_block[waterlogged=true,half=bottom]&quot;</span><span class="p">)</span>
+<span class="n">newstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withMergeData</span><span class="p">(</span><span class="n">wb</span><span class="p">)</span>  <span class="c1"># id of b + merge data of wb</span>
+<span class="n">newstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withMergeData</span><span class="p">(</span><span class="n">wb</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>  <span class="c1"># merge data of wb</span>
+<span class="n">nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;half&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">})</span>
+<span class="n">newstairs</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">withMergeData</span><span class="p">(</span><span class="n">nbt</span><span class="o">.</span><span class="n">asComponentData</span><span class="p">())</span>  <span class="c1"># convert nbt to component data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newstairs</span><span class="p">)</span>  <span class="c1"># in all 5 cases:</span>
+<span class="c1"># &gt;&gt;&gt; &#39;acacia_stairs[facing=&quot;east&quot;,half=&quot;bottom&quot;,waterlogged=true]&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>bool</em><em>  |  </em><em>int</em><em>  |  </em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><a class="reference internal" href="nbt.html#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><em>ComponentData</em></a><em> | </em><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – component data that should be merged onto this block’s</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a new block with this block’s id and data with the new component data merged on top of it</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter.html">Materials and Entity-Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">EntityType</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="#mcpq.nbt.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.id"><code class="docutils literal notranslate"><span class="pre">Block.id</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.type"><code class="docutils literal notranslate"><span class="pre">Block.type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.name"><code class="docutils literal notranslate"><span class="pre">Block.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.namespace"><code class="docutils literal notranslate"><span class="pre">Block.namespace</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.datastr"><code class="docutils literal notranslate"><span class="pre">Block.datastr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.hasData"><code class="docutils literal notranslate"><span class="pre">Block.hasData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.asBlockStateForItem"><code class="docutils literal notranslate"><span class="pre">Block.asBlockStateForItem()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.equals"><code class="docutils literal notranslate"><span class="pre">Block.equals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.getData"><code class="docutils literal notranslate"><span class="pre">Block.getData()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.withId"><code class="docutils literal notranslate"><span class="pre">Block.withId()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.withData"><code class="docutils literal notranslate"><span class="pre">Block.withData()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.Block.withMergeData"><code class="docutils literal notranslate"><span class="pre">Block.withMergeData()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nbt.html">NBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="vec3.html" title="&lt;no title&gt;"
+              >previous</a> |
+            <a href="nbt.html" title="NBT"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/block.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

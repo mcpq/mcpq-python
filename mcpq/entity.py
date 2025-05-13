@@ -8,7 +8,7 @@ from ._proto import minecraft_pb2 as pb
 from ._types import COLOR
 from .colors import color_codes
 from .exception import raise_on_error
-from .nbt import NBT, Block
+from .nbt import NBT, Block, EntityType
 from .vec3 import Vec3
 from .world import World
 
@@ -77,7 +77,7 @@ class Entity(_SharedBase, _HasServer):
     def __init__(self, server: _ServerInterface, entity_id: str) -> None:
         super().__init__(server)
         self._id = entity_id
-        self._type: str | None = None  # inject type from outside
+        self._type: EntityType | None = None  # inject type from outside
         self._update_ts: float = 0.0
         self._world: World = None
         self._pos: Vec3 = Vec3()
@@ -91,14 +91,14 @@ class Entity(_SharedBase, _HasServer):
         return self._id
 
     @property
-    def type(self) -> str:
-        """The entity type, such as ``"sheep"`` or ``"creeper"``"""
+    def type(self) -> EntityType:
+        """The :class:`~mcpq.nbt.EntityType` of this entity, e.g., ``"sheep"`` or ``"creeper"``"""
         if self._type is not None:
             # entity types rarely update (e.g., villager to zombie), so do not update here
             return self._type
         # entity was not updated yet
         self._update()
-        return self._type or "UNKNOWN"
+        return self._type or EntityType("UNKNOWN")
 
     @property
     def loaded(self) -> bool:
@@ -176,7 +176,7 @@ class Entity(_SharedBase, _HasServer):
     def _inject_update(self, pb_entity: pb.Entity) -> bool:
         assert pb_entity.id == self.id
         if pb_entity.type:
-            self._type = pb_entity.type
+            self._type = EntityType(pb_entity.type)
         self._world = self._server.get_world_by_name(pb_entity.location.world.name)
         self._pos = Vec3(
             pb_entity.location.pos.x, pb_entity.location.pos.y, pb_entity.location.pos.z
@@ -221,14 +221,14 @@ class Entity(_SharedBase, _HasServer):
             self._update(allow_dead=allow_dead)
 
     def getEntitiesAround(
-        self, distance: float, type: str | None = None, only_spawnable: bool = True
+        self, distance: float, type: str | EntityType | None = None, only_spawnable: bool = True
     ) -> list[Entity]:
         """Get all other entities in a certain radius around this one
 
         :param distance: the radius around this entity in which to get other entities
         :type distance: float
         :param type: the type of entitiy to get, get all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if True get only entities that can spawn, otherwise also get things like projectiles and drops, defaults to True
         :type only_spawnable: bool, optional
         :return: list of filtered entities with distance from this one less or equal to `distance`
@@ -282,11 +282,11 @@ class Entity(_SharedBase, _HasServer):
 
            `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `armortype`.
 
-           .. code::
+        .. code::
 
-              # enchant helmet with protection 4 (in addition to curse_of_binding)
-              helmet = mc.materials.getById("leather_helmet").withData({"enchantments": {"protection": 4}})
-              mc.getPlayer().replaceHelmet(helmet)
+            # enchant helmet with protection 4 (in addition to curse_of_binding)
+            helmet = mc.materials.getById("leather_helmet").withData({"enchantments": {"protection": 4}})
+            mc.getPlayer().replaceHelmet(helmet)
 
         This can be used to separate the players into any number of separate teams, like so:
 

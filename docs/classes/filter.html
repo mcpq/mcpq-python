@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Materials and Entity-Types &#8212; MCPQ 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="vec3.html" />
+    <link rel="prev" title="Events" href="events.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="events.html" title="Events"
+             accesskey="P">previous</a> |
+          <a href="vec3.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="materials-and-entity-types">
+<h1>Materials and Entity-Types<a class="headerlink" href="#materials-and-entity-types" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MaterialFilter</span></span><a class="headerlink" href="#mcpq.material.MaterialFilter" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> filteres materials, which includes types of blocks, items and other materials, by querying the server.
+The exact materials that are available depend on the Minecraft version and plugins/mods that are installed on the <code class="xref py py-class docutils literal notranslate"><span class="pre">Minecraft</span></code> instance.</p>
+<p>Typically, we would like to get a certain subtype of material, which can be filtered directly on this class. Once we have done this, we can iterate over it, return a list of applied filters or choose a random block from the filtered materials:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+
+<span class="c1"># get all blocks that contain the word &quot;wool&quot;</span>
+<span class="n">wool</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span>
+<span class="c1"># equivalent to:</span>
+<span class="n">wool</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">wool</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; &#39;black_wool&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wool</span><span class="o">.</span><span class="n">len</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; 16</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wool</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; [&#39;black_wool&#39;, &#39;blue_wool&#39;, &#39;brown_wool&#39;, ...]</span>
+
+<span class="c1"># get all non-solid blocks</span>
+<span class="n">solids</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">solid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># get all items</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="c1"># once you have your filtered materials you can iterate over them:</span>
+<span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">):</span>
+   <span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+<span class="c1"># or select randomly</span>
+<span class="n">random_wool</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">choice</span><span class="p">()</span>
+<span class="c1"># or turn the filter into a list for something else</span>
+<span class="n">wool_list</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Most filteres can be inverted, either directly, e.g., <code class="docutils literal notranslate"><span class="pre">mc.materials.item(False)</span></code> to get all non-item materials, or by using the inverted keyword for string filters, e.g., <code class="docutils literal notranslate"><span class="pre">mc.materials.contains(&quot;yellow&quot;,</span> <span class="pre">&quot;orange&quot;,</span> <span class="pre">negate=True)</span></code> to get all materials that do not contain the words yellow or orange.</p>
+<p>Additionally, filters can be combined in a number of ways.
+Let’s say we want to get all block types that contain the words “wool” or “concrete” but NOT the word “yellow”. There are multiple ways how we could filter the material list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+
+<span class="c1"># method chaining</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">,</span> <span class="s2">&quot;concrete&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># method chaining with or_ (or_ binds strongly, i.e., only the two contains calls are or-ed)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">or_</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;concrete&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># binary operators (short form)</span>
+<span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">,</span> <span class="s2">&quot;concrete&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+<span class="c1"># binary operators (explicit form)</span>
+<span class="n">wool_concrete</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;wool&quot;</span><span class="p">)</span> <span class="o">|</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;concrete&quot;</span><span class="p">)</span>
+<span class="n">wool_concrete</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plus there are many more filters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get exactly the block called &quot;red_wool&quot;</span>
+<span class="n">red_wool_block</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">getById</span><span class="p">(</span><span class="s2">&quot;red_wool&quot;</span><span class="p">)</span>
+<span class="c1"># get exactly the blocks &quot;red_wool&quot; and &quot;green_wool&quot;</span>
+<span class="n">red_green</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="s2">&quot;red_wool&quot;</span><span class="p">,</span> <span class="s2">&quot;green_wool&quot;</span><span class="p">)</span>
+<span class="c1"># number of &quot;cut_copper&quot; blocks (does NOT include, e.g., &quot;cut_copper_stairs&quot;)</span>
+<span class="n">number_of_cut_copper</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">block</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;cut_copper&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">len</span><span class="p">()</span>
+<span class="c1"># and many more...</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.or_">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">or_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></em><a class="headerlink" href="#mcpq.material.MaterialFilter.or_" title="Link to this definition">¶</a></dt>
+<dd><p>Or the next filter with the previous one (this is strongly binding) thus (potentially) widening the selection of materials.
+<code class="docutils literal notranslate"><span class="pre">mc.materials.block().contains(&quot;wool&quot;).or_.contains(&quot;concrete&quot;)</span></code> can be read as <code class="docutils literal notranslate"><span class="pre">block</span> <span class="pre">AND</span> <span class="pre">(wool</span> <span class="pre">OR</span> <span class="pre">concrete)</span></code> thus giving all blocks that contain either “wool” or “concrete” or both.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.get" title="Link to this definition">¶</a></dt>
+<dd><p>Apply all filters and return a Python <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of filtered blocks</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.getById">
+<span class="sig-name descname"><span class="pre">getById</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.getById" title="Link to this definition">¶</a></dt>
+<dd><p>Apply all filters and return the block with <cite>id</cite>.
+If the block does not exist in the current selection raise an error.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.first">
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.first" title="Link to this definition">¶</a></dt>
+<dd><p>Apply all filters and return the first element if one exists else None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.choice" title="Link to this definition">¶</a></dt>
+<dd><p>Apply all filters and return a random element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.len">
+<span class="sig-name descname"><span class="pre">len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.len" title="Link to this definition">¶</a></dt>
+<dd><p>Apply all filters and return the number of elements in the selection</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.air">
+<span class="sig-name descname"><span class="pre">air</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.air" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for air blocks, e.g., like <code class="docutils literal notranslate"><span class="pre">air</span></code> and <code class="docutils literal notranslate"><span class="pre">void_air</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.block">
+<span class="sig-name descname"><span class="pre">block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.block" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks, i.e., anything that can be set using <code class="xref py py-func docutils literal notranslate"><span class="pre">setBlock()</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.burnable">
+<span class="sig-name descname"><span class="pre">burnable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.burnable" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that can burn away</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.edible">
+<span class="sig-name descname"><span class="pre">edible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.edible" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for edible materials</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.flammable">
+<span class="sig-name descname"><span class="pre">flammable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.flammable" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that can catch fire</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.fuel">
+<span class="sig-name descname"><span class="pre">fuel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.fuel" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for materials that can be used as fuel in a furnace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.interactable">
+<span class="sig-name descname"><span class="pre">interactable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.interactable" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for interactable materials. Interactable materials include those with functionality when they are interacted with by a player such as chests, furnaces, etc. It counts as interactable if there is at least one state in which additional interact handling is performed for the material.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.item" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for obtainable items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.occluding">
+<span class="sig-name descname"><span class="pre">occluding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.occluding" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that occlude light. Most full blocks will occlude light while non-full blocks are non-occluding.
+Check the wiki on <a class="reference external" href="https://minecraft.wiki/w/Opacity">opacity</a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.solid">
+<span class="sig-name descname"><span class="pre">solid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.solid" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that are solid, i.e., can be built upon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.gravity">
+<span class="sig-name descname"><span class="pre">gravity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.gravity" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for materials that are affected by gravity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.vanilla">
+<span class="sig-name descname"><span class="pre">vanilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.vanilla" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for vanilla block, i.e., block with namespace <code class="docutils literal notranslate"><span class="pre">minecraft</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">namespaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.namespace" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for any number of namespaces. Providing multiple namespace means any block having any of the given namespaces is considered a match</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.equals" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for any number of exact block matches. Providing multiple means any block equaling any of the given strings is considered a match</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.contains" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that contain a substring. Providing multiple means any block containing any of the given substrings is considered a match</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.startswith">
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.startswith" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that start with a substring. Providing multiple means any block starting with any of the given substrings is considered a match</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.material.MaterialFilter.endswith">
+<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></span></span><a class="headerlink" href="#mcpq.material.MaterialFilter.endswith" title="Link to this definition">¶</a></dt>
+<dd><p>Filter for blocks that end with a substring. Providing multiple means any block ending with any of the given substrings is considered a match</p>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EntityTypeFilter</span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter" title="Link to this definition">¶</a></dt>
+<dd><p>Works the same as <a class="reference internal" href="#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> only for entity-types instead.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The interface and functions for entities is very similar to blocks, such that we are aliasing <a class="reference internal" href="block.html#mcpq.nbt.EntityType" title="mcpq.nbt.EntityType"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityType</span></code></a> to <a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> at the moment.
+If at a later point the functionality between the two diverges then we will split the classes as well.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.or_">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">or_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></em><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.or_" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.getById">
+<span class="sig-name descname"><span class="pre">getById</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.getById" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.first">
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.first" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.choice" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.len">
+<span class="sig-name descname"><span class="pre">len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.len" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.spawnable">
+<span class="sig-name descname"><span class="pre">spawnable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.spawnable" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.vanilla">
+<span class="sig-name descname"><span class="pre">vanilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.vanilla" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">namespaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.namespace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.equals" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.contains" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.startswith">
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.startswith" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entitytype.EntityTypeFilter.endswith">
+<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">substrings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></span></span><a class="headerlink" href="#mcpq.entitytype.EntityTypeFilter.endswith" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Materials and Entity-Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.material.MaterialFilter"><code class="docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entitytype.EntityTypeFilter"><code class="docutils literal notranslate"><span class="pre">EntityTypeFilter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html"><code class="docutils literal notranslate"><span class="pre">EntityType</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html#mcpq.nbt.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nbt.html">NBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="events.html" title="Events"
+              >previous</a> |
+            <a href="vec3.html" title="&lt;no title&gt;"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/filter.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

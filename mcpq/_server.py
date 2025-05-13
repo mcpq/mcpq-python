@@ -79,6 +79,7 @@ class _Server(_ServerInterface):
                 # TODO: automatically parse all properties to dict
                 "mcversion": str(response.mcVersion),
                 "mcpqversion": str(response.mcpqVersion),
+                "serverversion": str(response.serverVersion),
                 # _local properties may be added by _server functions
             }
         return self._server_info_cache

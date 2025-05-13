@@ -8,7 +8,7 @@ import signal
 import socket
 import subprocess
 import time
-import urllib
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
@@ -55,7 +55,7 @@ MC_VERSIONS = [
 PROTOBUF_VERSIONS = [
     "6.30.2",
     "5.29.4",
-    "5.28.0",
+    "5.28.0",  # pinned version
     "5.26.0",
     "4.23.0",
     "3.20.0",
@@ -232,7 +232,8 @@ def prepare_server_folder(session: nox.Session, mc_version: str) -> Path:
     plugin_loc: Path = folder / "plugins" / plugin.name
     if not plugin_loc.is_file() or not filecmp.cmp(plugin, plugin_loc):
         session.log(f"Copying plugin {plugin.as_posix()}")
-        shutil.rmtree(plugin_loc.parent)
+        if plugin_loc.parent.exists():
+            shutil.rmtree(plugin_loc.parent)
         plugin_loc.parent.mkdir()
         shutil.copy(plugin, plugin_loc)
     if not (eula_loc := (folder / "eula.txt")).is_file():

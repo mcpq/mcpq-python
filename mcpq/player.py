@@ -7,7 +7,7 @@ from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from .entity import Entity
 from .exception import raise_on_error
-from .nbt import NBT
+from .nbt import NBT, Block, EntityType
 from .vec3 import Vec3
 
 CACHE_PLAYER_TIME = 0.2
@@ -73,9 +73,9 @@ class Player(Entity, _SharedBase, _HasServer):
         return self._id
 
     @property
-    def type(self) -> str:
-        """The type of the player, is always ``"player"``"""
-        return "player"
+    def type(self) -> EntityType:
+        """The :class:`~mcpq.nbt.EntityType` of the player, is always ``"player"``"""
+        return EntityType("player")
 
     @property
     def online(self) -> bool:
@@ -169,7 +169,7 @@ class Player(Entity, _SharedBase, _HasServer):
         """Equivalent to :func:`gamemode` with argument ``"survival"``"""
         self.gamemode("survival")
 
-    def giveItems(self, item: str, amount: int = 1, *, nbt: NBT | None = None) -> None:
+    def giveItems(self, item: str | Block, amount: int = 1, *, nbt: NBT | None = None) -> None:
         """Put `amount` of certain `item` into the player's inventory.
         The item can be a string or a :class:`~mcpq.nbt.Block` with component data:
 
@@ -177,7 +177,9 @@ class Player(Entity, _SharedBase, _HasServer):
 
            mc.getPlayer().giveItems("snowball", 64)  # give player 64 snowballs (4 stacks of 16)
            sword = mc.materials.getById("diamond_sword").withData({"enchantments": {"sharpness": 5}})
+           # item can be given as is
            mc.getPlayer().giveItems(sword)  # give player enchanted sword
+           # blocks have to be changed to block_state format
            b = mc.blocks.getById("acacia_stairs").withData({"waterlogged": True})
            mc.getPlayer().giveItems(b.asBlockStateForItem())  # give player already waterlogged stairs
 

@@ -93,14 +93,14 @@ class _ServerInterface(ABC):
         return tuple(m for m in self.entity_type_cache().values() if filter(m))
 
     def get_server_version(self) -> str:
-        full_version: str | None = self.server_info_cache().get("mcversion")
+        full_version: str | None = self.server_info_cache().get("serverversion")
         if full_version is not None:
             return full_version
         return "unknown"
 
     def get_mc_version_string(self) -> str:
-        version: str | None = self.server_info_cache().get("_mcversion_string")
-        if version is not None:
+        version: str | None = self.server_info_cache().get("mcversion")
+        if version:
             return version
         full_version: str = self.get_server_version()
         if full_version != "unknown":
@@ -109,7 +109,7 @@ class _ServerInterface(ABC):
             # TODO: write unit test for this
             m = re.findall("\\(MC: (.+)\\)", full_version)
             if m and len(m):
-                version = self.server_info_cache()["_mcversion_string"] = m[-1]
+                version = self.server_info_cache()["mcversion"] = m[-1]
                 return version
             logging.warning(f"Minecraft version could not be parsed from '{full_version}'")
         return "unknown"

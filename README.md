@@ -1,6 +1,6 @@
 # Minecraft Protobuf Queries (MCPQ) Python Client Library
 
-This library is designed to control a Minecraft Java Server, such as [Spigot](https://www.spigotmc.org/) or [Paper](https://papermc.io/) running the **[mcpq plugin](https://github.com/mcpq/mcpq-plugin)**, with Python.
+This Python library is designed to control a Minecraft Java Server like [Paper](https://papermc.io/), or alternatively [Spigot](https://www.spigotmc.org/), running the **[mcpq plugin](https://github.com/mcpq/mcpq-plugin)**.
 
 This library is heavily inspired by [MCPI](https://github.com/martinohanlon/mcpi) (and its corresponding plugin [RaspberryJuice](https://github.com/zhuowei/RaspberryJuice)) and attempts a more modern approach for communication between server and client that also works for more modern versions of Minecraft.
 
@@ -17,7 +17,7 @@ After getting a [server](https://papermc.io/) and [compatible plugin](https://gi
 pip3 install mcpq
 ```
 
-Get coding!
+Get coding and checkout [the docs](https://mcpq.github.io/mcpq-python/) for more examples!
 
 ```python
 from mcpq import Minecraft, Vec3
@@ -68,7 +68,7 @@ The three tuple `major.minor.patch` of the version refers to the following:
 
 In other words, the first two numbers (`major.minor`) refer to the [plugin](https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions) version the library was written against.
 
-> E.g. the Python library version 1.0.X would require plugin version 1.0 or newer
+> E.g. the Python library version 2.0.X would require plugin version 2.0 or newer
 
 This Python library *should* work for any newer versions of the plugin if everything works out and no breaking changes are introduced, at least across *minor* versions (see [table](https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions)).
 On the other hand, the library will most likely not work for older versions of the plugin, especially not across *major* versions.

@@ -25,7 +25,7 @@ class _EntityTypeInternal:
     @classmethod
     def _build(cls, buffer: pb.EntityType) -> _EntityTypeInternal:
         return cls(
-            EntityType(buffer.key.removeprefix("minecraft:")),
+            EntityType(buffer.key),
             is_spawnable=buffer.isSpawnable,
         )
 

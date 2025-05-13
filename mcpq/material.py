@@ -35,7 +35,7 @@ class _MaterialInternal:
     @classmethod
     def _build(cls, buffer: pb.Material) -> _MaterialInternal:
         return cls(
-            Block(buffer.key.removeprefix("minecraft:")),
+            Block(buffer.key),
             is_air=buffer.isAir,
             is_block=buffer.isBlock,
             is_burnable=buffer.isBurnable,
