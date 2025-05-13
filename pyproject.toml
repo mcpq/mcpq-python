@@ -2,40 +2,41 @@
 build-backend = "setuptools.build_meta"
 requires = [
   "setuptools>=64",
-  "setuptools_scm>=8",
 ]
 
 [project]
 name = "mcpq"
+version = "2.0.0"
 description = "Library for communicating with and controlling Minecraft servers via MCPQ plugin"
 readme = "README.md"
 license = { text = "LGPL-3.0-or-later" }
 authors = [{ name = "Felix Wallner", email = "felix.wallner@protonmail.com" }]
 requires-python = ">=3.10"
 classifiers = [
+  "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
   "Operating System :: OS Independent",
 ]
-dynamic = [
-  "version",
-]
 dependencies = [
-  "grpcio",
-  "protobuf",
+  "grpcio>=1.65.4",
+  "protobuf>=3.20",
 ]
 [project.optional-dependencies]
 dev = [
   "black",
   "build",
-  "grpcio-tools",
+  "grpcio-tools>=1.65.4",
   "isort",
   "mypy",
+  "nox",
   "pre-commit",
   "pytest",
+  "pytest-integration",
   "pytest-mock",
   "pytest-timeout",
   "types-protobuf",
@@ -57,10 +58,7 @@ Homepage = "https://github.com/mcpq/mcpq-python"
 Issues = "https://github.com/mcpq/mcpq-python/issues"
 
 [tool.setuptools]
-packages = ["mcpq"]
-
-[tool.setuptools_scm]
-# enables setuptools_scm for versioning based on git tags
+packages = ["mcpq", "mcpq.tools", "mcpq._proto", "mcpq.nbt"]
 
 [tool.black]
 include = '\.pyi?$'

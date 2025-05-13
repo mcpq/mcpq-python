@@ -143,11 +143,11 @@ class Turtle:
 
     @property
     def _body_pos(self) -> list[Vec3]:
-        center = self._pos.floor()
+        c = self._pos.floor()  # center of head
         if self._pensize == 1:
-            return [center]
+            return [c]
         ra = range(-(self._pensize // 2), self._pensize // 2 + self._pensize % 2)
-        return [center.addX(x).addY(y).addZ(z) for x in ra for y in ra for z in ra]
+        return [Vec3(c.x + x, c.y + y, c.z + z) for x in ra for y in ra for z in ra]
 
     def _rotate(self, angle: float, to: Vec3) -> None:
         k = self._dir_front.cross(to).norm()

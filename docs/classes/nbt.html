@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NBT &#8212; MCPQ 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
+    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="turtle.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="block.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="block.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |
+          <a href="turtle.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="nbt">
+<h1>NBT<a class="headerlink" href="#nbt" title="Link to this heading">¶</a></h1>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.nbt.NBT">
+<span class="sig-name descname"><span class="pre">NBT</span></span><a class="headerlink" href="#mcpq.nbt.NBT" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a></p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtCompound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtCompound" title="Link to this definition">¶</a></dt>
+<dd><p>The definitive class for parsing and manipulating <a class="reference external" href="https://minecraft.wiki/w/NBT_format">NBT-format</a> data.
+It can be used like a python dict with the exception that its keys must be strings.
+It can also be passed a dict at initialization which will be automatically converted (see convertion rules below).</p>
+<p>Alias <a class="reference internal" href="#mcpq.nbt.NBT" title="mcpq.nbt.NBT"><code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code></a> of <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span><span class="p">,</span> <span class="n">NBT</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+<span class="n">nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="p">()</span>  <span class="c1"># create new NBT dictionary, called a compound in NBT format</span>
+<span class="c1"># its keys must always be strings</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;bool_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># will be converted to byte 1 (=`true`)</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;int_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># will be converted to int (or long if number is too large)</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;double_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.4</span>  <span class="c1"># will be converted to double</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;string_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;not a number text&quot;</span>  <span class="c1"># will stay a string (see number conversion below)</span>
+<span class="c1"># for lists and dicts: all internal values will be recursively converted</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;list_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># will be converted to nbt-list of int</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;compound_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>  <span class="c1"># will be converted to compound</span>
+<span class="c1"># compounds and lists can also be created/got and directly returned like so:</span>
+<span class="n">inner_compound</span> <span class="o">=</span> <span class="n">nbt</span><span class="o">.</span><span class="n">get_or_create_nbt</span><span class="p">(</span><span class="s2">&quot;compound_key&quot;</span><span class="p">)</span>  <span class="c1"># get compound set above</span>
+<span class="n">inner_compound</span><span class="p">[</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># overwrite nbt[&quot;compound_key&quot;][&quot;waterlogged&quot;]</span>
+<span class="n">nbt</span><span class="o">.</span><span class="n">get_or_create_list</span><span class="p">(</span><span class="s2">&quot;list_key&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span>  <span class="c1"># append to upper list</span>
+
+<span class="c1"># to easier convert to different number types, string-numbers will be parsed like so:</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;bool_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>  <span class="c1"># will be converted to byte 1 (=`true`)</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;byte_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1b&quot;</span>  <span class="c1"># will be converted to byte 1</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;short_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1s&quot;</span>  <span class="c1"># will be converted to short 1</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;int_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>  <span class="c1"># will be converted to int 1</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;long_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1l&quot;</span>  <span class="c1"># will be converted to long 1</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;float_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1.4f&quot;</span>  <span class="c1"># will be converted to float 1.4</span>
+<span class="n">nbt</span><span class="p">[</span><span class="s2">&quot;double_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1.4&quot;</span>  <span class="c1"># will be converted to double 1.4</span>
+
+<span class="c1"># to enforce a certain type during conversion use the corresponding property:</span>
+<span class="n">nbt</span><span class="o">.</span><span class="n">string</span><span class="p">[</span><span class="s2">&quot;string_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1b&quot;</span>  <span class="c1"># will STAY a string `&quot;1b&quot;` and not be converted</span>
+<span class="n">nbt</span><span class="o">.</span><span class="n">string</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;hi&quot;</span><span class="p">}</span>  <span class="c1"># will be converted to string, not compound</span>
+<span class="n">nbt</span><span class="o">.</span><span class="n">byte_array</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># will be converted to byte-array instead of nbt-list of int</span>
+<span class="n">nbt</span><span class="o">.</span><span class="n">short</span><span class="p">[</span><span class="s2">&quot;short_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># will be converted to short, not int</span>
+
+<span class="c1"># types are also checked on equality checks of compounds and lists:</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1b&quot;</span><span class="p">})</span>  <span class="c1"># true (true == 1b)</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>  <span class="c1"># true (true == true)</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1s&quot;</span><span class="p">})</span>  <span class="c1"># false</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4d&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4f&quot;</span><span class="p">})</span>  <span class="c1"># false</span>
+<span class="c1"># but NOT for primitive type checks, there the base type comparison is used:</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1b&quot;</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span>  <span class="c1"># true (int compare)</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span>  <span class="c1"># true (int compare)</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1s&quot;</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span>  <span class="c1"># true (int compare)</span>
+<span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4d&quot;</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;check&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4f&quot;</span><span class="p">})[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span>  <span class="c1"># true (float compare)</span>
+
+<span class="n">snbt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">nbt</span><span class="p">)</span>  <span class="c1"># convert to snbt (string NBT)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;key1&quot;</span><span class="p">:</span> <span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;key 2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})))</span>
+<span class="c1"># &gt;&gt;&gt; &#39;{key1:&quot;value1&quot;,&quot;key 2&quot;:2}&#39;</span>
+
+<span class="c1"># this can then be used for commands or other operations, for example:</span>
+<span class="c1"># to remove the AI and remove sound from a cow spawned at 0 0</span>
+<span class="n">nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;NoAI&quot;</span><span class="p">:</span> <span class="s2">&quot;1b&quot;</span><span class="p">,</span> <span class="s2">&quot;Silent&quot;</span><span class="p">:</span> <span class="s2">&quot;1b&quot;</span><span class="p">})</span>
+<span class="n">cow</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;cow&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getHeighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">up</span><span class="p">())</span>
+<span class="n">cow</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data merge entity @s </span><span class="si">{</span><span class="n">nbt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.parse">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a></span></span><a class="headerlink" href="#mcpq.nbt.NbtCompound.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Parse <cite>string</cite> of a compound in SNBT-format to <a class="reference internal" href="#mcpq.nbt.NBT" title="mcpq.nbt.NBT"><code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span><span class="p">,</span> <span class="n">NBT</span>
+<span class="n">nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;{key1:&quot;value1&quot;,key2:2}&#39;</span><span class="p">)</span>
+<span class="n">same_nbt</span> <span class="o">=</span> <span class="n">NBT</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">nbt</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the string of a compound in SNBT-format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the parsed compound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound">NbtCompound</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.asComponentData">
+<span class="sig-name descname"><span class="pre">asComponentData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt._types.ComponentData"><span class="pre">ComponentData</span></a></span></span><a class="headerlink" href="#mcpq.nbt.NbtCompound.asComponentData" title="Link to this definition">¶</a></dt>
+<dd><p>Convert <cite>self</cite> of type <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a> to <a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.
+Note, keys must not contain characters that would have to be quoted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.deepcopy">
+<span class="sig-name descname"><span class="pre">deepcopy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a></span></span><a class="headerlink" href="#mcpq.nbt.NbtCompound.deepcopy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.get_or_create_nbt">
+<span class="sig-name descname"><span class="pre">get_or_create_nbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a></span></span><a class="headerlink" href="#mcpq.nbt.NbtCompound.get_or_create_nbt" title="Link to this definition">¶</a></dt>
+<dd><p>Get an existing or create a <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a> at key <cite>key</cite>.
+Equivalent to <code class="docutils literal notranslate"><span class="pre">self[key]</span></code> if key is a <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a>, otherwise overwrite with new compound and return it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – key to get or create compound at</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>existing compound if key had one else new (overwritten) compound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound">NbtCompound</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.get_or_create_list">
+<span class="sig-name descname"><span class="pre">get_or_create_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a></span></span><a class="headerlink" href="#mcpq.nbt.NbtCompound.get_or_create_list" title="Link to this definition">¶</a></dt>
+<dd><p>Get an existing or create a <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a> at key <cite>key</cite>.
+Equivalent to <code class="docutils literal notranslate"><span class="pre">self[key]</span></code> if key is a <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a>, otherwise overwrite with new list and return it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – key to get or create list at</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>existing list if key had one else new (overwritten) list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList">NbtList</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.bool">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.bool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.byte">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">byte</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtByte" title="mcpq.nbt._types.NbtByte"><span class="pre">NbtByte</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.byte" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.short">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">short</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtShort" title="mcpq.nbt._types.NbtShort"><span class="pre">NbtShort</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.short" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.int">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">int</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtInt" title="mcpq.nbt._types.NbtInt"><span class="pre">NbtInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.int" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.long">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">long</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtLong" title="mcpq.nbt._types.NbtLong"><span class="pre">NbtLong</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.long" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.float">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">float</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtFloat" title="mcpq.nbt._types.NbtFloat"><span class="pre">NbtFloat</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.float" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.double">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">double</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtDouble" title="mcpq.nbt._types.NbtDouble"><span class="pre">NbtDouble</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.double" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.string" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.compound">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.compound" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.byte_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">byte_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtByteArray" title="mcpq.nbt._types.NbtByteArray"><span class="pre">NbtByteArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.byte_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.int_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">int_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtIntArray" title="mcpq.nbt._types.NbtIntArray"><span class="pre">NbtIntArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.int_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtCompound.long_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">long_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView" title="mcpq.nbt._types.TypedCompoundView"><span class="pre">TypedCompoundView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtLongArray" title="mcpq.nbt._types.NbtLongArray"><span class="pre">NbtLongArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtCompound.long_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt._types.TypedCompoundView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TypedCompoundView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByte" title="mcpq.nbt._types.NbtByte"><span class="pre">NbtByte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtShort" title="mcpq.nbt._types.NbtShort"><span class="pre">NbtShort</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtInt" title="mcpq.nbt._types.NbtInt"><span class="pre">NbtInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLong" title="mcpq.nbt._types.NbtLong"><span class="pre">NbtLong</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtFloat" title="mcpq.nbt._types.NbtFloat"><span class="pre">NbtFloat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtDouble" title="mcpq.nbt._types.NbtDouble"><span class="pre">NbtDouble</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByteArray" title="mcpq.nbt._types.NbtByteArray"><span class="pre">NbtByteArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtIntArray" title="mcpq.nbt._types.NbtIntArray"><span class="pre">NbtIntArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLongArray" title="mcpq.nbt._types.NbtLongArray"><span class="pre">NbtLongArray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt._types.TypedCompoundView" title="Link to this definition">¶</a></dt>
+<dd><p>A generic view of <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a> that enforces values to be of a specific type and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.ComponentData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComponentData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.ComponentData" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> subclasses and behaves exactly like <a class="reference internal" href="#mcpq.nbt.NBT" title="mcpq.nbt.NBT"><code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code></a> with the only difference being its string representation:
+Instead of <code class="docutils literal notranslate"><span class="pre">{key1:value1,key2:value2}</span></code> it is represented as <code class="docutils literal notranslate"><span class="pre">[key1=value1,key2=value2]</span></code>, allowing it to represent the <a class="reference external" href="https://minecraft.wiki/w/Data_component_format">component-format</a> on item, item stacks and block entities.
+Additionally, the keys of <a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> may not contain characters that have to be quoted in NBT format and must be strings.</p>
+<p>Checkout <a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code></a> for an explanation and example on how to parse and write component data directly.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.ComponentData.parse">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt._types.ComponentData"><span class="pre">ComponentData</span></a></span></span><a class="headerlink" href="#mcpq.nbt.ComponentData.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Parse <cite>string</cite> of a component-data block to <a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.nbt.ComponentData.asCompound">
+<span class="sig-name descname"><span class="pre">asCompound</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a></span></span><a class="headerlink" href="#mcpq.nbt.ComponentData.asCompound" title="Link to this definition">¶</a></dt>
+<dd><p>Convert <cite>self</cite> of type <a class="reference internal" href="#mcpq.nbt.ComponentData" title="mcpq.nbt.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a> to <a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt.NbtCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtCompound</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtList" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a> behaves like a python list with the exception that all its elements must have the same nbt type.
+When the list is empty any nbt type can be added but once an element was added the list (and conversions) are defined by the first element’s type.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.dtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByte" title="mcpq.nbt._types.NbtByte"><span class="pre">NbtByte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtShort" title="mcpq.nbt._types.NbtShort"><span class="pre">NbtShort</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtInt" title="mcpq.nbt._types.NbtInt"><span class="pre">NbtInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLong" title="mcpq.nbt._types.NbtLong"><span class="pre">NbtLong</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtFloat" title="mcpq.nbt._types.NbtFloat"><span class="pre">NbtFloat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtDouble" title="mcpq.nbt._types.NbtDouble"><span class="pre">NbtDouble</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByteArray" title="mcpq.nbt._types.NbtByteArray"><span class="pre">NbtByteArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtIntArray" title="mcpq.nbt._types.NbtIntArray"><span class="pre">NbtIntArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLongArray" title="mcpq.nbt._types.NbtLongArray"><span class="pre">NbtLongArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mcpq.nbt.NbtList.dtype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.bool">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.bool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.byte">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">byte</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtByte" title="mcpq.nbt._types.NbtByte"><span class="pre">NbtByte</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.byte" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.short">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">short</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtShort" title="mcpq.nbt._types.NbtShort"><span class="pre">NbtShort</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.short" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.int">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">int</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtInt" title="mcpq.nbt._types.NbtInt"><span class="pre">NbtInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.int" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.long">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">long</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtLong" title="mcpq.nbt._types.NbtLong"><span class="pre">NbtLong</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.long" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.float">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">float</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtFloat" title="mcpq.nbt._types.NbtFloat"><span class="pre">NbtFloat</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.float" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.double">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">double</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtDouble" title="mcpq.nbt._types.NbtDouble"><span class="pre">NbtDouble</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.double" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.string" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.compound">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.compound" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.byte_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">byte_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtByteArray" title="mcpq.nbt._types.NbtByteArray"><span class="pre">NbtByteArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.byte_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.int_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">int_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtIntArray" title="mcpq.nbt._types.NbtIntArray"><span class="pre">NbtIntArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.int_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtList.long_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">long_array</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt._types.TypedListView" title="mcpq.nbt._types.TypedListView"><span class="pre">TypedListView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mcpq.nbt.NbtLongArray" title="mcpq.nbt._types.NbtLongArray"><span class="pre">NbtLongArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mcpq.nbt.NbtList.long_array" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt._types.TypedListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TypedListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByte" title="mcpq.nbt._types.NbtByte"><span class="pre">NbtByte</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtShort" title="mcpq.nbt._types.NbtShort"><span class="pre">NbtShort</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtInt" title="mcpq.nbt._types.NbtInt"><span class="pre">NbtInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLong" title="mcpq.nbt._types.NbtLong"><span class="pre">NbtLong</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtFloat" title="mcpq.nbt._types.NbtFloat"><span class="pre">NbtFloat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtDouble" title="mcpq.nbt._types.NbtDouble"><span class="pre">NbtDouble</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><span class="pre">NbtList</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtByteArray" title="mcpq.nbt._types.NbtByteArray"><span class="pre">NbtByteArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtIntArray" title="mcpq.nbt._types.NbtIntArray"><span class="pre">NbtIntArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.nbt.NbtLongArray" title="mcpq.nbt._types.NbtLongArray"><span class="pre">NbtLongArray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt._types.TypedListView" title="Link to this definition">¶</a></dt>
+<dd><p>A generic view of <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt._types.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a> that enforces values to be of a specific type and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>.</p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtByte">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtByte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtByte" title="Link to this definition">¶</a></dt>
+<dd><p>Signed 8-bit integer and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>.
+Both 1b == True and 0b == False are true as booleans just represent 0 and 1 byte.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtShort">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtShort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtShort" title="Link to this definition">¶</a></dt>
+<dd><p>Signed 16-bit integer and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtInt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtInt" title="Link to this definition">¶</a></dt>
+<dd><p>Signed 32-bit integer and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtLong">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtLong</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtLong" title="Link to this definition">¶</a></dt>
+<dd><p>Signed 64-bit integer and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtFloat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtFloat" title="Link to this definition">¶</a></dt>
+<dd><p>Signed float with limit ±3.4e+38 and subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtDouble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtDouble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtDouble" title="Link to this definition">¶</a></dt>
+<dd><p>Subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtByteArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtByteArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtByteArray" title="Link to this definition">¶</a></dt>
+<dd><p>Subclass of <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtIntArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtIntArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtIntArray" title="Link to this definition">¶</a></dt>
+<dd><p>Subclass of <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mcpq.nbt.NbtLongArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NbtLongArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.nbt.NbtLongArray" title="Link to this definition">¶</a></dt>
+<dd><p>Subclass of <a class="reference internal" href="#mcpq.nbt.NbtList" title="mcpq.nbt.NbtList"><code class="xref py py-class docutils literal notranslate"><span class="pre">NbtList</span></code></a>.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter.html">Materials and Entity-Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html"><code class="docutils literal notranslate"><span class="pre">EntityType</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html#mcpq.nbt.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">NBT</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NBT"><code class="docutils literal notranslate"><span class="pre">NBT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtCompound"><code class="docutils literal notranslate"><span class="pre">NbtCompound</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt._types.TypedCompoundView"><code class="docutils literal notranslate"><span class="pre">TypedCompoundView</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.ComponentData"><code class="docutils literal notranslate"><span class="pre">ComponentData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtList"><code class="docutils literal notranslate"><span class="pre">NbtList</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt._types.TypedListView"><code class="docutils literal notranslate"><span class="pre">TypedListView</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtByte"><code class="docutils literal notranslate"><span class="pre">NbtByte</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtShort"><code class="docutils literal notranslate"><span class="pre">NbtShort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtInt"><code class="docutils literal notranslate"><span class="pre">NbtInt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtLong"><code class="docutils literal notranslate"><span class="pre">NbtLong</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtFloat"><code class="docutils literal notranslate"><span class="pre">NbtFloat</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtDouble"><code class="docutils literal notranslate"><span class="pre">NbtDouble</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtByteArray"><code class="docutils literal notranslate"><span class="pre">NbtByteArray</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtIntArray"><code class="docutils literal notranslate"><span class="pre">NbtIntArray</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.nbt.NbtLongArray"><code class="docutils literal notranslate"><span class="pre">NbtLongArray</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="block.html" title="&lt;no title&gt;"
+              >previous</a> |
+            <a href="turtle.html" title="&lt;no title&gt;"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/classes/nbt.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Felix Wallner.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

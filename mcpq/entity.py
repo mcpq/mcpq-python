@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import time
-from functools import partial
 
-from ._base import _EntityProvider, _HasStub
-from ._proto import MinecraftStub
+from ._abc import _ServerInterface
+from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import COLOR
-from ._util import ThreadSafeSingeltonCache
 from .colors import color_codes
 from .exception import raise_on_error
-from .nbt import NBT
+from .nbt import NBT, Block, EntityType
 from .vec3 import Vec3
-from .world import World, _WorldHub
+from .world import World
 
 __all__ = ["Entity"]
 
@@ -20,7 +18,7 @@ CACHE_ENTITY_TIME = 0.2
 ALLOW_UNLOADED_ENTITY_OPS = True
 
 
-class Entity(_HasStub):
+class Entity(_SharedBase, _HasServer):
     """The :class:`Entity` class represents an entity on the server.
     It can be used to query information about the entity or manipulate them, such as
     getting or setting their position, orientation, world and more.
@@ -76,11 +74,10 @@ class Entity(_HasStub):
        This improves performance but may also cause bugs or problems if the interval in which the up-to-date position is requred is lower than ``mcpq.entity.CACHE_ENTITY_TIME``.
     """
 
-    def __init__(self, stub: MinecraftStub, worldhub: _WorldHub, entity_id: str) -> None:
-        super().__init__(stub)
-        self._worldhub = worldhub
+    def __init__(self, server: _ServerInterface, entity_id: str) -> None:
+        super().__init__(server)
         self._id = entity_id
-        self._type: str | None = None  # inject type from outside
+        self._type: EntityType | None = None  # inject type from outside
         self._update_ts: float = 0.0
         self._world: World = None
         self._pos: Vec3 = Vec3()
@@ -94,13 +91,14 @@ class Entity(_HasStub):
         return self._id
 
     @property
-    def type(self) -> str:
-        """The entity type, such as ``"sheep"`` or ``"creeper"``"""
+    def type(self) -> EntityType:
+        """The :class:`~mcpq.nbt.EntityType` of this entity, e.g., ``"sheep"`` or ``"creeper"``"""
         if self._type is not None:
             # entity types rarely update (e.g., villager to zombie), so do not update here
             return self._type
-        # entity type should be injected directly after creation
-        raise NotImplementedError
+        # entity was not updated yet
+        self._update()
+        return self._type or EntityType("UNKNOWN")
 
     @property
     def loaded(self) -> bool:
@@ -145,7 +143,7 @@ class Entity(_HasStub):
         self._update_on_check()
         if self._world is None:
             # TODO: return _DefaultWorld? Does this case even happen?
-            return self._worldhub.worlds[0]
+            return self._server.get_worlds[0]
         return self._world
 
     @world.setter
@@ -178,8 +176,8 @@ class Entity(_HasStub):
     def _inject_update(self, pb_entity: pb.Entity) -> bool:
         assert pb_entity.id == self.id
         if pb_entity.type:
-            self._type = pb_entity.type
-        self._world = self._worldhub.getWorldByName(pb_entity.location.world.name)
+            self._type = EntityType(pb_entity.type)
+        self._world = self._server.get_world_by_name(pb_entity.location.world.name)
         self._pos = Vec3(
             pb_entity.location.pos.x, pb_entity.location.pos.y, pb_entity.location.pos.z
         )
@@ -190,7 +188,7 @@ class Entity(_HasStub):
         return True
 
     def _set_entity_loc(self, entity_loc: pb.EntityLocation) -> None:
-        response = self._stub.setEntity(
+        response = self._server.stub.setEntity(
             pb.Entity(
                 id=self.id,
                 location=entity_loc,
@@ -200,7 +198,7 @@ class Entity(_HasStub):
             raise_on_error(response)
 
     def _update(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> bool:
-        response = self._stub.getEntities(
+        response = self._server.stub.getEntities(
             pb.EntityRequest(
                 specific=pb.EntityRequest.SpecificEntities(entities=[pb.Entity(id=self.id)]),
                 withLocations=True,
@@ -218,35 +216,35 @@ class Entity(_HasStub):
             e = response.entities[0]
             return self._inject_update(e)
 
-    def _update_on_check(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> bool:
+    def _update_on_check(self, allow_dead: bool = ALLOW_UNLOADED_ENTITY_OPS) -> None:
         if self._should_update():
             self._update(allow_dead=allow_dead)
 
     def getEntitiesAround(
-        self, distance: float, type: str | None = None, only_spawnable: bool = True
+        self, distance: float, type: str | EntityType | None = None, only_spawnable: bool = True
     ) -> list[Entity]:
-        """Get all other entities in a certain radius around `self`
+        """Get all other entities in a certain radius around this one
 
-        :param distance: the radius around `self` in which to get other entities
+        :param distance: the radius around this entity in which to get other entities
         :type distance: float
         :param type: the type of entitiy to get, get all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if True get only entities that can spawn, otherwise also get things like projectiles and drops, defaults to True
         :type only_spawnable: bool, optional
-        :return: list of filtered entities with distance from `self` less or equal to `distance`
+        :return: list of filtered entities with distance from this one less or equal to `distance`
         :rtype: list[Entity]
         """
         entities = self.world.getEntitiesAround(self.pos, distance, type, only_spawnable)
         return [e for e in entities if e is not self]
 
     def giveEffect(
-        self, effect: str, seconds: int = 30, amplifier: int = 0, particles: bool = True
+        self, effect: str, seconds: int = 0, amplifier: int = 0, particles: bool = True
     ) -> None:
-        """Give `self` a (potion) effect
+        """Give this entity a (potion) effect
 
         :param effect: the name of the effect, e.g., ``"glowing"``
         :type effect: str
-        :param seconds: the number of seconds the effect should persist, defaults to 30
+        :param seconds: the number of seconds the effect should persist or infinite duration if 0, defaults to 0
         :type seconds: int, optional
         :param amplifier: the strength of the effect, `amplifier` + 1 is the level of the effect, defaults to 0
         :type amplifier: int, optional
@@ -254,7 +252,8 @@ class Entity(_HasStub):
         :type particles: bool, optional
         """
         pbool = str(not bool(particles)).lower()
-        self.runCommand(f"effect give @s {effect} {int(seconds)} {amplifier} {pbool}")
+        duration = "infinite" if not seconds else int(seconds)
+        self.runCommand(f"effect give @s {effect} {duration} {amplifier} {pbool}")
 
     def kill(self) -> None:
         "Kill this entity"
@@ -268,27 +267,90 @@ class Entity(_HasStub):
 
     def replaceHelmet(
         self,
-        armortype: str = "leather_helmet",
+        armortype: Block | str = "leather_helmet",
         unbreakable: bool = True,
         binding: bool = True,
         vanishing: bool = False,
         color: COLOR | int | None = None,
+        *,
         nbt: NBT | None = None,
     ) -> None:
-        nbt = nbt or NBT()
-        if binding:
-            nbt.add_binding_curse()
-        if vanishing:
-            nbt.add_vanishing_curse()
-        if unbreakable:
-            nbt.set_unbreakable()
-        if isinstance(color, str) and color in color_codes:
-            nbt.get_or_create_nbt("display")["color"] = color_codes[color]
-        elif isinstance(color, int):
-            nbt.get_or_create_nbt("display")["color"] = color
-        self.replaceItem("armor.head", armortype, nbt=nbt)
+        """Replace whatever the entity has on their head with the given `armortype`, default to ``leather_helmet`` with `color` if given.
+        May set the helment as `unbreakable` and/or enchant the helmet with `binding` or `vanishing` respectively.
 
-    def replaceItem(self, where: str, item: str, amount: int = 1, nbt: NBT | None = None) -> None:
+        .. note::
+
+           `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `armortype`.
+
+        .. code::
+
+            # enchant helmet with protection 4 (in addition to curse_of_binding)
+            helmet = mc.materials.getById("leather_helmet").withData({"enchantments": {"protection": 4}})
+            mc.getPlayer().replaceHelmet(helmet)
+
+        This can be used to separate the players into any number of separate teams, like so:
+
+        .. code::
+
+           from mcpq import Minecraft
+           from itertools import cycle
+           mc = Minecraft()
+           colors = ["red", "blue"]
+           teams = {color: [] for color in colors}
+           for player, color in zip(mc.getPlayerList(), cycle(colors)):
+              teams[color].append(player)
+              player.replaceHelmet(color=color)
+              player.postToChat("You are in team:", color)
+        """
+        mcversion = self._server.get_mc_version()
+        if isinstance(color, str) and color in color_codes:
+            color = color_codes[color]
+        if not isinstance(armortype, Block):
+            armortype = Block(armortype)
+        if mcversion and mcversion < (1, 20, 5):
+            nbt = nbt or NBT()
+            if binding:
+                nbt.get_or_create_list("Enchantments").compound.append(
+                    {"id": "minecraft:binding_curse", "lvl": "1s"}
+                )
+            if vanishing:
+                nbt.get_or_create_list("Enchantments").compound.append(
+                    {"id": "minecraft:vanishing_curse", "lvl": "1s"}
+                )
+            if unbreakable:
+                nbt.byte["Unbreakable"] = 1
+            if color is not None:  # only works on leather_helmet
+                nbt.get_or_create_nbt("display").int["color"] = color
+            armortype = armortype.withData()  # components did not exist
+            self.replaceItem("armor.head", armortype, nbt=nbt)
+        else:
+            component = armortype.getData()
+            if binding:
+                component.get_or_create_nbt("enchantments").int["minecraft:binding_curse"] = 1
+            if vanishing:
+                component.get_or_create_nbt("enchantments").int["minecraft:vanishing_curse"] = 1
+            if unbreakable:
+                component.compound["unbreakable"] = {}
+            if color is not None:  # only works on leather_helmet
+                component.int["dyed_color"] = color
+            self.replaceItem("armor.head", armortype.withData(component))
+
+    def replaceItem(
+        self, where: str, item: Block | str, amount: int = 1, *, nbt: NBT | None = None
+    ) -> None:
+        """Replace an inventory location `where` with a given `item`.
+        The location can be something like ``armor.[head|chest|legs|feet|body]``, ``weapon.[mainhand|offhand]``, ``hotbar.[0-8]``, ``inventory.[0-26]``, ``enderchest.[0-26]`` or ``container.[0-52]``.
+        The item can be a string or a :class:`~mcpq.nbt.Block` with component data:
+
+        .. code::
+
+           sword = mc.materials.getById("diamond_sword").withData({"enchantments": {"sharpness": 5}})
+           mc.getPlayer().replaceItem("weapon.mainhand", sword)
+
+        .. note::
+
+           `nbt` is only used for servers prior to 1.20.5 and will be removed in the future. All more modern servers use :class:`~mcpq.nbt.ComponentData`, which can be set on the `item`.
+        """
         if nbt is None:
             self.runCommand(f"item replace entity @s {where} with {item} {amount}")
         else:
@@ -296,6 +358,7 @@ class Entity(_HasStub):
 
     def runCommand(self, command: str) -> None:
         """Run the `command` as if it was typed in chat as ``/``-command by and at the location of the given entity.
+        Returns immediately without waiting for the command to finish executing.
 
         .. code-block:: python
 
@@ -307,6 +370,28 @@ class Entity(_HasStub):
         """
         command = f"execute as {self.id} at @s run " + command
         return super().runCommand(command)
+
+    def runCommandBlocking(self, command: str) -> str:
+        """Run the `command` as if it was typed in chat as ``/``-command by and at the location of the given entity.
+        Blocks and waits for the command to finish executing returning the command's result.
+
+        .. code-block:: python
+
+           response = entity.runCommandBlocking("data get entity @s")  # @s refers to this entity
+
+        .. caution::
+
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output,
+           specifically the capturing of output of vanilla commands.
+           Instead it only supports the capturing of Bukkit commands, which can be seen with ``mc.runCommandBlocking("help Bukkit").split("\\n")``
+
+        :param command: the command without the slash ``/``
+        :type command: str
+        :return: the console output of the command
+        :rtype: str
+        """
+        command = f"execute as {self.id} at @s run " + command
+        return super().runCommandBlocking(command)
 
     def teleport(
         self,
@@ -344,7 +429,8 @@ class Entity(_HasStub):
         world_pb = None
 
         if pos is not None:
-            pos_pb = pb.Vec3f(**pos.map(float).asdict())
+            pos = pos.map(float)
+            pos_pb = pb.Vec3f(x=pos.x, y=pos.y, z=pos.z)
 
         if facing is not None:
             orientation = facing.yaw_pitch()
@@ -352,9 +438,9 @@ class Entity(_HasStub):
 
         if world is not None:
             if isinstance(world, str):
-                world = self._worldhub.getWorldByKey(world)
+                world = self._server.get_world_by_key(world)
             elif isinstance(world, World):
-                newworld = self._worldhub.getWorldByName(world.name)
+                newworld = self._server.get_world_by_name(world.name)
                 if newworld is not world:
                     raise ValueError("World and entity are not from same server")
             else:
@@ -374,79 +460,3 @@ class Entity(_HasStub):
             self._yaw, self._pitch = orientation
         if world is not None:
             self._world = world
-
-
-class _EntityCache(_WorldHub, _HasStub, _EntityProvider):
-    def __init__(self, stub: MinecraftStub) -> None:
-        super().__init__(stub)
-        self._entity_cache = ThreadSafeSingeltonCache(
-            partial(Entity, stub, self), use_weakref=True
-        )
-
-    def _get_or_create_entity(self, entity_id: str) -> Entity:
-        return self._entity_cache.get_or_create(entity_id)
-
-    def getEntityById(self, entity_id: str) -> Entity:
-        """Get an entity with a certain `entity_id`, even if it is not loaded.
-
-        Normally the `entity_id` is not known ahead of time.
-        Prefer using :func:`getEntities`, :func:`getEntitiesAround` and :func:`spawnEntity`, which all return entities.
-
-        :param entity_id: the unique entity identified
-        :type entity_id: str
-        :return: the corresponding entity with that id, even if not loaded
-        :rtype: Entity
-        """
-        entity = self._get_or_create_entity(entity_id)
-        entity._update()
-        return entity
-
-
-# if __name__ == "__main__":
-#     from functools import partial
-
-#     test_stub_1 = object()
-#     test_stub_2 = object()
-#     E1 = partial(Entity, test_stub_1)
-#     P1 = partial(TestPlayer, test_stub_1)
-
-#     name1 = "test_id"
-#     name2 = "other_test_id"
-
-#     e1_1 = E1(name1)
-#     e2_1 = E1(name1)
-#     e3_1 = E1(name2)
-#     print(e1_1)
-#     print(e2_1)
-#     print(e3_1)
-#     assert e1_1 is not e2_1
-#     assert e1_1 is not e3_1
-#     assert e1_1 == e2_1
-#     assert e1_1 != e3_1
-#     p1_1 = P1(name1)
-#     print(p1_1)
-#     assert p1_1 != e1_1
-#     e1_1.runCommand("hi")
-#     p1_1.runCommand("hi")
-#     p1_1.kill()
-#     p1_1.kill()
-#     p1_1.only_player_cmd("test")
-
-#     print("---")
-
-#     from ._util import ThreadSafeCachedKeyBasedFactory
-
-#     entity1 = ThreadSafeCachedKeyBasedFactory(partial(Entity, test_stub_1), use_weakref=True)
-#     player1 = ThreadSafeCachedKeyBasedFactory(partial(TestPlayer, test_stub_1))
-
-#     e1_1 = entity1.get_or_create(name1)
-#     e2_1 = entity1.get_or_create(name2)
-#     e3_1 = entity1.get_or_create(name1)
-#     assert e1_1 is not e2_1
-#     assert e1_1 is e3_1
-#     p1_1 = player1.get_or_create(name1)
-#     p2_1 = player1.get_or_create(name2)
-#     p3_1 = player1.get_or_create(name1)
-#     assert p1_1 is not p2_1
-#     assert p1_1 is p3_1
-#     assert p1_1 is not e1_1

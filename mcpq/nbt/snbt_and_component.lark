@@ -1,0 +1,51 @@
+// EBNF gramar of SNBT with Lark (https://github.com/lark-parser/lark) addons
+// -----------------------------------
+
+?start: component | value
+
+?value: compound
+    | array 
+    | number 
+    | string
+
+// component must contain at least one pair, to differentiate between array
+component: "[" component_pair ("," component_pair)* "]"
+    component_pair: UNQUOTED_STRING "=" value
+                
+compound: "{" [pair ("," pair)*] "}"
+    pair: string ":" value
+                
+array: "[" [ ARRAY_TYPE_IND ";" ] [ value ("," value)*] "]"
+ARRAY_TYPE_IND.1: ("B" | "I" | "L")
+                
+number: BYTE     -> byte
+        | BOOL   -> bool
+        | SHORT  -> short
+        | INT    -> int
+        | LONG   -> long
+        | FLOAT  -> float
+        | DOUBLE -> double
+BYTE.4  : /[+-]?\d+[Bb]/
+BOOL.2  : "true" | "false" // bool is byte with different repr
+SHORT.4 : /[+-]?\d+[Ss]/
+INT.2   : /[+-]?\d+/
+LONG.4  : /[+-]?\d+[Ll]/
+FLOAT.4 : /[+-]?[0-9]*\.?[0-9]+[Ff]/
+DOUBLE.3: /[+-]?[0-9]*\.[0-9]+[Dd]?/ | /[+-]?[0-9]*\.?[0-9]+[Dd]/
+
+string: QUOTED_STRING      -> string
+        | UNQUOTED_STRING  -> unquoted_string
+
+QUOTED_STRING: DOUBLEQUOTE_ESCAPED_STRING 
+               | SINGLEQUOTE_ESCAPED_STRING 
+                
+UNQUOTED_STRING.0: /[a-zA-Z0-9_\-\+\.]+/
+
+_STRING_INNER: /.*?/
+_STRING_ESC_INNER: _STRING_INNER /(?<!\\)(\\\\)*?/
+
+DOUBLEQUOTE_ESCAPED_STRING: "\"" _STRING_ESC_INNER "\""
+SINGLEQUOTE_ESCAPED_STRING: "'" _STRING_ESC_INNER "'"
+                
+%import common.WS
+%ignore WS

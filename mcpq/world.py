@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from functools import partial
-
 from . import entity
-from ._base import _EntityProvider, _HasStub
-from ._proto import MinecraftStub
+from ._abc import _ServerInterface
+from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import CARDINAL, COLOR, DIRECTION
-from ._util import ThreadSafeSingeltonCache
+from ._util import warning
 from .exception import raise_on_error
+from .nbt import NBT, Block, EntityType
 from .vec3 import Vec3
 
 MAX_BLOCKS = 50000  # TODO: replace with block stream
 
 
-class _DefaultWorld(_HasStub, _EntityProvider):
+class _DefaultWorld(_SharedBase, _HasServer):
     """Manipulating the world is the heart piece of the entire library.
     With this you can query blocks and world features and set them in turn, as well as finding and spawning entities in the world.
     This allows building on the server quickly and precisely with only a few commands.
@@ -115,8 +114,10 @@ class _DefaultWorld(_HasStub, _EntityProvider):
             return self.setBlock(blocktype, Vec3(x, y, z))
 
     def _fetch_entities(
-        self, include_non_spawnable: bool, with_locations: bool, entity_type: str
+        self, include_non_spawnable: bool, with_locations: bool, entity_type: str | EntityType
     ) -> list[entity.Entity]:
+        if entity_type and not isinstance(entity_type, EntityType):
+            entity_type = EntityType(entity_type).type
         request = pb.EntityRequest(
             worldwide=pb.EntityRequest.WorldEntities(
                 world=self._pb_world,
@@ -125,19 +126,19 @@ class _DefaultWorld(_HasStub, _EntityProvider):
             ),
             withLocations=with_locations,
         )
-        response = self._stub.getEntities(request)
+        response = self._server.stub.getEntities(request)
         raise_on_error(response.status)
         entities = []
         for e in response.entities:
             if include_non_spawnable and e.type == "player":
                 # TODO: players are also included in getEntities(includeNotSpawnable=True) call
                 continue
-            nativeE = self._get_or_create_entity(e.id)
+            nativeE = self._server.get_or_create_entity(e.id)
             if with_locations:
                 nativeE._inject_update(e)
             else:
                 # update only type
-                nativeE._type = e.type
+                nativeE._type = EntityType(e.type)
             entities.append(nativeE)
         return entities
 
@@ -146,21 +147,17 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         """True if any world on the server has pvp enabled.
         Can be set to enable or disable pvp on all worlds on the server.
         """
-        # TODO: returning if ANY world has pvp
-        response = self._stub.accessWorlds(pb.WorldRequest())
+        response = self._server.stub.accessWorlds(pb.WorldRequest())
         raise_on_error(response.status)
         return any(world.info.pvp for world in response.worlds)
 
     @pvp.setter
     def pvp(self, value: bool) -> None:
-        # TODO: setting ALL world pvp variables
-        response = self._stub.accessWorlds(pb.WorldRequest())
-        raise_on_error(response.status)
-        response = self._stub.accessWorlds(
+        response = self._server.stub.accessWorlds(
             pb.WorldRequest(
                 worlds=[
                     pb.World(name=world.name, info=pb.WorldInfo(pvp=value))
-                    for world in response.worlds
+                    for world in self._server.get_worlds()
                 ]
             )
         )
@@ -172,7 +169,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :return: The position of the highest non-air block with given `x` and `z`
         :rtype: Vec3
         """
-        response = self._stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
+        response = self._server.stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
         raise_on_error(response.status)
         pos = Vec3(response.block.pos.x, response.block.pos.y, response.block.pos.z)
         return pos
@@ -181,103 +178,124 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         "Equivalent to the y value of :func:`getHighestPos` with `x` and `z`."
         return self.getHighestPos(x, z).y  # type: ignore
 
-    def getBlock(self, pos: Vec3) -> str:
-        """The block type/id at position `pos` in world.
+    def getBlock(self, pos: Vec3) -> Block:
+        """The block :class:`Block` type/id at position `pos` in world.
 
         .. note::
 
-           The function does only query the block type/id, no additional block data is included.
+           The function does only query the block type/id, no block component data is not queried.
+           To query block component data use :func:`getBlockWithData`.
 
         :param pos: position to query block from
         :type pos: Vec3
         :return: block type/id at queried position
-        :rtype: str
+        :rtype: Block
         """
-        response = self._stub.getBlock(
-            pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(**pos.floor().asdict()))
+        pos = pos.floor()
+        response = self._server.stub.getBlock(
+            pb.BlockRequest(world=self._pb_world, pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z))
         )
         raise_on_error(response.status)
-        return response.info.blockType
+        return Block(response.info.blockType)
 
-    # TODO: differentiate between block type and Block
-    # def getBlockWithData(self, pos: Vec3) -> Block:
-    #     raise NotImplementedError
+    def getBlockWithData(self, pos: Vec3) -> Block:
+        """The block :class:`Block` at position `pos` in world including block component data.
 
-    def getBlockList(self, positions: list[Vec3]) -> list[str]:
-        """The list of all block types/ids at given `positions` in world in the same order.
+        :param pos: position to query block from
+        :type pos: Vec3
+        :return: block type/id and component data at queried position
+        :rtype: Block
+        """
+        pos = pos.floor()
+        response = self._server.stub.getBlock(
+            pb.BlockRequest(
+                world=self._pb_world,
+                pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z),
+                withData=True,
+            ),
+        )
+        raise_on_error(response.status)
+        return Block(response.info.blockType + response.info.blockData)
+
+    def getBlockList(self, positions: list[Vec3]) -> list[Block]:
+        """The list of all block :class:`Block` types/ids at given `positions` in world in the same order.
 
         .. note::
 
-           The function does only query the block types/ids, no additional block data is included.
+           The function does only query the block type/ids, no block component data is not queried.
 
         :param positions: list of positions to query
         :type positions: list[Vec3]
         :return: list of block types/ids at given positions (same order)
-        :rtype: list[str]
+        :rtype: list[Block]
         """
         # TODO: natively support this operation
         return [self.getBlock(pos) for pos in positions]
 
-    def setBlock(self, blocktype: str, pos: Vec3) -> None:
+    def getBlockListWithData(self, positions: list[Vec3]) -> list[Block]:
+        """The list of all block :class:`Block` at given `positions` in world with component data in the same order.
+
+        :param positions: list of positions to query
+        :type positions: list[Vec3]
+        :return: list of block type/ids and component data at given positions (same order)
+        :rtype: list[Block]
+        """
+        # TODO: natively support this operation
+        return [self.getBlockWithData(pos) for pos in positions]
+
+    def setBlock(self, blocktype: str | Block, pos: Vec3) -> None:
         """Change the block at position `pos` to `blocktype` in world.
         This will overwrite any block at that position.
 
-        :param blocktype: the valid block type/id to set the block to
-        :type blocktype: str
+        :param blocktype: the valid block type/id or :class:`Block` to set the block to
+        :type blocktype: str | Block
         :param pos: the position where the block should be set
         :type pos: Vec3
         """
-        response = self._stub.setBlock(
+        pos = pos.floor()
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
+        response = self._server.stub.setBlock(
             pb.Block(
                 world=self._pb_world,
-                info=pb.BlockInfo(blockType=blocktype),
-                pos=pb.Vec3(**pos.floor().asdict()),
+                info=pb_info,
+                pos=pb.Vec3(x=pos.x, y=pos.y, z=pos.z),
             )
         )
         raise_on_error(response)
 
-    def setBed(self, pos: Vec3, direction: CARDINAL = "east", color: COLOR = "red") -> None:
-        """Place a bed at `pos` in `direction` with `color`, which is composed of two placed blocks with specific block data.
-
-        :param pos: the position of foot part of bed
-        :type pos: Vec3
-        :param direction: direction in which to place head part of bed, defaults to "east"
-        :type direction: CARDINAL, optional
-        :param color: color of bed, defaults to "red"
-        :type color: COLOR, optional
-        """
-        pos = pos.floor()
-        pos2 = getattr(pos, direction)(1)
-        self.runCommand(
-            f"setblock {pos.x} {pos.y} {pos.z} {color}_bed[part=foot,facing={direction}]"
-        )
-        self.runCommand(
-            f"setblock {pos2.x} {pos2.y} {pos2.z} {color}_bed[part=head,facing={direction}]"
-        )
-
-    def setBlockList(self, blocktype: str, positions: list[Vec3]) -> None:
+    def setBlockList(self, blocktype: str | Block, positions: list[Vec3]) -> None:
         """Change all blocks at `positions` to `blocktype` in world.
         This will overwrite all blocks at the given positions.
-        This is more efficient that using :func:`setBlock` mutliple times with the same `blocktype`.
+        This is more efficient that using :func:`setBlock` multiple times with the same `blocktype`.
 
         :param blocktype: the valid block type/id to set the blocks to
-        :type blocktype: str
+        :type blocktype: str | Block
         :param positions: the positions where the blocks should be set
         :type positions: list[Vec3]
         """
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
         for chunk in (
             positions[index : index + MAX_BLOCKS] for index in range(0, len(positions), MAX_BLOCKS)
         ):
-            response = self._stub.setBlocks(
+            floored = (pos.floor() for pos in chunk)
+            response = self._server.stub.setBlocks(
                 pb.Blocks(
                     world=self._pb_world,
-                    info=pb.BlockInfo(blockType=blocktype),
-                    pos=[pb.Vec3(**pos.floor().asdict()) for pos in chunk],
+                    info=pb_info,
+                    pos=[pb.Vec3(x=pos.x, y=pos.y, z=pos.z) for pos in floored],
                 )
             )
             raise_on_error(response)
 
-    def setBlockCube(self, blocktype: str, pos1: Vec3, pos2: Vec3) -> None:
+    def setBlockCube(self, blocktype: str | Block, pos1: Vec3, pos2: Vec3) -> None:
         """Change all blocks in a cube between the corners `pos1` and `pos2` in world to `blocktype`, where both positions are *inclusive*. meaning that both given positions/corners will be part of the cube.
         This will overwrite all blocks between the given positions.
         The positions span a cube if all their coordinates are different,
@@ -298,44 +316,173 @@ class _DefaultWorld(_HasStub, _EntityProvider):
                        world.setBlock("diamond_block", start.addX(x).addY(y).addZ(z))
 
         :param blocktype: the valid block type/id to set the blocks to
-        :type blocktype: str
+        :type blocktype: str | Block
         :param pos1: the position of one corner of the cube
         :type pos1: Vec3
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
         """
-        response = self._stub.setBlockCube(
+        pos1, pos2 = pos1.floor(), pos2.floor()
+        pb_info = (
+            pb.BlockInfo(blockType=blocktype.type, blockData=blocktype.datastr)
+            if isinstance(blocktype, Block) and blocktype.hasData
+            else pb.BlockInfo(blockType=blocktype)
+        )
+        response = self._server.stub.setBlockCube(
             pb.Blocks(
                 world=self._pb_world,
-                info=pb.BlockInfo(blockType=blocktype),
+                info=pb_info,
                 pos=[
-                    pb.Vec3(**pos1.floor().asdict()),
-                    pb.Vec3(**pos2.floor().asdict()),
+                    pb.Vec3(x=pos1.x, y=pos1.y, z=pos1.z),
+                    pb.Vec3(x=pos2.x, y=pos2.y, z=pos2.z),
                 ],
             )
         )
         raise_on_error(response)
 
-    def copyBlockCube(self, pos1: Vec3, pos2: Vec3) -> list[list[list[str]]]:
+    def setBed(self, pos: Vec3, direction: CARDINAL = "east", color: COLOR = "red") -> None:
+        """Place a bed at `pos` in `direction` with `color`, which is composed of two placed blocks with specific block data.
+
+        :param pos: the position of foot part of bed
+        :type pos: Vec3
+        :param direction: direction in which to place head part of bed, defaults to "east"
+        :type direction: CARDINAL, optional
+        :param color: color of bed, defaults to "red"
+        :type color: COLOR, optional
+        """
+        pos = pos.floor()
+        pos2 = getattr(pos, direction)(1)
+        # must place head first, otherwise foot breaks
+        self.setBlock(Block(f"{color}_bed[part=head,facing={direction}]"), pos2)
+        self.setBlock(Block(f"{color}_bed[part=foot,facing={direction}]"), pos)
+
+    def setSign(
+        self,
+        pos: Vec3,
+        text: list[str | NBT | dict] | str,
+        *,
+        color: COLOR = "black",
+        glowing: bool = False,
+        direction: CARDINAL | int = "south",
+        sign_block: str | Block = "oak_sign",
+    ) -> None:
+        """Place a sign block at `pos` with `text` overwriting any block there.
+        `text` can be a list of at most 8 elements, where each element is a line of text on the sign; the first 4 on the front and the second 4 on the back.
+        Lists with fewer than 8 elements are allowed and result in empty following lines.
+        `text` may also be a string in which case the above list is built by splitting the string on newlines.
+        The elements in the list may also be :class:`NBT` instances of the form:
+        ``{selector: "@p", color: "red", bold: false, italic: false, underlined: false, strikethrough: false, obfuscated: false, text: "A Line of Text"}``
+        The material and type of sign can be set with `sign_block` - it can be a sign, wall_sign, or hanging_sign of any given wood material.
+
+        .. code-block:: python
+
+           pos = Vec3(0, 120, 0) # position where to place sign
+           mc.setSign(pos, "Hello Minecraft") # front line 1
+           mc.setSign(pos, "Hello\\nMinecraft") # front line 1 and 2
+           mc.setSign(pos, ["Hello", "Minecraft"]) # front line 1 and 2
+           mc.setSign(pos, ["", "Hello", "Minecraft"]) # front line 2 and 3
+           # back line 6 and 7
+           mc.setSign(pos, ["", "", "", "",  "", "Hello", "Minecraft"])
+           # everything beyond line 8 (back line 4) is not on sign anymore
+           mc.setSign(pos, ["", "", "", "",  "", "", "", "",  "NOT ON SIGN"])
+           # line-wise customization with NBT compounds or dicts
+           mc.setSign(pos, [{"text": "Hello", "color": "red"}, NBT({"text": "Minecraft", "bold": True})])
+
+           valid_signs = mc.blocks.endswith("_sign")
+           mc.setSign(..., sign_block="spruce_sign")
+           mc.setSign(..., sign_block="jungle_wall_sign")
+           mc.setSign(..., sign_block="acacia_hanging_sign")
+           mc.setSign(..., sign_block="acacia_hanging_sign[attached=true]")
+           mc.setSign(..., sign_block=Block("oak_sign").withData({"waterlogged": True}))
+
+           mc.setSign(pos, "\\nHello\\nMinecraft\\n", direction="east", color="green", glowing=True)
+
+        :param pos: the position where the sign should be set
+        :type pos: Vec3
+        :param text: the text to put on sign either as list of at most 8 elements, where the first 4 are text on the front and the second set of 4 are the text on the back of the sign, or as a string, where said list is produced by splitting on newlines. Elements of the list may also be NBT compounds instead of strings.
+        :type text: list[str | NBT | dict[str, Any]] | str
+        :param color: the base color of the text on the sign, can be overwritten on a per-line basis by providing `NBT({"text":"...","color":"red"})` NBT compounds, defaults to "black"
+        :type color: COLOR, optional
+        :param glowing: whether or not the text should use the glowing effect, defaults to False
+        :type glowing: bool, optional
+        :param direction: the cardinal direction the sign should be facing, for non-wall signs can also be an integer between 0-15, defaults to "south"
+        :type direction: CARDINAL | int, optional
+        :param sign_block: the block type/id of the sign that should be placed, should end with "_sign", defaults to "oak_sign"
+        :type sign_block: str | Block, optional
+        """
+        # TODO: mc version
+        pos = pos.floor()
+        if isinstance(text, str):
+            text = text.split("\n")
+        else:
+            text = list(text)
+        if not isinstance(sign_block, Block):
+            sign_block = Block(sign_block)
+        if direction is not None:
+            facing = sign_block.getData()
+            if sign_block.type.endswith("_wall_sign"):
+                # use 'facing' (CARDINAL)
+                if not isinstance(direction, str):
+                    raise TypeError(
+                        f"Wall signs can only face a cardinal direction expected type str got {type(direction)}"
+                    )
+                facing.string["facing"] = direction
+            else:
+                # use 'rotation' (int 0-15)
+                if isinstance(direction, str):
+                    direction = {"south": 0, "west": 4, "north": 8, "east": 12}[direction]
+                facing.int["rotation"] = direction
+            sign_block = sign_block.withData(facing)
+
+        messages = []
+        for msg in text[:8]:
+            if isinstance(msg, NBT):
+                messages.append(msg)
+            elif isinstance(msg, dict):
+                messages.append(NBT(msg))
+            else:
+                n = NBT()
+                n.string["text"] = msg
+                messages.append(n)
+        messages.extend([NBT({"text": ""})] * (8 - len(messages)))
+        assert len(messages) == 8
+
+        nbt = NBT()
+        front = nbt.get_or_create_nbt("front_text")
+        back = nbt.get_or_create_nbt("back_text")
+        front.get_or_create_list("messages").string.extend(messages[:4])
+        back.get_or_create_list("messages").string.extend(messages[4:8])
+        front.byte["has_glowing_text"] = 1 if glowing else 0
+        back.byte["has_glowing_text"] = 1 if glowing else 0
+        front.string["color"] = color
+        back.string["color"] = color
+        # using /setblock will not change nbt data if identical block is already there
+        # cmd = f"setblock {pos.x} {pos.y} {pos.z} {sign_block}{nbt} replace"
+        cmd = f"data merge block {pos.x} {pos.y} {pos.z} {nbt}"
+        self.setBlock(sign_block, pos)
+        self.runCommand(cmd)
+
+    def copyBlockCube(
+        self, pos1: Vec3, pos2: Vec3, withData: bool = False
+    ) -> list[list[list[Block]]]:
         """Get all block types in a cube between `pos1` and `pos2` inclusive.
         Should be used in conjunction with :func:`pasteBlockCube`.
-
-        .. note::
-
-           The function does only copy the block types/ids, no additional block data is included.
 
         :param pos1: the position of one corner of the cube
         :type pos1: Vec3
         :param pos2: the position of the opposite corner of the cube
         :type pos2: Vec3
+        :param withData: whether block component data should be queried, defaults to False
+        :type withData: bool, optional
         :return: the block types in the cube given as rows of x with columns of y with slices of depth z respectively
-        :rtype: list[list[list[str]]]
+        :rtype: list[list[list[Block]]]
         """
         pos1, pos2 = pos1.map_pairwise(min, pos2), pos1.map_pairwise(max, pos2)
         pos1, pos2 = pos1.floor(), pos2.floor()
+        getfunc = self.getBlockWithData if withData else self.getBlock
         return [
             [
-                [self.getBlock(Vec3(x, y, z)) for z in range(pos1.z, pos2.z + 1)]
+                [getfunc(Vec3(x, y, z)) for z in range(pos1.z, pos2.z + 1)]
                 for y in range(pos1.y, pos2.y + 1)
             ]
             for x in range(pos1.x, pos2.x + 1)
@@ -343,7 +490,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
 
     def pasteBlockCube(
         self,
-        blocktypes: list[list[list[str]]],
+        blocktypes: list[list[list[str | Block]]],
         pos: Vec3,
         rotation: DIRECTION = "east",
         flip_x: bool = False,
@@ -353,10 +500,6 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         """Paste the block types in the cube `blocktypes` into the world at position `pos` where `pos` is the negative most corner of the cube along all three axes.
         Additional options can be used to change the rotation of blocks in the copied cube, however, no matter in which way the cube is rotated and/or flipped, `pos` will also be the most negative corner.
         Should be used in conjunction with :func:`copyBlockCube`.
-
-        .. note::
-
-           The :func:`copyBlockCube` function does only copy the block types/ids, no additional block data is included.
 
         .. code-block:: python
 
@@ -371,7 +514,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
 
 
         :param blocktypes: the cube of block types/ids that should be pasted, given as rows of x with columns of y with slices of depth z respectively
-        :type blocktypes: list[list[list[str]]]
+        :type blocktypes: list[list[list[str | Block]]]
         :param pos: the most negative corner along all three axes of the cube where the cube should be pasted
         :type pos: Vec3
         :param rotation: the direction of the x axis of the cube to be pasted ("east" means copied x axis aligns with real x axis, i.e., the original orientation), defaults to "east"
@@ -429,45 +572,65 @@ class _DefaultWorld(_HasStub, _EntityProvider):
                         Vec3(pos.x + xindex, pos.y + yindex, pos.z + zindex),
                     )
 
-    def spawnEntity(self, type: str, pos: Vec3) -> entity.Entity:
+    def spawnEntity(self, type: str | EntityType, pos: Vec3) -> entity.Entity:
         """Spawn and return a new entitiy of given `type` at position `pos` in world.
         The entity has default settings and behavior.
 
         :param type: the valid entity type that should be spawned (must be spawnable without additional parameters)
-        :type type: str
+        :type type: str | EntityType
         :param pos: the position where to spawn the entitiy in the world
         :type pos: Vec3
         :return: the :class:`Entity` entity spawned
         :rtype: entity.Entity
         """
-        response = self._stub.spawnEntity(
+        pos = pos.map(float)
+        if isinstance(type, EntityType) and type.hasData:
+            raise NotImplementedError(
+                f"spawnEntity does not support additional component data on entity: {type}"
+            )
+        response = self._server.stub.spawnEntity(
             pb.Entity(
-                type=type,
-                location=pb.EntityLocation(world=self._pb_world, pos=pb.Vec3f(**pos.asdict())),
+                type=type.type if isinstance(type, EntityType) else type,
+                location=pb.EntityLocation(
+                    world=self._pb_world, pos=pb.Vec3f(x=pos.x, y=pos.y, z=pos.z)
+                ),
             )
         )
         raise_on_error(response.status)
-        entity = self._get_or_create_entity(response.entity.id)
-        entity._type = response.entity.type
+        entity = self._server.get_or_create_entity(response.entity.id)
+        entity._type = EntityType(response.entity.type)
         return entity
 
-    def spawnItems(self, pos: Vec3, type: str, amount: int = 1) -> None:
+    def spawnItems(self, type: str | Block, pos: Vec3, amount: int = 1) -> None:
         """Spawn `amount` many collectable items of `type` at `pos`.
 
+        :param type: the item type as string or :class:`Block`, e.g., ``"minecraft:arrow"`` with potential component data
+        :type type: str | Block
         :param pos: position where to spawn the items
         :type pos: Vec3
-        :param type: the item type, e.g., ``"minecraft:arrow"``
-        :type type: str
         :param amount: number of items to spawn, defaults to 1
         :type amount: int, optional
         """
+        if isinstance(type, Vec3) and isinstance(pos, str):
+            warning(
+                "Used spawnItems with wrong parameter order, expected first type: str | Block then pos: Vec3"
+            )
+            type, pos = pos, type
         pos = pos.floor()
-        self.runCommand(
-            f'summon item {pos.x} {pos.y} {pos.z} {{Item:{{id:"{type}", Count:{amount}}}}}'
-        )
+        if not isinstance(type, Block):
+            type = Block(type)
+        mc_version = self._server.get_mc_version()
+        if mc_version and mc_version < (1, 20, 5):
+            nbt = NBT({"Item": {"id": type.type, "Count": f"{int(amount)}b"}})
+        else:
+            nbt = NBT({"Item": {"id": type.type, "Count": int(amount)}})
+            data = type.getData()
+            if data:
+                nbt["Item"]["components"] = data.asCompound()
+        self.runCommand(f"summon item {pos.x} {pos.y} {pos.z} {nbt}")
 
     def getEntities(
-        self, type: str | None = None, only_spawnable: bool = True
+        self, type: str | EntityType | None = None, only_spawnable: bool = True
     ) -> list[entity.Entity]:
         """Get all (loaded) entities in the world.
         If a `type` is provided, only entities of that type are returned.
@@ -475,7 +638,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         To get all entities (except players) set ``only_spawnable=False``, which will also return non-spawnable entities such as e.g. ``"falling_block"`` or ``"dropped_item"``.
 
         :param type: if provided returns only entities of that type, returns all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if False, will also return non-spawnable entities, defaults to True
         :type only_spawnable: bool, optional
         :return: list of (loaded and filtered) entities in the world
@@ -487,7 +650,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         self,
         pos: Vec3,
         distance: float,
-        type: str | None = None,
+        type: str | EntityType | None = None,
         only_spawnable: bool = True,
     ) -> list[entity.Entity]:
         """Equivalent to :func:`getEntities`, however, is filtered to only return entities within `distance` around `pos`. Is more efficient that filtering the list manually.
@@ -497,7 +660,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         :param distance: the maximum distance entities returned have around `pos`
         :type distance: float
         :param type: if provided returns only entities of that type, returns all types if None, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         :param only_spawnable: if False, will also return non-spawnable entities, defaults to True
         :type only_spawnable: bool, optional
         :return: list of (loaded and filtered) entities in the world closer than `distance` to `pos`
@@ -506,17 +669,20 @@ class _DefaultWorld(_HasStub, _EntityProvider):
         entities = self._fetch_entities(not only_spawnable, True, type if type else "")
         return [e for e in entities if pos.distance(e.pos) <= distance]
 
-    def removeEntities(self, type: str | None = None) -> None:
+    def removeEntities(self, type: str | EntityType | None = None) -> None:
         """Remove all entities (except players) from the world, they do not drop anything.
         If `type` is provided remove only entities of that type.
 
         :param type: if provided removes only entities of that type, otherwise remove all entities, defaults to None
-        :type type: str | None, optional
+        :type type: str | EntityType | None, optional
         """
         # TODO: support natively
         if type is None:
             self.runCommand("tp @e[type=!player] 0 -50000 0")
             self.runCommand("kill @e[type=!player]")
+        elif isinstance(type, EntityType):
+            self.runCommand(f"tp @e[type={type.type}] 0 -50000 0")
+            self.runCommand(f"kill @e[type={type.type}]")
         elif isinstance(type, str):
             self.runCommand(f"tp @e[type={type}] 0 -50000 0")
             self.runCommand(f"kill @e[type={type}]")
@@ -524,7 +690,7 @@ class _DefaultWorld(_HasStub, _EntityProvider):
             raise TypeError("Type should be of type str")
 
 
-class World(_DefaultWorld, _HasStub, _EntityProvider):
+class World(_DefaultWorld, _SharedBase, _HasServer):
     """Manipulating the world is the heart piece of the entire library.
     With this you can query blocks and world features and set them in turn, as well as finding and spawning entities in the world.
     This allows building on the server quickly and precisely with only a few commands.
@@ -569,16 +735,10 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
        If you want to affect a specific world, use :class:`World` classes instead, such as ``mc.overworld``, ``mc.nether`` or ``mc.end``.
     """
 
-    def __init__(
-        self, stub: MinecraftStub, entity_provider: _EntityProvider, key: str, name: str
-    ) -> None:
-        super().__init__(stub)
-        self._entity_provider = entity_provider
+    def __init__(self, server: _ServerInterface, key: str, name: str) -> None:
+        super().__init__(server)
         self._key = key
         self._name = name
-
-    def _get_or_create_entity(self, entity_id: str):
-        return self._entity_provider._get_or_create_entity(entity_id)
 
     @property
     def _pb_world(self) -> pb.World:
@@ -597,13 +757,13 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
     @property
     def pvp(self) -> bool:
         """True if pvp is enabled in this world. Can be set to enable or disable pvp in only this world."""
-        response = self._stub.accessWorlds(pb.WorldRequest(worlds=[self._pb_world]))
+        response = self._server.stub.accessWorlds(pb.WorldRequest(worlds=[self._pb_world]))
         raise_on_error(response.status)
         return response.worlds[0].info.pvp
 
     @pvp.setter
     def pvp(self, value: bool) -> None:
-        response = self._stub.accessWorlds(
+        response = self._server.stub.accessWorlds(
             pb.WorldRequest(worlds=[pb.World(name=self.name, info=pb.WorldInfo(pvp=value))])
         )
         raise_on_error(response.status)
@@ -613,7 +773,8 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         return f"{self.__class__.__name__}(key={self.key})"
 
     def runCommand(self, command: str) -> None:
-        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension..
+        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension.
+        Returns immediately without waiting for the command to finish executing.
 
         .. code-block:: python
 
@@ -625,124 +786,24 @@ class World(_DefaultWorld, _HasStub, _EntityProvider):
         command = f"execute in {self.key} run " + command
         return super().runCommand(command)
 
+    def runCommandBlocking(self, command: str) -> str:
+        """Run the `command` as if it was typed in chat as ``/``-command and executed in this specific world/dimension.
+        Blocks and waits for the command to finish executing returning the command's result.
 
-class _WorldHub(_HasStub, _EntityProvider):
-    """All functions regarding getting World objects and interacting with different worlds.
+        .. code-block:: python
 
-    .. note::
+           response = world.runCommandBlocking("locate biome mushroom_fields")
 
-       What is called :class:`World` here is referred to as a dimension in game.
+        .. caution::
 
-    """
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output,
+           specifically the capturing of output of vanilla commands.
+           Instead it only supports the capturing of Bukkit commands, which can be seen with ``mc.runCommandBlocking("help Bukkit").split("\\n")``
 
-    def __init__(self, stub: MinecraftStub) -> None:
-        super().__init__(stub)
-        self._world_by_name_cache = ThreadSafeSingeltonCache(None)
-
-    @property
-    def worlds(self) -> tuple[World, ...]:
-        """Give a tuple of all worlds loaded on the server.
-        Does not automatically call :func:`refreshWorlds`.
-
-        :return: A tuple of all worlds loaded on the server
-        :rtype: tuple[World, ...]
+        :param command: the command without the slash ``/``
+        :type command: str
+        :return: the console output of the command
+        :rtype: str
         """
-        if not self._world_by_name_cache:
-            self.refreshWorlds()
-        return tuple(self._world_by_name_cache.values())
-
-    @property
-    def overworld(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:overworld"``.
-
-        :return: The overworld world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:overworld")
-
-    @property
-    def nether(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_nether"``.
-
-        :return: The nether world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:the_nether")
-
-    @property
-    def end(self) -> World:
-        """Identical to :func:`getWorldByKey` with key ``"minecraft:the_end"``.
-
-        :return: The end world :class:`World` object
-        :rtype: World
-        """
-        return self.getWorldByKey("minecraft:the_end")
-
-    def getWorldByKey(self, key: str) -> World:
-        """The `key` of a world is the dimensions internal name/id.
-        Typically a regular server has the following worlds/keys:
-
-        - ``"minecraft:overworld"``
-
-        - ``"minecraft:the_nether"``
-
-        - ``"minecraft:the_end"``
-
-        The ``"minecraft:"`` prefix may be omitted, e.g., ``"the_nether"``.
-
-        If the given `key` does not exist an exception is raised.
-
-        :param key: Internal name/id of the world, such as ``"minecraft:the_nether"`` or ``"the_nether"``
-        :type key: str
-        :return: The corresponding :class:`World` object
-        :rtype: World
-        """
-        world = None
-        parts = key.split(":", maxsplit=1)
-        if len(parts) == 1:
-            key = "minecraft:" + key
-        for world in self.worlds:
-            if world.key == key:
-                return world
-        raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="key=" + key))
-        return world
-
-    def getWorldByName(self, name: str) -> World:
-        """The `name` of a world is the folder or namespace the world resides in.
-        The setting for the world the server opens is found in ``server.properties``.
-        A typical, unmodified PaperMC_ server will save the worlds in the following folders:
-
-        .. _PaperMC: https://papermc.io/
-
-        - ``"world"``, for the overworld
-
-        - ``"world_nether"``, for the nether
-
-        - ``"world_the_end"``, for the end
-
-        The name of the overworld (default ``world``) is used as the prefix for the other folders.
-
-        If the given `name` does not exist an exception is raised.
-
-        :param name: Foldername the world is saved in, such as ``world``
-        :type name: str
-        :return: The corresponding :class:`World` object
-        :rtype: World
-        """
-        if not self._world_by_name_cache:
-            self.refreshWorlds()
-        world = self._world_by_name_cache.get(name)
-        if world is None:
-            raise_on_error(pb.Status(code=pb.WORLD_NOT_FOUND, extra="name=" + name))
-        return world
-
-    def refreshWorlds(self) -> None:
-        """Fetches the currently loaded worlds from server and updates the world objects.
-        This should only be called if the loaded worlds on the server change, for example, with the Multiverse Core Plugin.
-        By default, the worlds will be refreshed on first use only.
-        """
-        response = self._stub.accessWorlds(pb.WorldRequest())
-        raise_on_error(response.status)
-        for world in response.worlds:
-            factory = partial(World, self._stub, self, world.info.key)
-            self._world_by_name_cache.get_or_create(world.name, factory)
+        command = f"execute in {self.key} run " + command
+        return super().runCommandBlocking(command)

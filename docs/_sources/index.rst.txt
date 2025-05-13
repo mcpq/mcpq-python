@@ -12,5 +12,8 @@ MCPQ documentation
    classes/player
    classes/world
    classes/events
+   classes/filter
    classes/vec3
+   classes/block
+   classes/nbt
    classes/turtle

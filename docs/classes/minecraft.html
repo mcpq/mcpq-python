@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 1.0.1 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=292eb321"></script>
+    <script src="../_static/documentation_options.js?v=51b770b3"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 1.0.1 documentation</a></div>
+          href="../index.html">MCPQ 2.0.0 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="../readme_link.html" title="Minecraft Protobuf Queries (MCPQ) Python Client Library"
              accesskey="P">previous</a> |
@@ -47,7 +47,7 @@ When constructing the class, a <code class="docutils literal notranslate"><span 
 All other worlds, events, entities and more are then received via the methods of that instance.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span>
 <span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to localhost</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Hello Minecraft&quot;</span><span class="p">)</span>  <span class="c1"># send  message in chat</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Hello Minecraft&quot;</span><span class="p">)</span>  <span class="c1"># send message in chat</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -60,15 +60,22 @@ However, it is also possible to connect with multiple instances from the same or
 <p>The connection used by the server is not encrypted or otherwise secured, meaning that any man-in-the-middle can read and modify any information sent between the program and the Minecraft server.
 For security reasons it is recommended to connect from the same host as the server is running on. By default, the plugin does only allow connections from <code class="docutils literal notranslate"><span class="pre">localhost</span></code> to prevent access from third parties.</p>
 </div>
-<p>The <a class="reference internal" href="#mcpq.Minecraft" title="mcpq.Minecraft"><code class="xref py py-class docutils literal notranslate"><span class="pre">Minecraft</span></code></a> instance is also an <em>event handler</em>, the default <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> and can be used to query <code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> objects from the server.
+<p>The <a class="reference internal" href="#mcpq.Minecraft" title="mcpq.Minecraft"><code class="xref py py-class docutils literal notranslate"><span class="pre">Minecraft</span></code></a> instance is also the default <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> and can be used to query <a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a>, <a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code></a> and <a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> objects from the server.
 Checkout the corresponding classes for more information.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="mcpq.Minecraft.events">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><span class="pre">EventHandler</span></a></em><a class="headerlink" href="#mcpq.Minecraft.events" title="Link to this definition">¶</a></dt>
-<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code> for receiving events from the server.
-Checkout the <code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code> class for examples for receiving events.</p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to localhost</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Players online:&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getPlayerList</span><span class="p">())</span>  <span class="c1"># show online players</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">block_hit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">)</span>  <span class="c1"># print whenever a player hits a block to chat</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;obsidian&quot;</span><span class="p">,</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># set obsidian block at origin</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getHighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># get position above highest ground at 0 0</span>
+<span class="n">stairs</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_stairs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">choice</span><span class="p">()</span>  <span class="c1"># get random block ending in &quot;_stairs&quot;</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="n">stairs</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span> <span class="n">pos</span><span class="p">)</span>  <span class="c1"># set waterlogged stairs above ground</span>
+<span class="n">creeper</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;creeper&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># spawn creeper on stairs</span>
+<span class="n">creeper</span><span class="o">.</span><span class="n">giveEffect</span><span class="p">(</span><span class="s2">&quot;invisibility&quot;</span><span class="p">)</span>  <span class="c1"># give creeper permanent invisibility effect</span>
+<span class="n">creeper</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getPlayer</span><span class="p">()</span><span class="o">.</span><span class="n">pos</span>  <span class="c1"># teleport creeper to player position</span>
+<span class="c1"># and many more ...</span>
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="mcpq.Minecraft.host">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mcpq.Minecraft.host" title="Link to this definition">¶</a></dt>
@@ -81,13 +88,54 @@ Checkout the <code class="xref py py-class docutils literal notranslate"><span c
 <dd><p>The Minecraft server port this instance is connected to.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.events">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><span class="pre">EventHandler</span></a></em><a class="headerlink" href="#mcpq.Minecraft.events" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code></a> for receiving events from the server.
+Checkout the <a class="reference internal" href="events.html#mcpq.events.EventHandler" title="mcpq.events.EventHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventHandler</span></code></a> class for examples for receiving events.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.blocks">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">blocks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></em><a class="headerlink" href="#mcpq.Minecraft.blocks" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> containing all types of blocks on the server.
+Equivalent to <code class="docutils literal notranslate"><span class="pre">mc.materials.block()</span></code>.
+Checkout the <a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> class for examples on filtering.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.materials">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materials</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><span class="pre">MaterialFilter</span></a></em><a class="headerlink" href="#mcpq.Minecraft.materials" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> containing all materials on the server, including types of blocks, items and more.
+Checkout the <a class="reference internal" href="filter.html#mcpq.material.MaterialFilter" title="mcpq.material.MaterialFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaterialFilter</span></code></a> class for examples on filtering.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.entity_types">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entity_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></em><a class="headerlink" href="#mcpq.Minecraft.entity_types" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityTypeFilter</span></code></a> containing all entity-types on the server.
+Checkout the <a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityTypeFilter</span></code></a> class for examples on filtering.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You probably want to use <a class="reference internal" href="#mcpq.Minecraft.spawnables" title="mcpq.Minecraft.spawnables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">spawnables</span></code></a> to get spawnable entity-types</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mcpq.Minecraft.spawnables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spawnables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><span class="pre">EntityTypeFilter</span></a></em><a class="headerlink" href="#mcpq.Minecraft.spawnables" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityTypeFilter</span></code></a> containing all entity-types on the server that can be spawned with <a class="reference internal" href="#mcpq.Minecraft.spawnEntity" title="mcpq.Minecraft.spawnEntity"><code class="xref py py-func docutils literal notranslate"><span class="pre">spawnEntity()</span></code></a>.
+Equivalent to <code class="docutils literal notranslate"><span class="pre">mc.entity_types.spawnable()</span></code>.
+Checkout the <a class="reference internal" href="filter.html#mcpq.entitytype.EntityTypeFilter" title="mcpq.entitytype.EntityTypeFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityTypeFilter</span></code></a> class for examples on filtering.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.postToChat">
 <span class="sig-name descname"><span class="pre">postToChat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.postToChat" title="Link to this definition">¶</a></dt>
 <dd><p>Print <cite>objects</cite> in chat separated by <cite>sep</cite>.
 All objects are converted to strings using <code class="xref py py-func docutils literal notranslate"><span class="pre">str()</span></code> first.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Hello Minecraft&quot;</span><span class="p">)</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Players online:&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getPlayers</span><span class="p">())</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">postToChat</span><span class="p">(</span><span class="s2">&quot;Players online:&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getPlayerList</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>You can also use the module <cite>mcpq.text</cite> to color or markup your chat messages.</p>
@@ -102,23 +150,86 @@ All objects are converted to strings using <code class="xref py py-func docutils
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – the separated between each object, defaults to “ “</p>
+<dd class="field-odd"><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – the separator between each object, defaults to “ “</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.runCommand">
-<span class="sig-name descname"><span class="pre">runCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.runCommand" title="Link to this definition">¶</a></dt>
-<dd><p>Run the <cite>command</cite> as if it was typed in chat as <code class="docutils literal notranslate"><span class="pre">/</span></code>-command.
-The command is run with the highest possible permission and no other modifiers.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;kill @e&quot;</span><span class="p">)</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;gamerule doDaylightCycle false&quot;</span><span class="p">)</span>
-</pre></div>
+<dt class="sig sig-object py" id="mcpq.Minecraft.getEntityById">
+<span class="sig-name descname"><span class="pre">getEntityById</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntityById" title="Link to this definition">¶</a></dt>
+<dd><p>Get an entity with a certain <cite>entity_id</cite>, even if it is not loaded.</p>
+<p>Normally the <cite>entity_id</cite> is not known ahead of time.
+Prefer using <a class="reference internal" href="#mcpq.Minecraft.getEntities" title="mcpq.Minecraft.getEntities"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntities()</span></code></a>, <a class="reference internal" href="#mcpq.Minecraft.getEntitiesAround" title="mcpq.Minecraft.getEntitiesAround"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntitiesAround()</span></code></a> and <a class="reference internal" href="#mcpq.Minecraft.spawnEntity" title="mcpq.Minecraft.spawnEntity"><code class="xref py py-func docutils literal notranslate"><span class="pre">spawnEntity()</span></code></a>, which all return entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>entity_id</strong> (<em>str</em>) – the unique entity identified</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the corresponding entity with that id, even if not loaded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity">Entity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getOfflinePlayer">
+<span class="sig-name descname"><span class="pre">getOfflinePlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getOfflinePlayer" title="Link to this definition">¶</a></dt>
+<dd><p>Get the <a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code></a> with the given <cite>name</cite> no matter if the player is online or not.
+Does not raise any errors if the player is offline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – player name/id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the player with the given <cite>name</cite></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getPlayer">
+<span class="sig-name descname"><span class="pre">getPlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getPlayer" title="Link to this definition">¶</a></dt>
+<dd><p>Get any currently online player or get the online player with given <cite>name</cite>.
+Will raise an error if either no player is online, or if the player with given <cite>name</cite> is not online.</p>
+<p>If you want to check for any currently online players, use <a class="reference internal" href="#mcpq.Minecraft.getPlayerList" title="mcpq.Minecraft.getPlayerList"><code class="xref py py-func docutils literal notranslate"><span class="pre">getPlayerList()</span></code></a> instead.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no guarantee that the player returned will be the same across multiple calls of this function. It may change depending on the order the players joined the server or the implementation of the server.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>command</strong> (<em>str</em>) – the command without the slash <code class="docutils literal notranslate"><span class="pre">/</span></code></p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – name of the online <a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code></a> that should be returned, or None if any online player will do, defaults to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the player with <cite>name</cite> if name is given, else any online player</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getPlayerList">
+<span class="sig-name descname"><span class="pre">getPlayerList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getPlayerList" title="Link to this definition">¶</a></dt>
+<dd><p>Get all currently online players on the entire server.
+If <cite>names</cite> is provided get all players with the given names only if they are online.
+Will raise an error if <cite>names</cite> is provided and at least one player with given name is offline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – if given return only players with given names or error if one of the given players is offline, otherwise if <cite>names</cite> is <cite>None</cite> will return all currently online players, defaults to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the list of all currently online players, or if <cite>names</cite> is provided, only those online players</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -144,7 +255,7 @@ Does not automatically call <a class="reference internal" href="#mcpq.Minecraft.
 <dd><p>Identical to <a class="reference internal" href="#mcpq.Minecraft.getWorldByKey" title="mcpq.Minecraft.getWorldByKey"><code class="xref py py-func docutils literal notranslate"><span class="pre">getWorldByKey()</span></code></a> with key <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:overworld&quot;</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The overworld world <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> object</p>
+<dd class="field-odd"><p>The overworld world <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> object</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World">World</a></p>
@@ -158,7 +269,7 @@ Does not automatically call <a class="reference internal" href="#mcpq.Minecraft.
 <dd><p>Identical to <a class="reference internal" href="#mcpq.Minecraft.getWorldByKey" title="mcpq.Minecraft.getWorldByKey"><code class="xref py py-func docutils literal notranslate"><span class="pre">getWorldByKey()</span></code></a> with key <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:the_nether&quot;</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The nether world <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> object</p>
+<dd class="field-odd"><p>The nether world <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> object</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World">World</a></p>
@@ -172,7 +283,7 @@ Does not automatically call <a class="reference internal" href="#mcpq.Minecraft.
 <dd><p>Identical to <a class="reference internal" href="#mcpq.Minecraft.getWorldByKey" title="mcpq.Minecraft.getWorldByKey"><code class="xref py py-func docutils literal notranslate"><span class="pre">getWorldByKey()</span></code></a> with key <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:the_end&quot;</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The end world <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> object</p>
+<dd class="field-odd"><p>The end world <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> object</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World">World</a></p>
@@ -197,7 +308,7 @@ Typically a regular server has the following worlds/keys:</p>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Internal name/id of the world, such as <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:the_nether&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;the_nether&quot;</span></code></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The corresponding <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> object</p>
+<dd class="field-even"><p>The corresponding <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World">World</a></p>
@@ -223,7 +334,7 @@ A typical, unmodified <a class="reference external" href="https://papermc.io/">P
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Foldername the world is saved in, such as <code class="docutils literal notranslate"><span class="pre">world</span></code></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The corresponding <code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code> object</p>
+<dd class="field-even"><p>The corresponding <a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">World</span></code></a> object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="world.html#mcpq.world.World" title="mcpq.world.World">World</a></p>
@@ -240,90 +351,70 @@ By default, the worlds will be refreshed on first use only.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.getEntityById">
-<span class="sig-name descname"><span class="pre">getEntityById</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntityById" title="Link to this definition">¶</a></dt>
-<dd><p>Get an entity with a certain <cite>entity_id</cite>, even if it is not loaded.</p>
-<p>Normally the <cite>entity_id</cite> is not known ahead of time.
-Prefer using <a class="reference internal" href="#mcpq.Minecraft.getEntities" title="mcpq.Minecraft.getEntities"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntities()</span></code></a>, <a class="reference internal" href="#mcpq.Minecraft.getEntitiesAround" title="mcpq.Minecraft.getEntitiesAround"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntitiesAround()</span></code></a> and <a class="reference internal" href="#mcpq.Minecraft.spawnEntity" title="mcpq.Minecraft.spawnEntity"><code class="xref py py-func docutils literal notranslate"><span class="pre">spawnEntity()</span></code></a>, which all return entities.</p>
+<dt class="sig sig-object py" id="mcpq.Minecraft.getMinecraftVersion">
+<span class="sig-name descname"><span class="pre">getMinecraftVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mcpq.Minecraft.getMinecraftVersion" title="Link to this definition">¶</a></dt>
+<dd><p>The Minecraft version of the server this instance is connected to or None if the version cannot be identified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getMinecraftVersionTuple">
+<span class="sig-name descname"><span class="pre">getMinecraftVersionTuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getMinecraftVersionTuple" title="Link to this definition">¶</a></dt>
+<dd><p>The Minecraft version of the server this instance is connected to as a integer tuple or None if the version cannot be identified (e.g. from non-release candidate servers).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getPluginVersion">
+<span class="sig-name descname"><span class="pre">getPluginVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mcpq.Minecraft.getPluginVersion" title="Link to this definition">¶</a></dt>
+<dd><p>The MCPQ Plugin version running on the server this instance is connected to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getServerVersion">
+<span class="sig-name descname"><span class="pre">getServerVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mcpq.Minecraft.getServerVersion" title="Link to this definition">¶</a></dt>
+<dd><p>The full name and version of the server this instance is connected to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.runCommand">
+<span class="sig-name descname"><span class="pre">runCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.runCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <cite>command</cite> as if it was typed in chat as <code class="docutils literal notranslate"><span class="pre">/</span></code>-command.
+The command is run with the highest possible permission and no other modifiers.
+Returns immediately without waiting for the command to finish executing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;kill @e&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;gamerule doDaylightCycle false&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>entity_id</strong> (<em>str</em>) – the unique entity identified</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the corresponding entity with that id, even if not loaded</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity">Entity</a></p>
+<dd class="field-odd"><p><strong>command</strong> (<em>str</em>) – the command without the slash <code class="docutils literal notranslate"><span class="pre">/</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.getOfflinePlayer">
-<span class="sig-name descname"><span class="pre">getOfflinePlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getOfflinePlayer" title="Link to this definition">¶</a></dt>
-<dd><p>Get the <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> with the given <cite>name</cite> no matter if the player is online or not.
-Does not raise any errors if the player is offline.</p>
+<dt class="sig sig-object py" id="mcpq.Minecraft.runCommandBlocking">
+<span class="sig-name descname"><span class="pre">runCommandBlocking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mcpq.Minecraft.runCommandBlocking" title="Link to this definition">¶</a></dt>
+<dd><p>Run the <cite>command</cite> as if it was typed in chat as <code class="docutils literal notranslate"><span class="pre">/</span></code>-command and return the response from the server.
+The command is run with the highest possible permission and no other modifiers.
+Blocks and waits for the command to finish executing returning the command’s result.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">runCommand</span><span class="p">(</span><span class="s2">&quot;locate biome mushroom_fields&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The plugin that is built against the <code class="docutils literal notranslate"><span class="pre">spigot-Bukkit</span> <span class="pre">API</span></code> does <em>not</em> fully support the return of command output,
+specifically the capturing of output of vanilla commands.
+Instead it only supports the capturing of Bukkit commands, which can be seen with <code class="docutils literal notranslate"><span class="pre">mc.runCommandBlocking(&quot;help</span> <span class="pre">Bukkit&quot;).split(&quot;\n&quot;)</span></code></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – player name/id</p>
+<dd class="field-odd"><p><strong>command</strong> (<em>str</em>) – the command without the slash <code class="docutils literal notranslate"><span class="pre">/</span></code></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the player with the given <cite>name</cite></p>
+<dd class="field-even"><p>the console output of the command</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.getPlayers">
-<span class="sig-name descname"><span class="pre">getPlayers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getPlayers" title="Link to this definition">¶</a></dt>
-<dd><p>Get all currently online players on the entire server.
-If <cite>names</cite> is provided get all players with the given names only if they are online.
-Will raise an error if <cite>names</cite> is provided and at least one player with given name is offline.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – if given return only players with given names or error if one of the given players is offline, otherwise if <cite>names</cite> is <cite>None</cite> will return all currently online players, defaults to None</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the list of all currently online players, or if <cite>names</cite> is provided, only those online players</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.getPlayerNames">
-<span class="sig-name descname"><span class="pre">getPlayerNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getPlayerNames" title="Link to this definition">¶</a></dt>
-<dd><p>Equivalent to <a class="reference internal" href="#mcpq.Minecraft.getPlayers" title="mcpq.Minecraft.getPlayers"><code class="xref py py-func docutils literal notranslate"><span class="pre">getPlayers()</span></code></a> but only return their names instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list of all currently online <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> names</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.getPlayer">
-<span class="sig-name descname"><span class="pre">getPlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player"><span class="pre">Player</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getPlayer" title="Link to this definition">¶</a></dt>
-<dd><p>Get any currently online player, which will become the default player thereafter, or get the online player with given <cite>name</cite>.
-Will raise an error if either no player is online, or if the player with given <cite>name</cite> is not online.</p>
-<p>If you want to check for any currently online players, use <a class="reference internal" href="#mcpq.Minecraft.getPlayers" title="mcpq.Minecraft.getPlayers"><code class="xref py py-func docutils literal notranslate"><span class="pre">getPlayers()</span></code></a> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – name of the online <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> that should be returned, or None if any online player will do, defaults to None</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the player with <cite>name</cite> if name is given, else any online player that will become default player thereafter</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="player.html#mcpq.player.Player" title="mcpq.player.Player">Player</a></p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -357,11 +448,12 @@ Can be set to enable or disable pvp on all worlds on the server.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.getBlock">
-<span class="sig-name descname"><span class="pre">getBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlock" title="Link to this definition">¶</a></dt>
-<dd><p>The block type/id at position <cite>pos</cite> in world.</p>
+<span class="sig-name descname"><span class="pre">getBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlock" title="Link to this definition">¶</a></dt>
+<dd><p>The block <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> type/id at position <cite>pos</cite> in world.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The function does only query the block type/id, no additional block data is included.</p>
+<p>The function does only query the block type/id, no block component data is not queried.
+To query block component data use <a class="reference internal" href="#mcpq.Minecraft.getBlockWithData" title="mcpq.Minecraft.getBlockWithData"><code class="xref py py-func docutils literal notranslate"><span class="pre">getBlockWithData()</span></code></a>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -371,18 +463,35 @@ Can be set to enable or disable pvp on all worlds on the server.</p>
 <dd class="field-even"><p>block type/id at queried position</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getBlockWithData">
+<span class="sig-name descname"><span class="pre">getBlockWithData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlockWithData" title="Link to this definition">¶</a></dt>
+<dd><p>The block <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> at position <cite>pos</cite> in world including block component data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – position to query block from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>block type/id and component data at queried position</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.getBlockList">
-<span class="sig-name descname"><span class="pre">getBlockList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlockList" title="Link to this definition">¶</a></dt>
-<dd><p>The list of all block types/ids at given <cite>positions</cite> in world in the same order.</p>
+<span class="sig-name descname"><span class="pre">getBlockList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlockList" title="Link to this definition">¶</a></dt>
+<dd><p>The list of all block <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> types/ids at given <cite>positions</cite> in world in the same order.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The function does only query the block types/ids, no additional block data is included.</p>
+<p>The function does only query the block type/ids, no block component data is not queried.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -392,21 +501,84 @@ Can be set to enable or disable pvp on all worlds on the server.</p>
 <dd class="field-even"><p>list of block types/ids at given positions (same order)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[str]</p>
+<dd class="field-odd"><p>list[<a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.getBlockListWithData">
+<span class="sig-name descname"><span class="pre">getBlockListWithData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getBlockListWithData" title="Link to this definition">¶</a></dt>
+<dd><p>The list of all block <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> at given <cite>positions</cite> in world with component data in the same order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>positions</strong> (<em>list</em><em>[</em><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a><em>]</em>) – list of positions to query</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of block type/ids and component data at given positions (same order)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.setBlock">
-<span class="sig-name descname"><span class="pre">setBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlock" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">setBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlock" title="Link to this definition">¶</a></dt>
 <dd><p>Change the block at position <cite>pos</cite> to <cite>blocktype</cite> in world.
 This will overwrite any block at that position.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>blocktype</strong> (<em>str</em>) – the valid block type/id to set the block to</p></li>
+<li><p><strong>blocktype</strong> (<em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – the valid block type/id or <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> to set the block to</p></li>
 <li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position where the block should be set</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.setBlockList">
+<span class="sig-name descname"><span class="pre">setBlockList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlockList" title="Link to this definition">¶</a></dt>
+<dd><p>Change all blocks at <cite>positions</cite> to <cite>blocktype</cite> in world.
+This will overwrite all blocks at the given positions.
+This is more efficient that using <a class="reference internal" href="#mcpq.Minecraft.setBlock" title="mcpq.Minecraft.setBlock"><code class="xref py py-func docutils literal notranslate"><span class="pre">setBlock()</span></code></a> multiple times with the same <cite>blocktype</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blocktype</strong> (<em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – the valid block type/id to set the blocks to</p></li>
+<li><p><strong>positions</strong> (<em>list</em><em>[</em><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a><em>]</em>) – the positions where the blocks should be set</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.setBlockCube">
+<span class="sig-name descname"><span class="pre">setBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlockCube" title="Link to this definition">¶</a></dt>
+<dd><p>Change all blocks in a cube between the corners <cite>pos1</cite> and <cite>pos2</cite> in world to <cite>blocktype</cite>, where both positions are <em>inclusive</em>. meaning that both given positions/corners will be part of the cube.
+This will overwrite all blocks between the given positions.
+The positions span a cube if all their coordinates are different,
+a plane if one of their coordinates is the same or a line if two of their three coordinates are the same.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># xlen, ylen, zlen are the length of the cube in the specified axis</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">()</span>  <span class="c1"># this would be the lowest (most negative coordinates) corner of the cube we want to draw, here origin</span>
+<span class="n">world</span><span class="o">.</span><span class="n">setBlockCube</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">xlen</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="n">ylen</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="n">zlen</span><span class="p">))</span>
+
+<span class="c1"># this is equivalent to (but more efficent and faster than)</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xlen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ylen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zlen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">world</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blocktype</strong> (<em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – the valid block type/id to set the blocks to</p></li>
+<li><p><strong>pos1</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of one corner of the cube</p></li>
+<li><p><strong>pos2</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of the opposite corner of the cube</p></li>
 </ul>
 </dd>
 </dl>
@@ -428,46 +600,46 @@ This will overwrite any block at that position.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.setBlockList">
-<span class="sig-name descname"><span class="pre">setBlockList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlockList" title="Link to this definition">¶</a></dt>
-<dd><p>Change all blocks at <cite>positions</cite> to <cite>blocktype</cite> in world.
-This will overwrite all blocks at the given positions.
-This is more efficient that using <a class="reference internal" href="#mcpq.Minecraft.setBlock" title="mcpq.Minecraft.setBlock"><code class="xref py py-func docutils literal notranslate"><span class="pre">setBlock()</span></code></a> mutliple times with the same <cite>blocktype</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>blocktype</strong> (<em>str</em>) – the valid block type/id to set the blocks to</p></li>
-<li><p><strong>positions</strong> (<em>list</em><em>[</em><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a><em>]</em>) – the positions where the blocks should be set</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="mcpq.Minecraft.setSign">
+<span class="sig-name descname"><span class="pre">setSign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nbt.html#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'white'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'orange'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'magenta'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'light_blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yellow'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lime'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pink'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'light_gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cyan'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'purple'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'brown'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'green'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'red'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'black'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">glowing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'south'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign_block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'oak_sign'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setSign" title="Link to this definition">¶</a></dt>
+<dd><p>Place a sign block at <cite>pos</cite> with <cite>text</cite> overwriting any block there.
+<cite>text</cite> can be a list of at most 8 elements, where each element is a line of text on the sign; the first 4 on the front and the second 4 on the back.
+Lists with fewer than 8 elements are allowed and result in empty following lines.
+<cite>text</cite> may also be a string in which case the above list is built by splitting the string on newlines.
+The elements in the list may also be <code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code> instances of the form:
+<code class="docutils literal notranslate"><span class="pre">{selector:</span> <span class="pre">&quot;&#64;p&quot;,</span> <span class="pre">color:</span> <span class="pre">&quot;red&quot;,</span> <span class="pre">bold:</span> <span class="pre">false,</span> <span class="pre">italic:</span> <span class="pre">false,</span> <span class="pre">underlined:</span> <span class="pre">false,</span> <span class="pre">strikethrough:</span> <span class="pre">false,</span> <span class="pre">obfuscated:</span> <span class="pre">false,</span> <span class="pre">text:</span> <span class="pre">&quot;A</span> <span class="pre">Line</span> <span class="pre">of</span> <span class="pre">Text&quot;}</span></code>
+The material and type of sign can be set with <cite>sign_block</cite> - it can be a sign, wall_sign, or hanging_sign of any given wood material.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># position where to place sign</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;Hello Minecraft&quot;</span><span class="p">)</span> <span class="c1"># front line 1</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;Hello</span><span class="se">\n</span><span class="s2">Minecraft&quot;</span><span class="p">)</span> <span class="c1"># front line 1 and 2</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;Minecraft&quot;</span><span class="p">])</span> <span class="c1"># front line 1 and 2</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;Minecraft&quot;</span><span class="p">])</span> <span class="c1"># front line 2 and 3</span>
+<span class="c1"># back line 6 and 7</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;Minecraft&quot;</span><span class="p">])</span>
+<span class="c1"># everything beyond line 8 (back line 4) is not on sign anymore</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="s2">&quot;NOT ON SIGN&quot;</span><span class="p">])</span>
+<span class="c1"># line-wise customization with NBT compounds or dicts</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">},</span> <span class="n">NBT</span><span class="p">({</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Minecraft&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})])</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Minecraft.setBlockCube">
-<span class="sig-name descname"><span class="pre">setBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.setBlockCube" title="Link to this definition">¶</a></dt>
-<dd><p>Change all blocks in a cube between the corners <cite>pos1</cite> and <cite>pos2</cite> in world to <cite>blocktype</cite>, where both positions are <em>inclusive</em>. meaning that both given positions/corners will be part of the cube.
-This will overwrite all blocks between the given positions.
-The positions span a cube if all their coordinates are different,
-a plane if one of their coordinates is the same or a line if two of their three coordinates are the same.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># xlen, ylen, zlen are the length of the cube in the specified axis</span>
-<span class="n">start</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">()</span>  <span class="c1"># this would be the lowest (most negative coordinates) corner of the cube we want to draw, here origin</span>
-<span class="n">world</span><span class="o">.</span><span class="n">setBlockCube</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">xlen</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="n">ylen</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="n">zlen</span><span class="p">))</span>
+<span class="n">valid_signs</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_sign&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">sign_block</span><span class="o">=</span><span class="s2">&quot;spruce_sign&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">sign_block</span><span class="o">=</span><span class="s2">&quot;jungle_wall_sign&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">sign_block</span><span class="o">=</span><span class="s2">&quot;acacia_hanging_sign&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">sign_block</span><span class="o">=</span><span class="s2">&quot;acacia_hanging_sign[attached=true]&quot;</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">sign_block</span><span class="o">=</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;oak_sign&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}))</span>
 
-<span class="c1"># this is equivalent to (but more efficent and faster than)</span>
-
-<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xlen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ylen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zlen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">world</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setSign</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Hello</span><span class="se">\n</span><span class="s2">Minecraft</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">glowing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>blocktype</strong> (<em>str</em>) – the valid block type/id to set the blocks to</p></li>
-<li><p><strong>pos1</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of one corner of the cube</p></li>
-<li><p><strong>pos2</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of the opposite corner of the cube</p></li>
+<li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position where the sign should be set</p></li>
+<li><p><strong>text</strong> (<em>list</em><em>[</em><em>str</em><em> | </em><em>NBT</em><em> | </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>str</em>) – the text to put on sign either as list of at most 8 elements, where the first 4 are text on the front and the second set of 4 are the text on the back of the sign, or as a string, where said list is produced by splitting on newlines. Elements of the list may also be NBT compounds instead of strings.</p></li>
+<li><p><strong>color</strong> (<em>COLOR</em><em>, </em><em>optional</em>) – the base color of the text on the sign, can be overwritten on a per-line basis by providing <cite>NBT({“text”:”…”,”color”:”red”})</cite> NBT compounds, defaults to “black”</p></li>
+<li><p><strong>glowing</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether or not the text should use the glowing effect, defaults to False</p></li>
+<li><p><strong>direction</strong> (<em>CARDINAL</em><em> | </em><em>int</em><em>, </em><em>optional</em>) – the cardinal direction the sign should be facing, for non-wall signs can also be an integer between 0-15, defaults to “south”</p></li>
+<li><p><strong>sign_block</strong> (<em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a><em>, </em><em>optional</em>) – the block type/id of the sign that should be placed, should end with “_sign”, defaults to “oak_sign”</p></li>
 </ul>
 </dd>
 </dl>
@@ -475,39 +647,32 @@ a plane if one of their coordinates is the same or a line if two of their three 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.copyBlockCube">
-<span class="sig-name descname"><span class="pre">copyBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.copyBlockCube" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copyBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">withData</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.copyBlockCube" title="Link to this definition">¶</a></dt>
 <dd><p>Get all block types in a cube between <cite>pos1</cite> and <cite>pos2</cite> inclusive.
 Should be used in conjunction with <a class="reference internal" href="#mcpq.Minecraft.pasteBlockCube" title="mcpq.Minecraft.pasteBlockCube"><code class="xref py py-func docutils literal notranslate"><span class="pre">pasteBlockCube()</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The function does only copy the block types/ids, no additional block data is included.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pos1</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of one corner of the cube</p></li>
 <li><p><strong>pos2</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position of the opposite corner of the cube</p></li>
+<li><p><strong>withData</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether block component data should be queried, defaults to False</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the block types in the cube given as rows of x with columns of y with slices of depth z respectively</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[list[list[str]]]</p>
+<dd class="field-odd"><p>list[list[list[<a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block">Block</a>]]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.pasteBlockCube">
-<span class="sig-name descname"><span class="pre">pasteBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'up'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'down'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'east'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.pasteBlockCube" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pasteBlockCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'up'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'down'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'east'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.pasteBlockCube" title="Link to this definition">¶</a></dt>
 <dd><p>Paste the block types in the cube <cite>blocktypes</cite> into the world at position <cite>pos</cite> where <cite>pos</cite> is the negative most corner of the cube along all three axes.
 Additional options can be used to change the rotation of blocks in the copied cube, however, no matter in which way the cube is rotated and/or flipped, <cite>pos</cite> will also be the most negative corner.
 Should be used in conjunction with <a class="reference internal" href="#mcpq.Minecraft.copyBlockCube" title="mcpq.Minecraft.copyBlockCube"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyBlockCube()</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <a class="reference internal" href="#mcpq.Minecraft.copyBlockCube" title="mcpq.Minecraft.copyBlockCube"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyBlockCube()</span></code></a> function does only copy the block types/ids, no additional block data is included.</p>
-</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">end</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="c1"># copy a 6x6x6 block cube from origin in world</span>
@@ -521,7 +686,7 @@ Should be used in conjunction with <a class="reference internal" href="#mcpq.Min
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>blocktypes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>list</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – the cube of block types/ids that should be pasted, given as rows of x with columns of y with slices of depth z respectively</p></li>
+<li><p><strong>blocktypes</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>list</em><em>[</em><em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a><em>]</em><em>]</em><em>]</em>) – the cube of block types/ids that should be pasted, given as rows of x with columns of y with slices of depth z respectively</p></li>
 <li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the most negative corner along all three axes of the cube where the cube should be pasted</p></li>
 <li><p><strong>rotation</strong> (<em>DIRECTION</em><em>, </em><em>optional</em>) – the direction of the x axis of the cube to be pasted (“east” means copied x axis aligns with real x axis, i.e., the original orientation), defaults to “east”</p></li>
 <li><p><strong>flip_x</strong> (<em>bool</em><em>, </em><em>optional</em>) – flip pasted blocks along x axis, defaults to False</p></li>
@@ -534,13 +699,13 @@ Should be used in conjunction with <a class="reference internal" href="#mcpq.Min
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.spawnEntity">
-<span class="sig-name descname"><span class="pre">spawnEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.spawnEntity" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">spawnEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a></span></span><a class="headerlink" href="#mcpq.Minecraft.spawnEntity" title="Link to this definition">¶</a></dt>
 <dd><p>Spawn and return a new entitiy of given <cite>type</cite> at position <cite>pos</cite> in world.
 The entity has default settings and behavior.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> (<em>str</em>) – the valid entity type that should be spawned (must be spawnable without additional parameters)</p></li>
+<li><p><strong>type</strong> (<em>str</em><em> | </em><em>EntityType</em>) – the valid entity type that should be spawned (must be spawnable without additional parameters)</p></li>
 <li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – the position where to spawn the entitiy in the world</p></li>
 </ul>
 </dd>
@@ -555,13 +720,13 @@ The entity has default settings and behavior.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.spawnItems">
-<span class="sig-name descname"><span class="pre">spawnItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.spawnItems" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">spawnItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.spawnItems" title="Link to this definition">¶</a></dt>
 <dd><p>Spawn <cite>amount</cite> many collectable items of <cite>type</cite> at <cite>pos</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>str</em><em> | </em><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt.Block"><em>Block</em></a>) – the item type as string or <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:arrow&quot;</span></code> with potential component data</p></li>
 <li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – position where to spawn the items</p></li>
-<li><p><strong>type</strong> (<em>str</em>) – the item type, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;minecraft:arrow&quot;</span></code></p></li>
 <li><p><strong>amount</strong> (<em>int</em><em>, </em><em>optional</em>) – number of items to spawn, defaults to 1</p></li>
 </ul>
 </dd>
@@ -570,7 +735,7 @@ The entity has default settings and behavior.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.getEntities">
-<span class="sig-name descname"><span class="pre">getEntities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_spawnable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntities" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getEntities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_spawnable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntities" title="Link to this definition">¶</a></dt>
 <dd><p>Get all (loaded) entities in the world.
 If a <cite>type</cite> is provided, only entities of that type are returned.
 By default only entities of types that could be spawned using <a class="reference internal" href="#mcpq.Minecraft.spawnEntity" title="mcpq.Minecraft.spawnEntity"><code class="xref py py-func docutils literal notranslate"><span class="pre">spawnEntity()</span></code></a> are returned.
@@ -578,7 +743,7 @@ To get all entities (except players) set <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided returns only entities of that type, returns all types if None, defaults to None</p></li>
+<li><p><strong>type</strong> (<em>str</em><em> | </em><em>EntityType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided returns only entities of that type, returns all types if None, defaults to None</p></li>
 <li><p><strong>only_spawnable</strong> (<em>bool</em><em>, </em><em>optional</em>) – if False, will also return non-spawnable entities, defaults to True</p></li>
 </ul>
 </dd>
@@ -593,14 +758,14 @@ To get all entities (except players) set <code class="docutils literal notransla
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.getEntitiesAround">
-<span class="sig-name descname"><span class="pre">getEntitiesAround</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_spawnable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntitiesAround" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getEntitiesAround</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_spawnable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Minecraft.getEntitiesAround" title="Link to this definition">¶</a></dt>
 <dd><p>Equivalent to <a class="reference internal" href="#mcpq.Minecraft.getEntities" title="mcpq.Minecraft.getEntities"><code class="xref py py-func docutils literal notranslate"><span class="pre">getEntities()</span></code></a>, however, is filtered to only return entities within <cite>distance</cite> around <cite>pos</cite>. Is more efficient that filtering the list manually.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – position around which the entities are returned</p></li>
 <li><p><strong>distance</strong> (<em>float</em>) – the maximum distance entities returned have around <cite>pos</cite></p></li>
-<li><p><strong>type</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided returns only entities of that type, returns all types if None, defaults to None</p></li>
+<li><p><strong>type</strong> (<em>str</em><em> | </em><em>EntityType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided returns only entities of that type, returns all types if None, defaults to None</p></li>
 <li><p><strong>only_spawnable</strong> (<em>bool</em><em>, </em><em>optional</em>) – if False, will also return non-spawnable entities, defaults to True</p></li>
 </ul>
 </dd>
@@ -615,12 +780,12 @@ To get all entities (except players) set <code class="docutils literal notransla
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Minecraft.removeEntities">
-<span class="sig-name descname"><span class="pre">removeEntities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.removeEntities" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">removeEntities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.removeEntities" title="Link to this definition">¶</a></dt>
 <dd><p>Remove all entities (except players) from the world, they do not drop anything.
 If <cite>type</cite> is provided remove only entities of that type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>type</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided removes only entities of that type, otherwise remove all entities, defaults to None</p>
+<dd class="field-odd"><p><strong>type</strong> (<em>str</em><em> | </em><em>EntityType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided removes only entities of that type, otherwise remove all entities, defaults to None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -642,11 +807,18 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <li class="toctree-l1"><a class="reference internal" href="../search.html">Search Page</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../readme_link.html">Minecraft Protobuf Queries (MCPQ) Python Client Library</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.events"><code class="docutils literal notranslate"><span class="pre">Minecraft.events</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.host"><code class="docutils literal notranslate"><span class="pre">Minecraft.host</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.port"><code class="docutils literal notranslate"><span class="pre">Minecraft.port</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.events"><code class="docutils literal notranslate"><span class="pre">Minecraft.events</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.blocks"><code class="docutils literal notranslate"><span class="pre">Minecraft.blocks</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.materials"><code class="docutils literal notranslate"><span class="pre">Minecraft.materials</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.entity_types"><code class="docutils literal notranslate"><span class="pre">Minecraft.entity_types</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.spawnables"><code class="docutils literal notranslate"><span class="pre">Minecraft.spawnables</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.postToChat"><code class="docutils literal notranslate"><span class="pre">Minecraft.postToChat()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.runCommand"><code class="docutils literal notranslate"><span class="pre">Minecraft.runCommand()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getEntityById"><code class="docutils literal notranslate"><span class="pre">Minecraft.getEntityById()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getOfflinePlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getOfflinePlayer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayerList"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayerList()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.worlds"><code class="docutils literal notranslate"><span class="pre">Minecraft.worlds</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.overworld"><code class="docutils literal notranslate"><span class="pre">Minecraft.overworld</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.nether"><code class="docutils literal notranslate"><span class="pre">Minecraft.nether</span></code></a></li>
@@ -654,20 +826,24 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getWorldByKey"><code class="docutils literal notranslate"><span class="pre">Minecraft.getWorldByKey()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getWorldByName"><code class="docutils literal notranslate"><span class="pre">Minecraft.getWorldByName()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.refreshWorlds"><code class="docutils literal notranslate"><span class="pre">Minecraft.refreshWorlds()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getEntityById"><code class="docutils literal notranslate"><span class="pre">Minecraft.getEntityById()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getOfflinePlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getOfflinePlayer()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayers"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayers()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayerNames"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayerNames()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getMinecraftVersion"><code class="docutils literal notranslate"><span class="pre">Minecraft.getMinecraftVersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getMinecraftVersionTuple"><code class="docutils literal notranslate"><span class="pre">Minecraft.getMinecraftVersionTuple()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPluginVersion"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPluginVersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getServerVersion"><code class="docutils literal notranslate"><span class="pre">Minecraft.getServerVersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.runCommand"><code class="docutils literal notranslate"><span class="pre">Minecraft.runCommand()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.runCommandBlocking"><code class="docutils literal notranslate"><span class="pre">Minecraft.runCommandBlocking()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pvp"><code class="docutils literal notranslate"><span class="pre">Minecraft.pvp</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getHighestPos"><code class="docutils literal notranslate"><span class="pre">Minecraft.getHighestPos()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getHeight"><code class="docutils literal notranslate"><span class="pre">Minecraft.getHeight()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getBlock"><code class="docutils literal notranslate"><span class="pre">Minecraft.getBlock()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getBlockWithData"><code class="docutils literal notranslate"><span class="pre">Minecraft.getBlockWithData()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getBlockList"><code class="docutils literal notranslate"><span class="pre">Minecraft.getBlockList()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getBlockListWithData"><code class="docutils literal notranslate"><span class="pre">Minecraft.getBlockListWithData()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setBlock"><code class="docutils literal notranslate"><span class="pre">Minecraft.setBlock()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setBed"><code class="docutils literal notranslate"><span class="pre">Minecraft.setBed()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setBlockList"><code class="docutils literal notranslate"><span class="pre">Minecraft.setBlockList()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setBlockCube"><code class="docutils literal notranslate"><span class="pre">Minecraft.setBlockCube()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setBed"><code class="docutils literal notranslate"><span class="pre">Minecraft.setBed()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.setSign"><code class="docutils literal notranslate"><span class="pre">Minecraft.setSign()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.copyBlockCube"><code class="docutils literal notranslate"><span class="pre">Minecraft.copyBlockCube()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.pasteBlockCube"><code class="docutils literal notranslate"><span class="pre">Minecraft.pasteBlockCube()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.spawnEntity"><code class="docutils literal notranslate"><span class="pre">Minecraft.spawnEntity()</span></code></a></li>
@@ -681,7 +857,11 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <li class="toctree-l1"><a class="reference internal" href="player.html"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="world.html"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter.html">Materials and Entity-Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html"><code class="docutils literal notranslate"><span class="pre">EntityType</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="block.html#mcpq.nbt.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nbt.html">NBT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="turtle.html"><code class="docutils literal notranslate"><span class="pre">Turtle</span></code></a></li>
 </ul>
 
