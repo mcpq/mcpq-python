@@ -1,4 +1,4 @@
-.PHONY: show_docs live_docs all docs proto dist upload
+.PHONY: show_docs live_docs all docs proto nbt_lark test_local test_local_server test_full dist upload
 
 # some instructions and setup from the following blog:
 # https://dmltquant.github.io/ply_sphinx_docs_github_pages/README.html#step-01-project-folder
@@ -21,12 +21,21 @@ docs:
 
 proto:
 	python3 -m grpc_tools.protoc --version
-	@echo Make sure to have the correct version of grpcio and grpcio-tools installed
+	@echo "Make sure to have the correct version of grpcio and grpcio-tools installed, namely the minimal version specified in pyproject.toml"
 	python3 -m grpc_tools.protoc --proto_path=proto --python_out=mcpq/_proto --grpc_python_out=mcpq/_proto proto/minecraft.proto
 	@echo Run 'nox' to make sure your dependencies are still compatible
 
 nbt_lark:
 	python3 -m lark.tools.standalone --maybe_placeholders mcpq/nbt/snbt_and_component.lark -o mcpq/nbt/_snbt_and_component.py
+
+test_local:
+	pytest --without-integration tests
+
+test_local_server:
+	pytest tests
+
+test_full:
+	nox
 
 dist:
 	rm -rf dist build *.egg-info

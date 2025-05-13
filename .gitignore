@@ -1,5 +1,6 @@
 docsource/_autosummary
 docsource/_build
+.nox_servers/
 
 ### Python ###
 # Created and adapted from https://www.toptal.com/developers/gitignore/api/python,
