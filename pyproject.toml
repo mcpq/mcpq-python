@@ -32,6 +32,7 @@ dev = [
   "build",
   "grpcio-tools>=1.65.4",
   "isort",
+  "lark",
   "mypy",
   "nox",
   "pre-commit",
@@ -46,7 +47,7 @@ docs = [
   "myst-parser",
   "sphinx",
 ]
-imagequantizer = [
+tools = [
   "imageio",
   "numpy",
   "Pillow",
