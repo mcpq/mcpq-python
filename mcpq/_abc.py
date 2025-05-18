@@ -94,7 +94,7 @@ class _ServerInterface(ABC):
 
     def get_server_version(self) -> str:
         full_version: str | None = self.server_info_cache().get("serverversion")
-        if full_version is not None:
+        if full_version:
             return full_version
         return "unknown"
 
@@ -116,14 +116,14 @@ class _ServerInterface(ABC):
 
     def get_mc_version(self) -> tuple[int, ...]:
         version_tuple = self.server_info_cache().get("_mcversion_tuple")
-        if version_tuple is not None:
+        if version_tuple:
             return version_tuple
         versionstr = self.get_mc_version_string()
         if versionstr != "unknown":
             numsstr = versionstr.split(".")
             try:
-                nums = [int(n) for n in numsstr]
-                version_tuple = self.server_info_cache()["_mcversion_tuple"] = tuple(nums)
+                version_tuple = tuple(int(n) for n in numsstr)
+                self.server_info_cache()["_mcversion_tuple"] = version_tuple
                 return version_tuple
             except ValueError:
                 logging.warning(

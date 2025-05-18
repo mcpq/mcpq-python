@@ -22,8 +22,9 @@ import nox
 INTEGRATION = True
 # location of plugin (can be built or downloaded to root)
 SERVER_PLUGIN_SEARCH_LOCATION = [
-    Path.home() / "mcpq-plugin" / "build" / "libs",
     Path(__file__).parent,
+    Path(__file__).parent / "mcpq-plugin" / "build" / "libs",
+    Path.home() / "mcpq-plugin" / "build" / "libs",
 ]
 # location of the java 21 executable
 SERVER_JAVA_EXE = Path("java")
@@ -65,7 +66,7 @@ GRPCIO_VERSIONS = [
     "1.69.0",
     "1.68.0",
     "1.66.0",
-    "1.65.4",  # compiled proto version
+    "1.65.4",  # compiled proto / pinned version
     "1.64.0",
     "1.63.0",
 ]
@@ -77,7 +78,7 @@ if INTEGRATION:
 @nox.session(python=PY_VERSIONS[-1], venv_backend="uv|virtualenv")
 @nox.parametrize("protobuf_version", PROTOBUF_VERSIONS)
 @nox.parametrize("grpcio_version", GRPCIO_VERSIONS)
-def dep_versions_test(session: nox.Session, protobuf_version, grpcio_version):
+def dep_test(session: nox.Session, protobuf_version, grpcio_version):
     session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
     grpcio_dep = f"grpcio=={grpcio_version}"
     protobuf_dep = f"protobuf=={protobuf_version}"
@@ -94,7 +95,7 @@ def dep_versions_test(session: nox.Session, protobuf_version, grpcio_version):
 
 
 @nox.session(python=PY_VERSIONS, venv_backend="uv|virtualenv")
-def py_versions_test(session: nox.Session):
+def py_test(session: nox.Session):
     session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
     session.install(".")  # install latest according to pyproject.toml
     check_installed_deps(session, ["grpcio", "protobuf", "mcpq"])
@@ -107,7 +108,7 @@ def py_versions_test(session: nox.Session):
 
 @nox.session(python=PY_VERSIONS[-1], venv_backend="uv|virtualenv")
 @nox.parametrize("mc_version", MC_VERSIONS)
-def mc_versions_test(session: nox.Session, mc_version: str):
+def mc_test(session: nox.Session, mc_version: str):
     status = start_server(session, mc_version)
     if not status.is_nox:
         session.error("Cannot test mc versions with an already running server")

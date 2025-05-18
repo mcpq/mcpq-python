@@ -202,6 +202,23 @@ def test_float():
         assert str(n) == f"{float(v)}f"
         assert NbtFloat(f"{v}f") == v
         assert NbtFloat(f"{v}F") == v
+    for v in [
+        "-2.213E-18",
+        "-2.213e-18",
+        "3.4492891728878024E-4",
+        ".1",
+        "1.",
+        "123E23",
+        ".1E23",
+        "1.E23",
+        "1.1E+23",
+        "1",
+    ]:
+        assert NbtFloat(f"{v}f") == float(v)
+        assert type(parse_snbt(f"{v}f")) is NbtFloat
+        assert parse_snbt(f"{v}f") == float(v)
+    with pytest.raises(ValueError):
+        parse_snbt("1e48f")
     for v in invalids:
         with pytest.raises(ValueError):
             NbtFloat(v)
@@ -223,14 +240,30 @@ def test_double():
         + [3.4 * 10**41, 3.4 * 10**64, -3.4 * 10**41, -3.4 * 10**64]
     )
     # has a limit in theory, but not implemented here
-    invalids = ["text"]
     for v in valids:
         n = NbtDouble(v)
         assert n == v
         assert str(n) == f"{float(v)}"
         assert NbtDouble(f"{v}d") == v
         assert NbtDouble(f"{v}D") == v
-    for v in invalids:
+    for v in [
+        "-2.213E-18",
+        "-2.213e-18",
+        "3.4492891728878024E-4",
+        ".1",
+        "1.",
+        "123E48",
+        ".1E48",
+        "1.E48",
+        "1.1E+48",
+    ]:
+        assert NbtDouble(f"{v}d") == float(v)
+        assert NbtDouble(f"{v}") == float(v)
+        assert type(parse_snbt(v)) is NbtDouble
+        assert parse_snbt(v) == float(v)
+    assert type(parse_snbt("1d")) is NbtDouble
+    assert type(parse_snbt("1")) is not NbtDouble
+    for v in ["text"]:
         with pytest.raises(ValueError):
             NbtDouble(v)
         with pytest.raises(ValueError):
@@ -594,6 +627,8 @@ def test_parsing():
         "[ku,'{}',le]",
         "[ku,'[]',le]",
         "[ku,'1232',le]",
+        "-2.213E-18d",
+        "3.4492891728878024e-4d",
         '"\\\\"',
         "'\\\\'",
         '"\\\\\'"',
@@ -703,7 +738,7 @@ def test_parsing_todos():
 
 
 def test_player_data():
-    data = """{seenCredits: 0b, DeathTime: 0s, Bukkit.updateLevel: 2, foodTickTimer: 0, recipeBook: {isBlastingFurnaceFilteringCraftable: 0b, isGuiOpen: 0b, toBeDisplayed: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"], isSmokerGuiOpen: 0b, isBlastingFurnaceGuiOpen: 0b, isFurnaceFilteringCraftable: 0b, isFurnaceGuiOpen: 0b, isFilteringCraftable: 0b, isSmokerFilteringCraftable: 0b, recipes: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"]}, XpTotal: 0, OnGround: 0b, AbsorptionAmount: 0.0f, playerGameType: 1, Attributes: [{Name: "minecraft:generic.max_health", Base: 20.0d}, {Name: "minecraft:generic.movement_speed", Base: 0.10000000149011612d}], Invulnerable: 0b, SelectedItemSlot: 0, Brain: {memories: {}}, bukkit: {newTotalExp: 0, newLevel: 0, newExp: 0, keepLevel: 0b, lastPlayed: 1742115166782L, firstPlayed: 1727295819566L, expToDrop: 0, lastKnownName: "Tester"}, Dimension: "minecraft:overworld", Paper.Origin: [-1.5d, 96.0d, -3.5d], abilities: {walkSpeed: 0.1f, flySpeed: 0.05f, instabuild: 1b, flying: 1b, mayfly: 1b, invulnerable: 1b, mayBuild: 1b}, Score: 0, Rotation: [88.80469f, 20.399933f], HurtByTimestamp: 0, foodSaturationLevel: 5.0f, WorldUUIDMost: -324847824704549623L, SelectedItem: {id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, Paper.OriginWorld: [I; -75634529, -496153335, -1855661986, -2106814127], Paper: {LastLogin: 1742110050816L, LastSeen: 1742115166782L}, EnderItems: [], foodLevel: 20, Air: 300s, XpSeed: -776347013, XpLevel: 0, Motion: [0.0d, 0.0d, 0.0d], UUID: [I; -1406999311, -101697727, -1525262829, 331660734], Spigot.ticksLived: 345851, Inventory: [{Slot: 0b, id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, {Slot: 1b, id: "minecraft:acacia_boat", tag: {asd: "\\' "}, Count: 1b}, {Slot: 2b, id: "minecraft:acacia_boat", tag: {asd: "\\n "}, Count: 1b}], WorldUUIDLeast: -7970007540112256687L, FallDistance: 0.0f, DataVersion: 3465, SleepTimer: 0s, XpP: 0.0f, warden_spawn_tracker: {ticks_since_last_warning: 9823, warning_level: 0, cooldown_ticks: 0}, previousPlayerGameType: 0, Pos: [129.2085770903654d, 81.24618693923294d, -100.51093785797983d], Health: 20.0f, HurtTime: 0s, FallFlying: 0b, Fire: -20s, PortalCooldown: 0, foodExhaustionLevel: 0.0f, Paper.SpawnReason: "DEFAULT"}"""
+    data = """{seenCredits: 0b, DeathTime: 0s, Bukkit.updateLevel: 2, foodTickTimer: 0, recipeBook: {isBlastingFurnaceFilteringCraftable: 0b, isGuiOpen: 0b, toBeDisplayed: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"], isSmokerGuiOpen: 0b, isBlastingFurnaceGuiOpen: 0b, isFurnaceFilteringCraftable: 0b, isFurnaceGuiOpen: 0b, isFilteringCraftable: 0b, isSmokerFilteringCraftable: 0b, recipes: ["minecraft:birch_chest_boat", "minecraft:jungle_chest_boat", "minecraft:crafting_table", "minecraft:oak_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:acacia_chest_boat", "minecraft:mangrove_chest_boat", "minecraft:spruce_chest_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_chest_boat"]}, XpTotal: 0, OnGround: 0b, AbsorptionAmount: 0.0f, playerGameType: 1, Attributes: [{Name: "minecraft:generic.max_health", Base: 20.0d}, {Name: "minecraft:generic.movement_speed", Base: 0.10000000149011612d}], Invulnerable: 0b, SelectedItemSlot: 0, Brain: {memories: {}}, bukkit: {newTotalExp: 0, newLevel: 0, newExp: 0, keepLevel: 0b, lastPlayed: 1742115166782L, firstPlayed: 1727295819566L, expToDrop: 0, lastKnownName: "Tester"}, Dimension: "minecraft:overworld", Paper.Origin: [-1.5d, 96.0d, -3.5d], abilities: {walkSpeed: 0.1f, flySpeed: 0.05f, instabuild: 1b, flying: 1b, mayfly: 1b, invulnerable: 1b, mayBuild: 1b}, Score: 0, Rotation: [88.80469f, 20.399933f], HurtByTimestamp: 0, foodSaturationLevel: 5.0f, WorldUUIDMost: -324847824704549623L, SelectedItem: {id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, Paper.OriginWorld: [I; -75634529, -496153335, -1855661986, -2106814127], Paper: {LastLogin: 1742110050816L, LastSeen: 1742115166782L}, EnderItems: [], foodLevel: 20, Air: 300s, XpSeed: -776347013, XpLevel: 0, Motion: [3.4492891728878024E-4d, 0.0d, -2.213E-18d], UUID: [I; -1406999311, -101697727, -1525262829, 331660734], Spigot.ticksLived: 345851, Inventory: [{Slot: 0b, id: "minecraft:acacia_boat", tag: {asd: 2}, Count: 1b}, {Slot: 1b, id: "minecraft:acacia_boat", tag: {asd: "\\' "}, Count: 1b}, {Slot: 2b, id: "minecraft:acacia_boat", tag: {asd: "\\n "}, Count: 1b}], WorldUUIDLeast: -7970007540112256687L, FallDistance: 0.0f, DataVersion: 3465, SleepTimer: 0s, XpP: 0.0f, warden_spawn_tracker: {ticks_since_last_warning: 9823, warning_level: 0, cooldown_ticks: 0}, previousPlayerGameType: 0, Pos: [129.2085770903654d, 81.24618693923294d, -100.51093785797983d], Health: 20.0f, HurtTime: 0s, FallFlying: 0b, Fire: -20s, PortalCooldown: 0, foodExhaustionLevel: 0.0f, Paper.SpawnReason: "DEFAULT"}"""
     nbt = NbtCompound.parse(data)
     assert nbt["seenCredits"] == 0
     assert nbt["bukkit"]["lastKnownName"] == "Tester"
