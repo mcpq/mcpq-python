@@ -136,3 +136,10 @@ class _ServerInterface(ABC):
         if mcpq_version is not None:
             return mcpq_version
         return "unknown"
+
+    def run_command(self, command: str, blocking: bool, output: bool) -> str:
+        response = self.stub.runCommandWithOptions(
+            pb.CommandRequest(command=command, blocking=blocking, output=output)
+        )
+        raise_on_error(response.status)
+        return response.output
