@@ -623,7 +623,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         if mc_version and mc_version < (1, 20, 5):
             nbt = NBT({"Item": {"id": type.type, "Count": f"{int(amount)}b"}})
         else:
-            nbt = NBT({"Item": {"id": type.type, "Count": int(amount)}})
+            nbt = NBT({"Item": {"id": type.type, "count": int(amount)}})
             data = type.getData()
             if data:
                 nbt["Item"]["components"] = data.asCompound()
