@@ -163,18 +163,20 @@ class _DefaultWorld(_SharedBase, _HasServer):
         )
         raise_on_error(response.status)
 
-    def getHighestPos(self, x: int, z: int) -> Vec3:
+    def getHighestPos(self, x: int | float, z: int | float) -> Vec3:
         """The position of the highest non-air block with given `x` and `z` in the world.
 
         :return: The position of the highest non-air block with given `x` and `z`
         :rtype: Vec3
         """
-        response = self._server.stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
+        response = self._server.stub.getHeight(
+            pb.HeightRequest(world=self._pb_world, x=int(x), z=int(z))
+        )
         raise_on_error(response.status)
         pos = Vec3(response.block.pos.x, response.block.pos.y, response.block.pos.z)
         return pos
 
-    def getHeight(self, x: int, z: int) -> int:
+    def getHeight(self, x: int | float, z: int | float) -> int:
         "Equivalent to the y value of :func:`getHighestPos` with `x` and `z`."
         return self.getHighestPos(x, z).y  # type: ignore
 
