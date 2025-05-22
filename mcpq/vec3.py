@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import asdict, dataclass
 from numbers import Number
-from typing import Any, Callable, Iterator, Union
+from typing import Any, Callable, Iterator, Union, overload
 
 from ._types import CARDINAL, DIRECTION
 
@@ -259,6 +259,15 @@ class Vec3:
         "The direction of the longest (most significant) cardinal axis"
         return self.withY(0).direction_label()  # type: ignore
 
+    def in_cube(self, corner1: Vec3, corner2: Vec3) -> bool:
+        "Whether `self` is enclosed in the cube spanned between `corner1` and `corner2`, both corners *inclusive*"
+        minc, maxc = corner1.map_pairwise(min, corner2), corner1.map_pairwise(max, corner2)
+        return (
+            minc.x <= self.x <= maxc.x
+            and minc.y <= self.y <= maxc.y
+            and minc.z <= self.z <= maxc.z
+        )
+
     def east(self, n: _NumType = 1) -> Vec3:
         "Equivalent to ``self.addX(n)``"
         return Vec3(self.x + n, self.y, self.z)
@@ -282,6 +291,57 @@ class Vec3:
     def north(self, n: _NumType = 1) -> Vec3:
         "Equivalent to ``self.addZ(-n)``"
         return Vec3(self.x, self.y, self.z - n)
+
+    @overload
+    def add(self) -> Vec3:
+        ...
+
+    @overload
+    def add(self, scalar: _NumType) -> Vec3:
+        ...
+
+    @overload
+    def add(self, vector: Vec3) -> Vec3:
+        ...
+
+    @overload
+    def add(self, x: _NumType, y: _NumType, z: _NumType) -> Vec3:
+        ...
+
+    @overload
+    def add(
+        self, *, x: _NumType | None = None, y: _NumType | None = None, z: _NumType | None = None
+    ) -> Vec3:
+        ...
+
+    def add(self, *args: _NumVec, **kwargs: _NumType) -> Vec3:
+        """
+        `self` with added scalar, another vector, or explicit component-wise values.
+        Supports:
+        * add()
+        * add(scalar)
+        * add(Vec3)
+        * add(x, y, z)
+        * add(x=1, y=2, z=3) with optional partials (missing parts default to 0)
+        """
+        if args and kwargs:
+            raise TypeError("Cannot use both positional and keyword arguments")
+
+        if kwargs:
+            x = kwargs.get("x", 0)
+            y = kwargs.get("y", 0)
+            z = kwargs.get("z", 0)
+            return Vec3(self.x + x, self.y + y, self.z + z)
+
+        if len(args) == 0:
+            return self.__add__(1)
+        elif len(args) == 1:
+            return self.__add__(args[0])
+        elif len(args) == 3:
+            x, y, z = args
+            return Vec3(self.x + x, self.y + y, self.z + z)
+        else:
+            raise TypeError(f"Expected 0, 1 or 3 arguments to add, got {len(args)}")
 
     def addX(self, n: _NumType = 1) -> Vec3:
         "`self` with `n` added to `x`, equivalent to ``self + Vec3(n, 0, 0)``"

@@ -163,6 +163,31 @@ def test_statics() -> None:
     assert myvec.withYZ(-a) == Vec3(myvec.x, -a, -a)
 
 
+def test_func_add() -> None:
+    myvec = Vec3(1, -3, 4.6)
+    assert myvec.add() == myvec + 1
+    assert myvec.add(1) == myvec + 1
+    assert myvec.add(14) == myvec + 14
+    assert myvec.add(-14) == myvec - 14
+    with pytest.raises(TypeError):
+        myvec.add(1, 2)
+    assert myvec.add(9, 1, -1) == myvec + Vec3(9, 1, -1)
+    assert myvec.add(Vec3()) == myvec
+    assert myvec.add(myvec) == myvec + myvec
+    assert myvec.add(x=4) == myvec.addX(4)
+    assert myvec.add(y=-4) == myvec.addY(-4)
+    assert myvec.add(z=12) == myvec.addZ(12)
+    assert myvec.add(x=-4, y=5) == myvec.addX(-4).addY(5)
+    assert myvec.add(x=-4, z=6) == myvec.addX(-4).addZ(6)
+    assert myvec.add(y=-4, z=6) == myvec.addY(-4).addZ(6)
+    assert myvec.add(x=12, y=-4, z=6) == myvec.addX(12).addY(-4).addZ(6)
+    assert myvec.add(z=6, x=12, y=-4) == myvec.addX(12).addY(-4).addZ(6)
+    with pytest.raises(TypeError):
+        myvec.add(1, y=5)
+    with pytest.raises(TypeError):
+        myvec.add(1, 2, 3, x=5)
+
+
 def test_neg() -> None:
     v = Vec3(1, -2, 3)
     assert -v == Vec3(-v.x, -v.y, -v.z)
@@ -602,6 +627,35 @@ def test_direction() -> None:
     v = Vec3().east(b).up(-a).south(b)
     assert v.cardinal_label() == DEFAULT
     assert v.direction_label() == DOWN
+
+
+def test_in_cube() -> None:
+    p1 = Vec3(-3, 0, -2)
+    p2 = Vec3(3, -4, -5)
+    assert p1.in_cube(p1, p2)
+    assert p2.in_cube(p1, p2)
+    assert not Vec3(0, 0, 0).in_cube(p1, p2)
+    assert not Vec3(0, 0, 0).in_cube(p2, p1)
+    assert Vec3(0, 0, -3).in_cube(p1, p2)
+    assert Vec3(0, 0, -3).in_cube(p2, p1)
+    assert p1.withX(p2.x).in_cube(p1, p2)
+    assert p1.withY(p2.y).in_cube(p1, p2)
+    assert p1.withZ(p2.z).in_cube(p1, p2)
+    assert p2.withX(p1.x).in_cube(p1, p2)
+    assert p2.withY(p1.y).in_cube(p1, p2)
+    assert p2.withZ(p1.z).in_cube(p1, p2)
+    assert not p1.withX(p2.x + 0.2).in_cube(p1, p2)
+    assert not p1.withY(p2.y - 0.2).in_cube(p1, p2)
+    assert not p1.withZ(p2.z - 15).in_cube(p1, p2)
+
+
+def test_vec_alias() -> None:
+    from mcpq import Minecraft
+
+    mc = Minecraft.__new__(Minecraft)  # without calling __init__
+    assert mc.Vec3 is Vec3
+    assert mc.vec is Vec3
+    assert mc.vec(1, 2, 3) == Vec3(1, 2, 3)
 
 
 def test_from_yaw_pitch() -> None:

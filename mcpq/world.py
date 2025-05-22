@@ -691,6 +691,37 @@ class _DefaultWorld(_SharedBase, _HasServer):
         else:
             raise TypeError("Type should be of type str")
 
+    def getNbt(self, pos: Vec3) -> NBT | False | None:
+        """Get the block entitiy's NBT data at `pos` as :class:`NBT`.
+        Return `None` if the block is not loaded or `False` if the block is loaded but not a block entity.
+        The data is not cached NBT data is always queried on call.
+
+        .. caution::
+
+           This function requires command output captuing.
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output.
+        """
+        pos = pos.floor()
+        out = self.runCommandBlocking(f"data get block {pos.x} {pos.y} {pos.z}")
+        if out and "{" in out and "}" in out:
+            nbtstr = out[out.index("{") : out.rindex("}") + 1]
+            try:
+                return NBT.parse(nbtstr)
+            except Exception:
+                import traceback
+
+                traceback.print_exc()
+                _in_world = f" in {self.key}" if isinstance(self, World) else ""
+                warning(
+                    f"NBT data of block entity at {pos}{_in_world} could not be parsed: {nbtstr}"
+                )
+        elif not out:
+            warning(
+                "No response received. Your plugin version may not support command output capturing (built against Spigot API)."
+            )
+        elif "not a block entity" in out.lower():
+            return False
+
 
 class World(_DefaultWorld, _SharedBase, _HasServer):
     """Manipulating the world is the heart piece of the entire library.

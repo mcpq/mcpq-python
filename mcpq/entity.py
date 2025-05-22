@@ -242,14 +242,14 @@ class Entity(_SharedBase, _HasServer):
         return [e for e in entities if e is not self]
 
     def getNbt(self) -> NBT | None:
-        """Get the entities NBT data as :class:`NBT` or None if the entity is not loaded. The data is not cached NBT data is always queried on call.
+        """Get the entity's NBT data as :class:`NBT` or None if the entity is not loaded. The data is not cached NBT data is always queried on call.
 
         .. caution::
 
            This function requires command output captuing.
            The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output.
         """
-        out = self._server.run_command(f"data get entity {self.id}", True, True)
+        out = super().runCommandBlocking(f"data get entity {self.id}")  # do not run as entity
         if out and "{" in out and "}" in out:
             nbtstr = out[out.index("{") : out.rindex("}") + 1]
             try:
