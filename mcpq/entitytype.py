@@ -35,8 +35,8 @@ class EntityTypeFilter(_HasServer, Sequence):
 
     .. note::
 
-       The interface and functions for entities is very similar to blocks, such that we are aliasing :class:`~mcpq.nbt.EntityType` to :class:`~mcpq.nbt.Block` at the moment.
-       If at a later point the functionality between the two diverges then we will split the classes as well.
+       The interface and functions for entities is very similar to blocks, such that :class:`~mcpq.nbt.EntityType` is aliased to :class:`~mcpq.nbt.Block` at the moment.
+       If at a later point the functionality between the two diverges then the classes will split up.
     """
 
     def __init__(

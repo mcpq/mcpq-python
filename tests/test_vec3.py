@@ -310,6 +310,13 @@ def test_div() -> None:
         assert v // 0
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_unsupported_casting() -> None:
+    v = Vec3(1.4, -2.61, 3.8)
+    with pytest.raises(TypeError):
+        int(v)  # type: ignore
+
+
 def test_round() -> None:
     from math import ceil, floor, trunc
 
@@ -321,8 +328,6 @@ def test_round() -> None:
     assert floor(v) == v.floor() == Vec3(1, -3, 3)
     assert ceil(v) == v.ceil() == Vec3(2, -2, 4)
     assert trunc(v) == v.trunc() == Vec3(1, -2, 3)
-    with pytest.raises(TypeError):
-        int(v)  # type: ignore
 
     assert all(isinstance(w, int) for w in v.floor())
     assert all(isinstance(w, int) for w in v.ceil())
@@ -632,30 +637,32 @@ def test_direction() -> None:
 def test_in_cube() -> None:
     p1 = Vec3(-3, 0, -2)
     p2 = Vec3(3, -4, -5)
-    assert p1.in_cube(p1, p2)
-    assert p2.in_cube(p1, p2)
-    assert not Vec3(0, 0, 0).in_cube(p1, p2)
-    assert not Vec3(0, 0, 0).in_cube(p2, p1)
-    assert Vec3(0, 0, -3).in_cube(p1, p2)
-    assert Vec3(0, 0, -3).in_cube(p2, p1)
-    assert p1.withX(p2.x).in_cube(p1, p2)
-    assert p1.withY(p2.y).in_cube(p1, p2)
-    assert p1.withZ(p2.z).in_cube(p1, p2)
-    assert p2.withX(p1.x).in_cube(p1, p2)
-    assert p2.withY(p1.y).in_cube(p1, p2)
-    assert p2.withZ(p1.z).in_cube(p1, p2)
-    assert not p1.withX(p2.x + 0.2).in_cube(p1, p2)
-    assert not p1.withY(p2.y - 0.2).in_cube(p1, p2)
-    assert not p1.withZ(p2.z - 15).in_cube(p1, p2)
+    assert p1.in_box(p1, p2)
+    assert p2.in_box(p1, p2)
+    assert not Vec3(0, 0, 0).in_box(p1, p2)
+    assert not Vec3(0, 0, 0).in_box(p2, p1)
+    assert Vec3(0, 0, -3).in_box(p1, p2)
+    assert Vec3(0, 0, -3).in_box(p2, p1)
+    assert p1.withX(p2.x).in_box(p1, p2)
+    assert p1.withY(p2.y).in_box(p1, p2)
+    assert p1.withZ(p2.z).in_box(p1, p2)
+    assert p2.withX(p1.x).in_box(p1, p2)
+    assert p2.withY(p1.y).in_box(p1, p2)
+    assert p2.withZ(p1.z).in_box(p1, p2)
+    assert not p1.withX(p2.x + 0.2).in_box(p1, p2)
+    assert not p1.withY(p2.y - 0.2).in_box(p1, p2)
+    assert not p1.withZ(p2.z - 15).in_box(p1, p2)
 
 
 def test_vec_alias() -> None:
     from mcpq import Minecraft
+    from mcpq._base import _SharedBase
 
     mc = Minecraft.__new__(Minecraft)  # without calling __init__
     assert mc.Vec3 is Vec3
     assert mc.vec is Vec3
     assert mc.vec(1, 2, 3) == Vec3(1, 2, 3)
+    mc.__class__ = _SharedBase  # so _cleanup does not run as it would fail
 
 
 def test_from_yaw_pitch() -> None:

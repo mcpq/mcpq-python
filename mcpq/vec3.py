@@ -259,8 +259,8 @@ class Vec3:
         "The direction of the longest (most significant) cardinal axis"
         return self.withY(0).direction_label()  # type: ignore
 
-    def in_cube(self, corner1: Vec3, corner2: Vec3) -> bool:
-        "Whether `self` is enclosed in the cube spanned between `corner1` and `corner2`, both corners *inclusive*"
+    def in_box(self, corner1: Vec3, corner2: Vec3) -> bool:
+        "Whether `self` is enclosed in the bounding box/cube spanned between `corner1` and `corner2`, both corners *inclusive*"
         minc, maxc = corner1.map_pairwise(min, corner2), corner1.map_pairwise(max, corner2)
         return (
             minc.x <= self.x <= maxc.x

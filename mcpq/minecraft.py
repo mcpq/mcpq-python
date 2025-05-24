@@ -203,7 +203,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
         .. note::
 
-           You probably want to use :attr:`.spawnables` to get spawnable entity-types
+           You probably want to use :attr:`.spawnables` to get spawnable entity-types only
         """
         return EntityTypeFilter(self._server, [])
 
@@ -222,19 +222,18 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         .. code-block:: python
 
            mc.postToChat("Hello Minecraft")
-           mc.postToChat("Players online:", mc.getPlayerList())
+           # print all only players
+           mc.postToChat("Players online:", *mc.getPlayerList())
+           # print every block hit event into chat (good for learning events)
+           mc.events.block_hit.register(mc.postToChat)
 
-        You can also use the module `mcpq.text` to color or markup your chat messages.
+        You can also use the module `mcpq.text` to color or markup your chat messages:
 
         .. code-block:: python
 
-           from mcpq.text import *  # RED, BLUE, BOLD, RESET ...
-           mc.postToChat(RED + BOLD + "super " + RESET + BLUE + "cool!")
-           # prints "super cool!", where "super" is red and bold, and "cool!" is blue
-
-           # or alternatively, in order to not mix up your namespaces (especially `mcpq.colors`)
-           from mcpq import text
+           from mcpq import Minecraft, text
            mc.postToChat(text.RED + text.BOLD + "super " + text.RESET + text.BLUE + "cool!")
+           # prints "super cool!", where "super" is red and bold, and "cool!" is blue
 
         :param sep: the separator between each object, defaults to " "
         :type sep: str, optional

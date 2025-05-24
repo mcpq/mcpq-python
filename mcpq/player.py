@@ -176,11 +176,11 @@ class Player(Entity, _SharedBase, _HasServer):
         .. code::
 
            mc.getPlayer().giveItems("snowball", 64)  # give player 64 snowballs (4 stacks of 16)
-           sword = mc.materials.getById("diamond_sword").withData({"enchantments": {"sharpness": 5}})
+           sword = mc.Block("diamond_sword").withData({"enchantments": {"sharpness": 5}})
            # item can be given as is
            mc.getPlayer().giveItems(sword)  # give player enchanted sword
            # blocks have to be changed to block_state format
-           b = mc.blocks.getById("acacia_stairs").withData({"waterlogged": True})
+           b = mc.Block("acacia_stairs").withData({"waterlogged": True})
            mc.getPlayer().giveItems(b.asBlockStateForItem())  # give player already waterlogged stairs
 
         .. note::
