@@ -1,4 +1,19 @@
 import importlib.metadata as _metalib
+import logging as _logging
+
+# get this logger with: logging.getLogger("mcpq")
+# and set the level either with basicConfig or specifically:
+# logging.getLogger("mcpq").setLevel(logging.DEBUG)
+logger: _logging.Logger = _logging.getLogger("mcpq")
+if not logger.hasHandlers():
+    handler = _logging.StreamHandler()
+    handler.setLevel(_logging.NOTSET)
+    formatter = _logging.Formatter("%(levelname)s:%(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+if logger.level == _logging.NOTSET:
+    logger.setLevel(_logging.WARNING)
 
 try:
     __version__ = _metalib.version(__package__ or __name__)

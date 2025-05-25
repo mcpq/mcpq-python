@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import logging
 import re
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable
 
+from . import logger
 from ._proto import minecraft_pb2 as pb
 from .exception import raise_on_error
 
@@ -111,7 +111,7 @@ class _ServerInterface(ABC):
             if m and len(m):
                 version = self.server_info_cache()["mcversion"] = m[-1]
                 return version
-            logging.warning(f"Minecraft version could not be parsed from '{full_version}'")
+            logger.warning(f"Minecraft version could not be parsed from '{full_version}'")
         return "unknown"
 
     def get_mc_version(self) -> tuple[int, ...]:
@@ -126,7 +126,7 @@ class _ServerInterface(ABC):
                 self.server_info_cache()["_mcversion_tuple"] = version_tuple
                 return version_tuple
             except ValueError:
-                logging.warning(
+                logger.warning(
                     f"Minecraft version '{versionstr}' could not be parsed to tuple of integers"
                 )
         return tuple()

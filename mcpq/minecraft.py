@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import logging
-
 import grpc
 
+from . import logger
 from ._base import _HasServer, _SharedBase
 from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
@@ -20,9 +19,6 @@ from .vec3 import Vec3
 from .world import World, _DefaultWorld
 
 __all__ = ["Minecraft"]
-
-logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
-# logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 
 
 class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
@@ -130,14 +126,14 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         return f"{self.__class__.__name__}({host=}, {port=})"
 
     def _cleanup(self) -> None:
-        logging.debug("Minecraft: _cleanup: called, closing channel...")
+        logger.debug("Minecraft: _cleanup: called, closing channel...")
         old_handler, self._event_handler = self._event_handler, None
         old_handler._cleanup()
         self._channel.close()
-        logging.debug("Minecraft: _cleanup: done")
+        logger.debug("Minecraft: _cleanup: done")
 
     def __del__(self) -> None:
-        logging.debug("Minecraft: __del__: called")
+        logger.debug("Minecraft: __del__: called")
         self._cleanup()
 
     @property
