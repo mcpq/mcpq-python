@@ -19,6 +19,25 @@ def test_close() -> None:
     assert not close(Vec3(), Vec3(0.001, -0.001))
 
 
+def test_vec_is_close() -> None:
+    v1 = Vec3(0.001, -0.001)
+    v2 = Vec3(0.000001, -0.000001)
+    assert v1 != v2
+    assert not v1.is_close(v2, abs_tol=1e-6)
+    assert not v2.is_close(v1, abs_tol=1e-6)
+    assert not v1.is_close(Vec3(), abs_tol=1e-6)
+    assert not Vec3().is_close(v1, abs_tol=1e-6)
+    assert v2.is_close(Vec3(), abs_tol=1e-6)
+    assert Vec3().is_close(v2, abs_tol=1e-6)
+
+    v1 = Vec3(4.55, 3.33333333333333333333, 12)
+    v2 = Vec3(4.55, 3.33333333333, 12)
+    assert v1 != v2
+    assert v1.is_close(v2)
+    assert v2.is_close(v1)
+    assert not v1.is_close(v2.addX(0.001))
+
+
 def test_eq() -> None:
     # created by dataclass, only sanity checks
     assert Vec3() == Vec3()
@@ -365,6 +384,26 @@ def test_len_norm() -> None:
     assert close(v.norm(), v / v.length())
     assert close(v.norm().length(), 1)
 
+    assert v.scale(1) == v
+    assert v.scale(1) == v * 1
+    assert v.scale(4.5) == v * 4.5
+    assert v.scale(4.5).length() == v.length() * 4.5
+
+    assert v.with_length(1) == v.norm()
+    assert v.with_length(0) == Vec3()
+    for i in range(-50, 50):
+        assert close(v.with_length(i / 10).length(), abs(i / 10))
+        assert close(v.with_length(i / 10), v.norm() * (i / 10))
+
+
+def test_clamp() -> None:
+    v = Vec3(1, -2, 3.3)
+    assert v.clamp(v - 1, v + 1) == v
+    assert v.clamp(Vec3(), v + 1) == v.withY(0)
+    assert v.clamp(v - 1, Vec3()) == Vec3(0, -2, 2.3)
+    assert v.clamp(Vec3(), Vec3()) == Vec3()
+    assert v.clamp(Vec3(5, -10, 5), Vec3(10, -5, 10)) == Vec3(5, -5, 5)
+
 
 def test_map() -> None:
     import operator
@@ -383,6 +422,25 @@ def test_map() -> None:
     assert v.map_pairwise(operator.add, w) == v + w
     assert v.map_pairwise(operator.mul, w) == v * w
     assert v.map_pairwise(operator.pow, w) == Vec3(v.x**w.x, v.y**w.y, v.z**w.z)
+    assert v.map_nwise(abs) == v.map(abs)
+    assert v.map_nwise(operator.add, w) == v.map_pairwise(operator.add, w)
+    assert v.map_nwise(max, w, w + 1) == v.map_pairwise(max, w + 1)
+    assert v.map_nwise(min, w, w + 1) == v.map_pairwise(min, w)
+
+    with pytest.raises(TypeError):
+        v.map(operator.add)
+    with pytest.raises(TypeError):
+        v.map_pairwise(abs, w)
+    with pytest.raises(TypeError):
+        v.map_nwise(operator.add)
+
+    assert v.max(w, w + 1, w + 2) == v.map_pairwise(max, w + 2)
+    assert v.min(w, w + 1, w + 2) == v.map_pairwise(min, w)
+    ops = set((v, w, w + 1, v - 1))
+    vmin = v.min(*ops)
+    vmax = v.max(*ops)
+    assert all(o.min(*(ops - set((o,)))) == vmin for o in list(ops))
+    assert all(o.max(*(ops - set((o,)))) == vmax for o in list(ops))
 
 
 def test_angle() -> None:
@@ -499,27 +557,28 @@ def test_order() -> None:
     assert sorted([v3, v1, v2]) == [v1, v2, v3]
 
 
-def test_frozen() -> None:
-    from dataclasses import FrozenInstanceError
-
+def test_immutable() -> None:
     v = Vec3(1, 2, 3)
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.x = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.y = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.z = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.x += 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.y += 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.z += 5  # type: ignore
 
 
 def test_asdict() -> None:
     v = Vec3(1, 2, 3)
-    assert v.asdict() == {"x": 1, "y": 2, "z": 3}
+    assert v.to_dict() == {"x": 1, "y": 2, "z": 3}
+    assert v.to_tuple() == (1, 2, 3)
+    with pytest.deprecated_call():
+        assert v.asdict() == {"x": 1, "y": 2, "z": 3}
 
 
 def test_pickle() -> None:
@@ -552,7 +611,7 @@ def test_copy() -> None:
     assert nv == cp == dc
     assert isinstance(cp, NewTestVec)
     assert isinstance(dc, NewTestVec)
-    assert v != nv
+    assert v == nv
 
 
 def test_hash() -> None:
@@ -563,6 +622,12 @@ def test_hash() -> None:
     assert hash(Vec3()) != hash(object())
     assert hash(Vec3()) != hash(0.0)
     assert hash(Vec3()) != hash(False)
+
+
+def test_str_repr() -> None:
+    v = Vec3(0, -22, 123.6)
+    assert repr(v) == str(v)
+    assert str(v) == "Vec3(x=0, y=-22, z=123.6)"
 
 
 def test_pow() -> None:
@@ -757,3 +822,15 @@ def test_yaw_pitch() -> None:
     assert Vec3().west().yaw_pitch() == (90, 0)
     assert Vec3().north().yaw_pitch() == (-180, 0)
     assert Vec3(100, 0, 100).yaw_pitch() == (-45, 0)
+
+
+def test_constants() -> None:
+    assert Vec3.ZEROS == Vec3()
+    assert Vec3.ONES == Vec3(1, 1, 1)
+    assert Vec3.ORIGIN == Vec3()
+    assert Vec3.EAST == Vec3().east()
+    assert Vec3.WEST == Vec3().west()
+    assert Vec3.UP == Vec3().up()
+    assert Vec3.DOWN == Vec3().down()
+    assert Vec3.SOUTH == Vec3().south()
+    assert Vec3.NORTH == Vec3().north()
