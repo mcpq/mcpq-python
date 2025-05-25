@@ -52,7 +52,7 @@ class _MaterialInternal:
 
 class MaterialFilter(_HasServer, Sequence):
     """
-    The :class:`MaterialFilter` filteres materials, which includes types of blocks, items and other materials, by querying the server.
+    The :class:`MaterialFilter` filters materials, which includes types of blocks, items and other materials, by querying the server.
     The exact materials that are available depend on the Minecraft version and plugins/mods that are installed on the :class:`Minecraft` instance.
 
     Typically, we would like to get a certain subtype of material, which can be filtered directly on this class. Once we have done this, we can iterate over it, return a list of applied filters or choose a random block from the filtered materials:
@@ -87,7 +87,7 @@ class MaterialFilter(_HasServer, Sequence):
        # or turn the filter into a list for something else
        wool_list = mc.blocks.contains("wool").get()
 
-    Most filteres can be inverted, either directly, e.g., ``mc.materials.item(False)`` to get all non-item materials, or by using the inverted keyword for string filters, e.g., ``mc.materials.contains("yellow", "orange", negate=True)`` to get all materials that do not contain the words yellow or orange.
+    Most filters can be inverted, either directly, e.g., ``mc.materials.item(False)`` to get all non-item materials, or by using the inverted keyword for string filters, e.g., ``mc.materials.contains("yellow", "orange", negate=True)`` to get all materials that do not contain the words yellow or orange.
 
     Additionally, filters can be combined in a number of ways.
     Let's say we want to get all block types that contain the words "wool" or "concrete" but NOT the word "yellow". There are multiple ways how we could filter the material list:

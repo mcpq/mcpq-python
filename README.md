@@ -14,8 +14,9 @@ Due to the use of the new type annotations **Python 3.10+** is required!
 After getting a [server](https://papermc.io/) and [compatible plugin](https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions) setup and running, the only thing left to do is to install the python library:
 
 ```bash
-pip3 install mcpq
+pip install mcpq
 ```
+> Some of the extra features in `mcpq.tools` need additional dependencies, if you want to use them install with: `pip install mcpq[tools]`
 
 Get coding and checkout [the docs](https://mcpq.github.io/mcpq-python/) for more examples!
 
@@ -78,7 +79,7 @@ TLDR; make sure the first 2 numbers (`major.minor`) of the library version are t
 
 ## Build Instructions
 
-The library is currently [published on PyPI](https://pypi.org/project/mcpq/). The package can be downloaded from there with `pip3 install mcpq`.
+The library is currently [published on PyPI](https://pypi.org/project/mcpq/). The package can be downloaded from there with `pip install mcpq`.
 
 You can also install this package directly by using `pip install git+https://github.com/mcpq/mcpq-python.git@<tag/branch>` to install it directly from Github (`git` is required for this).
 If you cloned the repository already then `pip install .` can be used.

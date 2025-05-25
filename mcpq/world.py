@@ -163,18 +163,20 @@ class _DefaultWorld(_SharedBase, _HasServer):
         )
         raise_on_error(response.status)
 
-    def getHighestPos(self, x: int, z: int) -> Vec3:
+    def getHighestPos(self, x: int | float, z: int | float) -> Vec3:
         """The position of the highest non-air block with given `x` and `z` in the world.
 
         :return: The position of the highest non-air block with given `x` and `z`
         :rtype: Vec3
         """
-        response = self._server.stub.getHeight(pb.HeightRequest(world=self._pb_world, x=x, z=z))
+        response = self._server.stub.getHeight(
+            pb.HeightRequest(world=self._pb_world, x=int(x), z=int(z))
+        )
         raise_on_error(response.status)
         pos = Vec3(response.block.pos.x, response.block.pos.y, response.block.pos.z)
         return pos
 
-    def getHeight(self, x: int, z: int) -> int:
+    def getHeight(self, x: int | float, z: int | float) -> int:
         "Equivalent to the y value of :func:`getHighestPos` with `x` and `z`."
         return self.getHighestPos(x, z).y  # type: ignore
 
@@ -200,6 +202,18 @@ class _DefaultWorld(_SharedBase, _HasServer):
 
     def getBlockWithData(self, pos: Vec3) -> Block:
         """The block :class:`Block` at position `pos` in world including block component data.
+
+        .. code::
+
+           pos = mc.vec(1, 2, 3)
+           mc.setBlock("furnace", pos)
+           block_without_data = mc.getBlock(pos)  # returns type Block
+           print(block_without_data)
+           # >>> "furnace"
+           block_with_data = mc.getBlockWithData(pos)  # returns type Block
+           print(block_with_data)
+           # >>> "furnace[facing=north,lit=false]"
+           mc.setBlock(block_with_data.withData({"lit": True}), pos)  # make furnce look lit
 
         :param pos: position to query block from
         :type pos: Vec3
@@ -247,6 +261,31 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """Change the block at position `pos` to `blocktype` in world.
         This will overwrite any block at that position.
 
+        .. code::
+
+           mc = Minecraft()
+           pos = mc.vec(1, 2, 3)
+           # set blocks in default world
+           mc.setBlock("acacia_stairs", pos)
+           mc.setBlock(mc.Block("acacia_stairs"), pos)
+           mc.setBlock(mc.Block("acacia_stairs").withData({"waterlogged": True}), pos)
+           # or set in specific world
+           mc.nether.setBlock(...)
+
+        If you want to set many blocks of the *same type* use :func:`setBlockList` instead:
+
+        .. code::
+
+           start = mc.vec(0, 50, 0)
+           for x in range(1000):
+              pos = start.addX(x)
+              mc.setBlock("gold_block", pos)
+
+           # instead use setBlockList which is much more efficient:
+
+           positions = [start.addX(x) for x in range(1000)]
+           mc.setBlockList("gold_block", positions)
+
         :param blocktype: the valid block type/id or :class:`Block` to set the block to
         :type blocktype: str | Block
         :param pos: the position where the block should be set
@@ -271,6 +310,18 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """Change all blocks at `positions` to `blocktype` in world.
         This will overwrite all blocks at the given positions.
         This is more efficient that using :func:`setBlock` multiple times with the same `blocktype`.
+
+        .. code::
+
+           start = mc.vec(0, 50, 0)
+           positions = [start.addX(x) for x in range(1000)]
+           mc.setBlockList("gold_block", positions)
+
+           # this is equivalent to but much more efficent and faster than:
+
+           for x in range(1000):
+              pos = start.addX(x)
+              mc.setBlock("gold_block", pos)
 
         :param blocktype: the valid block type/id to set the blocks to
         :type blocktype: str | Block
@@ -308,7 +359,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
            start = Vec3()  # this would be the lowest (most negative coordinates) corner of the cube we want to draw, here origin
            world.setBlockCube("diamond_block", start, start.addX(xlen).addY(ylen).addZ(zlen))
 
-           # this is equivalent to (but more efficent and faster than)
+           # this is equivalent to but much more efficent and faster than:
 
            for x in range(xlen + 1):
                for y in range(ylen + 1):
@@ -576,6 +627,13 @@ class _DefaultWorld(_SharedBase, _HasServer):
         """Spawn and return a new entitiy of given `type` at position `pos` in world.
         The entity has default settings and behavior.
 
+        .. code::
+
+           cow = mc.spawnEntity("cow", mc.getHighestPos(0, 0).up())
+           creeper = mc.spawnEntity("creeper", mc.getHighestPos(0, 0).up())
+           creeper.giveEffect("invisibility")  # make creeper permanently invisible
+           creeper.pos = mc.getPlayer().pos  # teleport creeper a player
+
         :param type: the valid entity type that should be spawned (must be spawnable without additional parameters)
         :type type: str | EntityType
         :param pos: the position where to spawn the entitiy in the world
@@ -604,6 +662,15 @@ class _DefaultWorld(_SharedBase, _HasServer):
     def spawnItems(self, type: str | Block, pos: Vec3, amount: int = 1) -> None:
         """Spawn `amount` many collectable items of `type` at `pos`.
 
+        .. code::
+
+           pos = mc.vec(1, 2, 3)  # position where to spawn the item (on the ground)
+           mc.spawnItems("iron_sword", pos)  # spawn a dropped iron_sword at pos
+           mc.spawnItems(mc.Block("iron_sword").withData({"enchantments": {"sharpness": 5}}), pos)  # enchanted
+           mc.spawnItems("acacia_stairs", pos, 64)  # spawn a stack of dropped acacia_stairs at pos
+           # for component data that should be set on blocks once placed, use asBlockStateForItem()
+           mc.spawnItems(mc.Block("acacia_stairs").withData({"waterlogged": True}).asBlockStateForItem(), pos, 64)
+
         :param type: the item type as string or :class:`Block`, e.g., ``"minecraft:arrow"`` with potential component data
         :type type: str | Block
         :param pos: position where to spawn the items
@@ -623,7 +690,7 @@ class _DefaultWorld(_SharedBase, _HasServer):
         if mc_version and mc_version < (1, 20, 5):
             nbt = NBT({"Item": {"id": type.type, "Count": f"{int(amount)}b"}})
         else:
-            nbt = NBT({"Item": {"id": type.type, "Count": int(amount)}})
+            nbt = NBT({"Item": {"id": type.type, "count": int(amount)}})
             data = type.getData()
             if data:
                 nbt["Item"]["components"] = data.asCompound()
@@ -636,6 +703,12 @@ class _DefaultWorld(_SharedBase, _HasServer):
         If a `type` is provided, only entities of that type are returned.
         By default only entities of types that could be spawned using :func:`spawnEntity` are returned.
         To get all entities (except players) set ``only_spawnable=False``, which will also return non-spawnable entities such as e.g. ``"falling_block"`` or ``"dropped_item"``.
+
+        .. code::
+
+           entities = mc.getEntities()  # get all (loaded) entities in the world
+           items = mc.getEntities("item")  # get only all (loaded) dropped items
+           mc.removeEntities("item")  # remove all dropped items (is more efficient than iterating over items manually)
 
         :param type: if provided returns only entities of that type, returns all types if None, defaults to None
         :type type: str | EntityType | None, optional
@@ -688,6 +761,37 @@ class _DefaultWorld(_SharedBase, _HasServer):
             self.runCommand(f"kill @e[type={type}]")
         else:
             raise TypeError("Type should be of type str")
+
+    def getNbt(self, pos: Vec3) -> NBT | False | None:
+        """Get the block entitiy's NBT data at `pos` as :class:`NBT`.
+        Return `None` if the block is not loaded or `False` if the block is loaded but not a block entity.
+        The data is not cached NBT data is always queried on call.
+
+        .. caution::
+
+           This function requires command output captuing.
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output.
+        """
+        pos = pos.floor()
+        out = self.runCommandBlocking(f"data get block {pos.x} {pos.y} {pos.z}")
+        if out and "{" in out and "}" in out:
+            nbtstr = out[out.index("{") : out.rindex("}") + 1]
+            try:
+                return NBT.parse(nbtstr)
+            except Exception:
+                import traceback
+
+                traceback.print_exc()
+                _in_world = f" in {self.key}" if isinstance(self, World) else ""
+                warning(
+                    f"NBT data of block entity at {pos}{_in_world} could not be parsed: {nbtstr}"
+                )
+        elif not out:
+            warning(
+                "No response received. Your plugin version may not support command output capturing (built against Spigot API)."
+            )
+        elif "not a block entity" in out.lower():
+            return False
 
 
 class World(_DefaultWorld, _SharedBase, _HasServer):

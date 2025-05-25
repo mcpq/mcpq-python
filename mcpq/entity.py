@@ -6,6 +6,7 @@ from ._abc import _ServerInterface
 from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
 from ._types import COLOR
+from ._util import warning
 from .colors import color_codes
 from .exception import raise_on_error
 from .nbt import NBT, Block, EntityType
@@ -221,7 +222,10 @@ class Entity(_SharedBase, _HasServer):
             self._update(allow_dead=allow_dead)
 
     def getEntitiesAround(
-        self, distance: float, type: str | EntityType | None = None, only_spawnable: bool = True
+        self,
+        distance: float,
+        type: str | EntityType | None = None,
+        only_spawnable: bool = True,
     ) -> list[Entity]:
         """Get all other entities in a certain radius around this one
 
@@ -236,6 +240,29 @@ class Entity(_SharedBase, _HasServer):
         """
         entities = self.world.getEntitiesAround(self.pos, distance, type, only_spawnable)
         return [e for e in entities if e is not self]
+
+    def getNbt(self) -> NBT | None:
+        """Get the entity's NBT data as :class:`NBT` or None if the entity is not loaded. The data is not cached NBT data is always queried on call.
+
+        .. caution::
+
+           This function requires command output captuing.
+           The plugin that is built against the ``spigot-Bukkit API`` does *not* fully support the return of command output.
+        """
+        out = super().runCommandBlocking(f"data get entity {self.id}")  # do not run as entity
+        if out and "{" in out and "}" in out:
+            nbtstr = out[out.index("{") : out.rindex("}") + 1]
+            try:
+                return NBT.parse(nbtstr)
+            except Exception:
+                import traceback
+
+                traceback.print_exc()
+                warning(f"NBT data of {self} could not be parsed: {nbtstr}")
+        elif not out:
+            warning(
+                "No response received. Your plugin version may not support command output capturing (built against Spigot API)."
+            )
 
     def giveEffect(
         self, effect: str, seconds: int = 0, amplifier: int = 0, particles: bool = True

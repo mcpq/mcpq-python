@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import time
 from dataclasses import dataclass, field
 from functools import partial
@@ -11,6 +10,7 @@ from typing import Callable, Generic, TypeVar
 
 import grpc
 
+from . import logger
 from ._abc import _ServerInterface
 from ._base import _HasServer
 from ._proto import minecraft_pb2 as pb
@@ -228,15 +228,15 @@ class SingleEventHandler(_HasServer, Generic[EventType]):
         return f"{self.__class__.__name__}[{self._cls.__name__}](key={self._key})"
 
     def _cleanup(self) -> None:
-        logging.debug(self._logp + "_cleanup: cancelling stream...")
+        logger.debug(self._logp + "_cleanup: cancelling stream...")
         with self._thread_lock.for_write():
             self._thread_cancelled = True
             if self._stream:
                 self._stream.cancel()
             if self._thread:
-                logging.debug(self._logp + "_cleanup: joining thread...")
+                logger.debug(self._logp + "_cleanup: joining thread...")
                 self._thread.join()
-                logging.debug(self._logp + "_cleanup: joined thread")
+                logger.debug(self._logp + "_cleanup: joined thread")
             self._thread_cancelled, self._thread, self._stream = None, None, None
 
     def _have_thread(self) -> None:
@@ -267,18 +267,18 @@ class SingleEventHandler(_HasServer, Generic[EventType]):
 
     def _poll(self) -> None:
         try:
-            logging.debug(self._logp + "_poll: started polling")
+            logger.debug(self._logp + "_poll: started polling")
             if self._thread_cancelled:
-                logging.debug(self._logp + "_poll: stream was cancelled instantly")
+                logger.debug(self._logp + "_poll: stream was cancelled instantly")
                 return
             for rpc_event in self._stream:
                 if self._thread_cancelled:  # is only set to True once! (no lock required)
-                    logging.debug(self._logp + "_poll: stream was cancelled via variable")
+                    logger.debug(self._logp + "_poll: stream was cancelled via variable")
                     return
                 event = self._cls._build(self._server, rpc_event)
                 if self._callbacks:
                     for callback in self._callbacks:
-                        logging.debug(self._logp + f"_poll: callback with event: {rpc_event}")
+                        logger.debug(self._logp + f"_poll: callback with event: {rpc_event}")
                         try:
                             callback(event)
                         except Exception as e:
@@ -287,30 +287,30 @@ class SingleEventHandler(_HasServer, Generic[EventType]):
                                 if hasattr(callback, "__name__")
                                 else str(callback)
                             )
-                            logging.error(
+                            logger.error(
                                 self._logp
                                 + f"callback {name}({event}) raised error: {type(e).__name__}{e.args}"
                             )
                             # TODO: potentially propagate error to main thread? (for now, continue)
                 else:
-                    logging.debug(self._logp + f"_poll: putting event in queue: {rpc_event}")
+                    logger.debug(self._logp + f"_poll: putting event in queue: {rpc_event}")
                     try:
                         self._event_queue.put(event, block=False, timeout=None)
                     except Full:
                         if self._event_drop_time + WARN_DROPPED_INTERVAL < time.time():
-                            logging.warning(
+                            logger.warning(
                                 self._logp + "_poll: dropping events due to backlog in queue"
                             )
                             self._event_drop_time = time.time()
         except grpc.RpcError as e:
             if hasattr(e, "code") and callable(e.code) and e.code() == grpc.StatusCode.CANCELLED:
                 if self._thread_cancelled:  # is only set to True once! (no lock required)
-                    logging.debug(self._logp + "_poll: stream was cancelled")
+                    logger.debug(self._logp + "_poll: stream was cancelled")
                 else:
-                    logging.error(self._logp + "_poll: stream was cancelled, but NOT via cleanup!")
+                    logger.error(self._logp + "_poll: stream was cancelled, but NOT via cleanup!")
                     raise e
             else:
-                logging.error(self._logp + f"_poll: stream was closed by RpcError: {e}")
+                logger.error(self._logp + f"_poll: stream was closed by RpcError: {e}")
                 raise e
         finally:
             self._thread_cancelled = True
@@ -503,13 +503,13 @@ class EventHandler(_HasServer):
         )
 
     def _cleanup(self) -> None:
-        logging.debug("EventHandler: _cleanup: called...")
+        logger.debug("EventHandler: _cleanup: called...")
         old_cache, self._poller = self._poller, None
         for key, poller in old_cache.items():
-            logging.debug(f"EventHandler: _cleanup: calling cleanup in poller with key {key}")
+            logger.debug(f"EventHandler: _cleanup: calling cleanup in poller with key {key}")
             poller._cleanup()
         old_cache.clear()
-        logging.debug("EventHandler: _cleanup: done")
+        logger.debug("EventHandler: _cleanup: done")
 
     def _get_or_create_poller(self, key: int, cls: EventType) -> SingleEventHandler:
         return self._poller.get_or_create(key, partial(SingleEventHandler, self._server, cls))

@@ -21,9 +21,10 @@ import nox
 # if True: if a server is running, use that one, else download and run own servers
 INTEGRATION = True
 # location of plugin (can be built or downloaded to root)
-SERVER_PLUGIN_SEARCH_LOCATION = [
-    Path.home() / "mcpq-plugin" / "build" / "libs",
+LOCAL_PLUGIN_SEARCH_LOCATION = [
     Path(__file__).parent,
+    Path(__file__).parent / "mcpq-plugin" / "build" / "libs",
+    Path.home() / "mcpq-plugin" / "build" / "libs",
 ]
 # location of the java 21 executable
 SERVER_JAVA_EXE = Path("java")
@@ -52,6 +53,11 @@ MC_VERSIONS = [
     "1.20.2",
     "1.20.1",
 ]
+PLUGIN_VERSIONS = [
+    # note: if not explicitly specified will use local before latest
+    "2.1",
+    "2.0",
+]
 PROTOBUF_VERSIONS = [
     "6.30.2",
     "5.29.4",
@@ -65,7 +71,7 @@ GRPCIO_VERSIONS = [
     "1.69.0",
     "1.68.0",
     "1.66.0",
-    "1.65.4",  # compiled proto version
+    "1.65.4",  # compiled proto / pinned version
     "1.64.0",
     "1.63.0",
 ]
@@ -77,7 +83,7 @@ if INTEGRATION:
 @nox.session(python=PY_VERSIONS[-1], venv_backend="uv|virtualenv")
 @nox.parametrize("protobuf_version", PROTOBUF_VERSIONS)
 @nox.parametrize("grpcio_version", GRPCIO_VERSIONS)
-def dep_versions_test(session: nox.Session, protobuf_version, grpcio_version):
+def dep_test(session: nox.Session, protobuf_version, grpcio_version):
     session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
     grpcio_dep = f"grpcio=={grpcio_version}"
     protobuf_dep = f"protobuf=={protobuf_version}"
@@ -94,7 +100,7 @@ def dep_versions_test(session: nox.Session, protobuf_version, grpcio_version):
 
 
 @nox.session(python=PY_VERSIONS, venv_backend="uv|virtualenv")
-def py_versions_test(session: nox.Session):
+def py_test(session: nox.Session):
     session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
     session.install(".")  # install latest according to pyproject.toml
     check_installed_deps(session, ["grpcio", "protobuf", "mcpq"])
@@ -107,8 +113,20 @@ def py_versions_test(session: nox.Session):
 
 @nox.session(python=PY_VERSIONS[-1], venv_backend="uv|virtualenv")
 @nox.parametrize("mc_version", MC_VERSIONS)
-def mc_versions_test(session: nox.Session, mc_version: str):
+def mc_test(session: nox.Session, mc_version: str):
     status = start_server(session, mc_version)
+    if not status.is_nox:
+        session.error("Cannot test mc versions with an already running server")
+    session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
+    session.install(".")  # install latest according to pyproject.toml
+    check_installed_deps(session, ["grpcio", "protobuf", "mcpq"])
+    session.run("pytest")
+
+
+@nox.session(python=PY_VERSIONS[-1], venv_backend="uv|virtualenv")
+@nox.parametrize("plugin_version", PLUGIN_VERSIONS)
+def plugin_test(session: nox.Session, plugin_version: str):
+    status = start_server(session, MC_VERSIONS[0], plugin_version)
     if not status.is_nox:
         session.error("Cannot test mc versions with an already running server")
     session.install("pytest", "pytest-integration", "pytest-mock", "pytest-timeout")
@@ -211,7 +229,43 @@ def download_paper(session: nox.Session, mc_version: str, target_dir: Path) -> P
     return server_path
 
 
-def prepare_server_folder(session: nox.Session, mc_version: str) -> Path:
+def download_mcpq(session: nox.Session, version: str, target_dir: Path) -> Path:
+    def single_from_json(single_release):
+        if "assets" not in single_release:
+            session.error(f"No assets in plugin release: {release}")
+        for asset in single_release["assets"]:
+            name = asset["name"]
+            if name.startswith("mcpq-") and name.endswith(".jar"):
+                break
+        else:
+            session.error(f"Could not find MCPQ plugin jar in assets: {single_release}")
+        download_url = asset["browser_download_url"]
+        session.log(f"Downloading newest MCPQ plugin: {name}")
+        target_version_dir = target_dir / str(version)
+        target_version_dir.mkdir(parents=True, exist_ok=True)
+        urllib.request.urlretrieve(download_url, target_version_dir / name)
+        session.log(f"Downloaded '{(target_version_dir / name).as_posix()}'")
+        return target_version_dir / name
+
+    api = "https://api.github.com/repos/mcpq/mcpq-plugin/releases"
+    weburl = urllib.request.urlopen(api)
+    data = weburl.read()
+    encoding = weburl.info().get_content_charset("utf-8")
+    api_all_versions = json.loads(data.decode(encoding))
+    for release in api_all_versions:
+        if "tag_name" in release:
+            if release["tag_name"] == version or release["tag_name"][1:] == version:
+                return single_from_json(release)
+        else:
+            session.error(
+                "Expected tag_name to be set on all releases and did not have fallback for tag identification"
+            )
+    session.error(f"Could not find plugin version '{version}' online")
+
+
+def prepare_server_folder(
+    session: nox.Session, mc_version: str, plugin_version: str | None = None
+) -> Path:
     folder = (SERVER_VERSIONS_FOLDER / mc_version).resolve()
     folder.mkdir(parents=True, exist_ok=True)
     jars = list(f for f in folder.glob("*.jar") if f.is_file())
@@ -221,17 +275,35 @@ def prepare_server_folder(session: nox.Session, mc_version: str) -> Path:
         server_path = jars[0]
     else:
         session.error(f"Too many jar files in {folder.as_posix()}")
-    for location in SERVER_PLUGIN_SEARCH_LOCATION:
-        if plugins := list(f for f in location.glob("mcpq-*.jar") if f.is_file()):
-            if len(plugins) > 1:
-                session.error(f"Too many mcpq plugins at location {location.as_posix()}")
-            plugin = plugins[0]
-            break
-    else:
-        session.error("MCPQ plugin could not be found in given locations")
+
+    plugin = None
+    if plugin_version is None:  # use local > latest
+        for location in LOCAL_PLUGIN_SEARCH_LOCATION:
+            if plugins := list(f for f in location.glob("mcpq-*.jar") if f.is_file()):
+                if len(plugins) > 1:
+                    session.error(f"Too many mcpq plugins at location {location.as_posix()}")
+                plugin = plugins[0]
+                session.log(f"Using local MCPQ plugin at {plugin.as_posix()}")
+                break
+        else:
+            plugin_version = PLUGIN_VERSIONS[0]
+            session.log(
+                f"MCPQ plugin could not be found locally, falling back to version '{plugin_version}'"
+            )
+    if plugin is None:
+        plugin_download_folder = SERVER_VERSIONS_FOLDER / "plugins" / plugin_version
+        if plugin_download_folder.is_dir():
+            if plugins := list(
+                f for f in plugin_download_folder.glob("mcpq-*.jar") if f.is_file()
+            ):
+                plugin = plugins[0]
+                session.log(f"Using plugin version '{plugin_version}' at {plugin.as_posix()}")
+        if plugin is None:
+            plugin = download_mcpq(session, plugin_version, plugin_download_folder.parent)
+
     plugin_loc: Path = folder / "plugins" / plugin.name
     if not plugin_loc.is_file() or not filecmp.cmp(plugin, plugin_loc):
-        session.log(f"Copying plugin {plugin.as_posix()}")
+        # session.log(f"Copying plugin {plugin.as_posix()}")
         if plugin_loc.parent.exists():
             shutil.rmtree(plugin_loc.parent)
         plugin_loc.parent.mkdir()
@@ -245,7 +317,24 @@ def prepare_server_folder(session: nox.Session, mc_version: str) -> Path:
     return server_path
 
 
-def start_server(session: nox.Session, mc_version: str) -> ServerStatus:
+def running_plugin_version(session: nox.Session) -> str | None:
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).parent))
+    try:
+        import mcpq
+
+        mc = mcpq.Minecraft()
+        return mc.getPluginVersion()
+    except Exception as e:
+        session.warn(f"Could not query plugin version from running server: {e}")
+    finally:
+        del sys.path[0]
+
+
+def start_server(
+    session: nox.Session, mc_version: str, plugin_version: str | None = None
+) -> ServerStatus:
     status = ServerStatus.read()
     if not status.running and status.is_nox:
         session.error(
@@ -257,17 +346,25 @@ def start_server(session: nox.Session, mc_version: str) -> ServerStatus:
         )
         return status
     if status.running and status.is_nox:
-        if status.version != mc_version:
+        current_plugin_version = running_plugin_version(session)
+        want_plugin_version = plugin_version or PLUGIN_VERSIONS[0]
+        if status.version == mc_version and current_plugin_version == want_plugin_version:
+            session.log(
+                "Running nox server has the correct minecraft and plugin version, already started"
+            )
+            return status
+        elif status.version != mc_version:
             session.warn(
                 f"Running nox server ({status.version}) has different version (want {mc_version})"
             )
-            status = status.kill()
-            time.sleep(1)
         else:
-            session.log("Running nox server has the correct version, already started")
-            return status
+            session.warn(
+                f"Running nox server has the correct minecraft version but wrong plugin version (has {current_plugin_version} want {want_plugin_version}), shutting down"
+            )
+        status = status.kill()
+        time.sleep(1)
     session.log(f"No servers running, setup server {mc_version}")
-    server_path = prepare_server_folder(session, mc_version)
+    server_path = prepare_server_folder(session, mc_version, plugin_version)
     session.log(f"Starting nox server {mc_version}")
     with session.chdir(server_path.parent):
         proc = subprocess.Popen(

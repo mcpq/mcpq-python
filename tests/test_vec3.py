@@ -19,6 +19,25 @@ def test_close() -> None:
     assert not close(Vec3(), Vec3(0.001, -0.001))
 
 
+def test_vec_is_close() -> None:
+    v1 = Vec3(0.001, -0.001)
+    v2 = Vec3(0.000001, -0.000001)
+    assert v1 != v2
+    assert not v1.is_close(v2, abs_tol=1e-6)
+    assert not v2.is_close(v1, abs_tol=1e-6)
+    assert not v1.is_close(Vec3(), abs_tol=1e-6)
+    assert not Vec3().is_close(v1, abs_tol=1e-6)
+    assert v2.is_close(Vec3(), abs_tol=1e-6)
+    assert Vec3().is_close(v2, abs_tol=1e-6)
+
+    v1 = Vec3(4.55, 3.33333333333333333333, 12)
+    v2 = Vec3(4.55, 3.33333333333, 12)
+    assert v1 != v2
+    assert v1.is_close(v2)
+    assert v2.is_close(v1)
+    assert not v1.is_close(v2.addX(0.001))
+
+
 def test_eq() -> None:
     # created by dataclass, only sanity checks
     assert Vec3() == Vec3()
@@ -163,6 +182,31 @@ def test_statics() -> None:
     assert myvec.withYZ(-a) == Vec3(myvec.x, -a, -a)
 
 
+def test_func_add() -> None:
+    myvec = Vec3(1, -3, 4.6)
+    assert myvec.add() == myvec + 1
+    assert myvec.add(1) == myvec + 1
+    assert myvec.add(14) == myvec + 14
+    assert myvec.add(-14) == myvec - 14
+    with pytest.raises(TypeError):
+        myvec.add(1, 2)
+    assert myvec.add(9, 1, -1) == myvec + Vec3(9, 1, -1)
+    assert myvec.add(Vec3()) == myvec
+    assert myvec.add(myvec) == myvec + myvec
+    assert myvec.add(x=4) == myvec.addX(4)
+    assert myvec.add(y=-4) == myvec.addY(-4)
+    assert myvec.add(z=12) == myvec.addZ(12)
+    assert myvec.add(x=-4, y=5) == myvec.addX(-4).addY(5)
+    assert myvec.add(x=-4, z=6) == myvec.addX(-4).addZ(6)
+    assert myvec.add(y=-4, z=6) == myvec.addY(-4).addZ(6)
+    assert myvec.add(x=12, y=-4, z=6) == myvec.addX(12).addY(-4).addZ(6)
+    assert myvec.add(z=6, x=12, y=-4) == myvec.addX(12).addY(-4).addZ(6)
+    with pytest.raises(TypeError):
+        myvec.add(1, y=5)
+    with pytest.raises(TypeError):
+        myvec.add(1, 2, 3, x=5)
+
+
 def test_neg() -> None:
     v = Vec3(1, -2, 3)
     assert -v == Vec3(-v.x, -v.y, -v.z)
@@ -285,6 +329,13 @@ def test_div() -> None:
         assert v // 0
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_unsupported_casting() -> None:
+    v = Vec3(1.4, -2.61, 3.8)
+    with pytest.raises(TypeError):
+        int(v)  # type: ignore
+
+
 def test_round() -> None:
     from math import ceil, floor, trunc
 
@@ -296,8 +347,6 @@ def test_round() -> None:
     assert floor(v) == v.floor() == Vec3(1, -3, 3)
     assert ceil(v) == v.ceil() == Vec3(2, -2, 4)
     assert trunc(v) == v.trunc() == Vec3(1, -2, 3)
-    with pytest.raises(TypeError):
-        int(v)  # type: ignore
 
     assert all(isinstance(w, int) for w in v.floor())
     assert all(isinstance(w, int) for w in v.ceil())
@@ -335,6 +384,26 @@ def test_len_norm() -> None:
     assert close(v.norm(), v / v.length())
     assert close(v.norm().length(), 1)
 
+    assert v.scale(1) == v
+    assert v.scale(1) == v * 1
+    assert v.scale(4.5) == v * 4.5
+    assert v.scale(4.5).length() == v.length() * 4.5
+
+    assert v.with_length(1) == v.norm()
+    assert v.with_length(0) == Vec3()
+    for i in range(-50, 50):
+        assert close(v.with_length(i / 10).length(), abs(i / 10))
+        assert close(v.with_length(i / 10), v.norm() * (i / 10))
+
+
+def test_clamp() -> None:
+    v = Vec3(1, -2, 3.3)
+    assert v.clamp(v - 1, v + 1) == v
+    assert v.clamp(Vec3(), v + 1) == v.withY(0)
+    assert v.clamp(v - 1, Vec3()) == Vec3(0, -2, 2.3)
+    assert v.clamp(Vec3(), Vec3()) == Vec3()
+    assert v.clamp(Vec3(5, -10, 5), Vec3(10, -5, 10)) == Vec3(5, -5, 5)
+
 
 def test_map() -> None:
     import operator
@@ -353,6 +422,25 @@ def test_map() -> None:
     assert v.map_pairwise(operator.add, w) == v + w
     assert v.map_pairwise(operator.mul, w) == v * w
     assert v.map_pairwise(operator.pow, w) == Vec3(v.x**w.x, v.y**w.y, v.z**w.z)
+    assert v.map_nwise(abs) == v.map(abs)
+    assert v.map_nwise(operator.add, w) == v.map_pairwise(operator.add, w)
+    assert v.map_nwise(max, w, w + 1) == v.map_pairwise(max, w + 1)
+    assert v.map_nwise(min, w, w + 1) == v.map_pairwise(min, w)
+
+    with pytest.raises(TypeError):
+        v.map(operator.add)
+    with pytest.raises(TypeError):
+        v.map_pairwise(abs, w)
+    with pytest.raises(TypeError):
+        v.map_nwise(operator.add)
+
+    assert v.max(w, w + 1, w + 2) == v.map_pairwise(max, w + 2)
+    assert v.min(w, w + 1, w + 2) == v.map_pairwise(min, w)
+    ops = set((v, w, w + 1, v - 1))
+    vmin = v.min(*ops)
+    vmax = v.max(*ops)
+    assert all(o.min(*(ops - set((o,)))) == vmin for o in list(ops))
+    assert all(o.max(*(ops - set((o,)))) == vmax for o in list(ops))
 
 
 def test_angle() -> None:
@@ -469,27 +557,28 @@ def test_order() -> None:
     assert sorted([v3, v1, v2]) == [v1, v2, v3]
 
 
-def test_frozen() -> None:
-    from dataclasses import FrozenInstanceError
-
+def test_immutable() -> None:
     v = Vec3(1, 2, 3)
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.x = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.y = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.z = 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.x += 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.y += 5  # type: ignore
-    with pytest.raises(FrozenInstanceError):
+    with pytest.raises(AttributeError):
         v.z += 5  # type: ignore
 
 
 def test_asdict() -> None:
     v = Vec3(1, 2, 3)
-    assert v.asdict() == {"x": 1, "y": 2, "z": 3}
+    assert v.to_dict() == {"x": 1, "y": 2, "z": 3}
+    assert v.to_tuple() == (1, 2, 3)
+    with pytest.deprecated_call():
+        assert v.asdict() == {"x": 1, "y": 2, "z": 3}
 
 
 def test_pickle() -> None:
@@ -522,7 +611,7 @@ def test_copy() -> None:
     assert nv == cp == dc
     assert isinstance(cp, NewTestVec)
     assert isinstance(dc, NewTestVec)
-    assert v != nv
+    assert v == nv
 
 
 def test_hash() -> None:
@@ -533,6 +622,12 @@ def test_hash() -> None:
     assert hash(Vec3()) != hash(object())
     assert hash(Vec3()) != hash(0.0)
     assert hash(Vec3()) != hash(False)
+
+
+def test_str_repr() -> None:
+    v = Vec3(0, -22, 123.6)
+    assert repr(v) == str(v)
+    assert str(v) == "Vec3(x=0, y=-22, z=123.6)"
 
 
 def test_pow() -> None:
@@ -602,6 +697,37 @@ def test_direction() -> None:
     v = Vec3().east(b).up(-a).south(b)
     assert v.cardinal_label() == DEFAULT
     assert v.direction_label() == DOWN
+
+
+def test_in_cube() -> None:
+    p1 = Vec3(-3, 0, -2)
+    p2 = Vec3(3, -4, -5)
+    assert p1.in_box(p1, p2)
+    assert p2.in_box(p1, p2)
+    assert not Vec3(0, 0, 0).in_box(p1, p2)
+    assert not Vec3(0, 0, 0).in_box(p2, p1)
+    assert Vec3(0, 0, -3).in_box(p1, p2)
+    assert Vec3(0, 0, -3).in_box(p2, p1)
+    assert p1.withX(p2.x).in_box(p1, p2)
+    assert p1.withY(p2.y).in_box(p1, p2)
+    assert p1.withZ(p2.z).in_box(p1, p2)
+    assert p2.withX(p1.x).in_box(p1, p2)
+    assert p2.withY(p1.y).in_box(p1, p2)
+    assert p2.withZ(p1.z).in_box(p1, p2)
+    assert not p1.withX(p2.x + 0.2).in_box(p1, p2)
+    assert not p1.withY(p2.y - 0.2).in_box(p1, p2)
+    assert not p1.withZ(p2.z - 15).in_box(p1, p2)
+
+
+def test_vec_alias() -> None:
+    from mcpq import Minecraft
+    from mcpq._base import _SharedBase
+
+    mc = Minecraft.__new__(Minecraft)  # without calling __init__
+    assert mc.Vec3 is Vec3
+    assert mc.vec is Vec3
+    assert mc.vec(1, 2, 3) == Vec3(1, 2, 3)
+    mc.__class__ = _SharedBase  # so _cleanup does not run as it would fail
 
 
 def test_from_yaw_pitch() -> None:
@@ -696,3 +822,15 @@ def test_yaw_pitch() -> None:
     assert Vec3().west().yaw_pitch() == (90, 0)
     assert Vec3().north().yaw_pitch() == (-180, 0)
     assert Vec3(100, 0, 100).yaw_pitch() == (-45, 0)
+
+
+def test_constants() -> None:
+    assert Vec3.ZEROS == Vec3()
+    assert Vec3.ONES == Vec3(1, 1, 1)
+    assert Vec3.ORIGIN == Vec3()
+    assert Vec3.EAST == Vec3().east()
+    assert Vec3.WEST == Vec3().west()
+    assert Vec3.UP == Vec3().up()
+    assert Vec3.DOWN == Vec3().down()
+    assert Vec3.SOUTH == Vec3().south()
+    assert Vec3.NORTH == Vec3().north()

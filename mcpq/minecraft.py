@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import logging
-
 import grpc
 
+from . import logger
 from ._base import _HasServer, _SharedBase
 from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
@@ -14,13 +13,12 @@ from .entitytype import EntityTypeFilter
 from .events import EventHandler
 from .exception import raise_on_error
 from .material import MaterialFilter
+from .nbt import NBT, Block, EntityType
 from .player import Player
+from .vec3 import Vec3
 from .world import World, _DefaultWorld
 
 __all__ = ["Minecraft"]
-
-logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
-# logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 
 
 class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
@@ -52,11 +50,13 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
     .. code::
 
-       from mcpq import Minecraft, Vec3
-       mc = Minecraft()  # connect to localhost
+       from mcpq import Minecraft
+
+       mc = Minecraft()  # connect to server on localhost with mcpq-plugin
+
        mc.postToChat("Players online:", mc.getPlayerList())  # show online players
        mc.events.block_hit.register(mc.postToChat)  # print whenever a player hits a block to chat
-       mc.setBlock("obsidian", Vec3(0, 0, 0))  # set obsidian block at origin
+       mc.setBlock("obsidian", mc.Vec3(0, 0, 0))  # set obsidian block at origin
        pos = mc.getHighestPos(0, 0).up(1)  # get position above highest ground at 0 0
        stairs = mc.blocks.endswith("_stairs").choice()  # get random block ending in "_stairs"
        mc.setBlock(stairs.withData({"waterlogged": True}), pos)  # set waterlogged stairs above ground
@@ -126,25 +126,50 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         return f"{self.__class__.__name__}({host=}, {port=})"
 
     def _cleanup(self) -> None:
-        logging.debug("Minecraft: _cleanup: called, closing channel...")
+        logger.debug("Minecraft: _cleanup: called, closing channel...")
         old_handler, self._event_handler = self._event_handler, None
         old_handler._cleanup()
         self._channel.close()
-        logging.debug("Minecraft: _cleanup: done")
+        logger.debug("Minecraft: _cleanup: done")
 
     def __del__(self) -> None:
-        logging.debug("Minecraft: __del__: called")
+        logger.debug("Minecraft: __del__: called")
         self._cleanup()
 
     @property
     def host(self) -> str:
-        """The Minecraft server host address this instance is connected to."""
+        """The Minecraft server host address this instance is connected to, default is ``localhost``."""
         return self._addr[0]
 
     @property
     def port(self) -> int:
-        """The Minecraft server port this instance is connected to."""
+        """The Minecraft server port this instance is connected to, default is ``1789``."""
         return self._addr[1]
+
+    @property
+    def Block(self) -> type[Block]:
+        """Alias for constructing :class:`~mcpq.nbt.Block`, e.g., ``mc.Block("acacia_stairs")``"""
+        return Block
+
+    @property
+    def EntityType(self) -> type[EntityType]:
+        """Alias for constructing :class:`~mcpq.nbt.EntityType`, e.g., ``mc.EntityType("creeper")``"""
+        return EntityType
+
+    @property
+    def NBT(self) -> type[NBT]:
+        """Alias for constructing :class:`~mcpq.nbt.NBT`, e.g., ``mc.NBT({"unbreakable": {}})``"""
+        return NBT
+
+    @property
+    def Vec3(self) -> type[Vec3]:
+        """Alias for constructing :class:`~mcpq.vec3.Vec3`, e.g., ``mc.Vec3(1, 2, 3)``"""
+        return Vec3
+
+    @property
+    def vec(self) -> type[Vec3]:
+        """Alias for constructing :class:`~mcpq.vec3.Vec3`, e.g., ``mc.vec(1, 2, 3)``"""
+        return Vec3
 
     @property
     def events(self) -> EventHandler:
@@ -174,7 +199,7 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
 
         .. note::
 
-           You probably want to use :attr:`.spawnables` to get spawnable entity-types
+           You probably want to use :attr:`.spawnables` to get spawnable entity-types only
         """
         return EntityTypeFilter(self._server, [])
 
@@ -193,19 +218,18 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         .. code-block:: python
 
            mc.postToChat("Hello Minecraft")
-           mc.postToChat("Players online:", mc.getPlayerList())
+           # print all only players
+           mc.postToChat("Players online:", *mc.getPlayerList())
+           # print every block hit event into chat (good for learning events)
+           mc.events.block_hit.register(mc.postToChat)
 
-        You can also use the module `mcpq.text` to color or markup your chat messages.
+        You can also use the module `mcpq.text` to color or markup your chat messages:
 
         .. code-block:: python
 
-           from mcpq.text import *  # RED, BLUE, BOLD, RESET ...
-           mc.postToChat(RED + BOLD + "super " + RESET + BLUE + "cool!")
-           # prints "super cool!", where "super" is red and bold, and "cool!" is blue
-
-           # or alternatively, in order to not mix up your namespaces (especially `mcpq.colors`)
-           from mcpq import text
+           from mcpq import Minecraft, text
            mc.postToChat(text.RED + text.BOLD + "super " + text.RESET + text.BLUE + "cool!")
+           # prints "super cool!", where "super" is red and bold, and "cool!" is blue
 
         :param sep: the separator between each object, defaults to " "
         :type sep: str, optional

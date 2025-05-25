@@ -1,4 +1,12 @@
-def konvertiere_bild(bild, neuesFormat=None, zeige=False):
+import os
+from pathlib import Path as _Path
+
+
+def konvertiere_bild(
+    bild: _Path | os.PathLike | str,
+    neuesFormat: tuple[int, int] | None = None,
+    zeige: bool = False,
+):
     """Nimmt ein Bild oder den Pfad eines Bildes entgegen und wandelt
     es in die 16 Minecraft Wollfarben um.
 
@@ -32,7 +40,9 @@ def konvertiere_bild(bild, neuesFormat=None, zeige=False):
 # ---------------------------------------------------------
 
 
-def convert_image(image, newsize=None, show=False):
+def convert_image(
+    image: _Path | os.PathLike | str, newsize: tuple[int, int] | None = None, show: bool = False
+):
     try:
         import numpy as np
         import scipy.ndimage as nd

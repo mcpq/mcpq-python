@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 2.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+          href="../index.html">MCPQ 2.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="player.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -115,7 +115,7 @@ Returns immediately without waiting for the command to finish executing.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.world.World.getHighestPos">
-<span class="sig-name descname"><span class="pre">getHighestPos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.world.World.getHighestPos" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getHighestPos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.world.World.getHighestPos" title="Link to this definition">¶</a></dt>
 <dd><p>The position of the highest non-air block with given <cite>x</cite> and <cite>z</cite> in the world.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -129,7 +129,7 @@ Returns immediately without waiting for the command to finish executing.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.world.World.getHeight">
-<span class="sig-name descname"><span class="pre">getHeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mcpq.world.World.getHeight" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getHeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mcpq.world.World.getHeight" title="Link to this definition">¶</a></dt>
 <dd><p>Equivalent to the y value of <a class="reference internal" href="#mcpq.world.World.getHighestPos" title="mcpq.world.World.getHighestPos"><code class="xref py py-func docutils literal notranslate"><span class="pre">getHighestPos()</span></code></a> with <cite>x</cite> and <cite>z</cite>.</p>
 </dd></dl>
 
@@ -159,6 +159,17 @@ To query block component data use <a class="reference internal" href="#mcpq.worl
 <dt class="sig sig-object py" id="mcpq.world.World.getBlockWithData">
 <span class="sig-name descname"><span class="pre">getBlockWithData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></span><a class="headerlink" href="#mcpq.world.World.getBlockWithData" title="Link to this definition">¶</a></dt>
 <dd><p>The block <code class="xref py py-class docutils literal notranslate"><span class="pre">Block</span></code> at position <cite>pos</cite> in world including block component data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">vec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;furnace&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<span class="n">block_without_data</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>  <span class="c1"># returns type Block</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block_without_data</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; &quot;furnace&quot;</span>
+<span class="n">block_with_data</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getBlockWithData</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>  <span class="c1"># returns type Block</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">block_with_data</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; &quot;furnace[facing=north,lit=false]&quot;</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="n">block_with_data</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;lit&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span> <span class="n">pos</span><span class="p">)</span>  <span class="c1"># make furnce look lit</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pos</strong> (<a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><em>Vec3</em></a>) – position to query block from</p>
@@ -215,6 +226,28 @@ To query block component data use <a class="reference internal" href="#mcpq.worl
 <span class="sig-name descname"><span class="pre">setBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocktype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.world.World.setBlock" title="Link to this definition">¶</a></dt>
 <dd><p>Change the block at position <cite>pos</cite> to <cite>blocktype</cite> in world.
 This will overwrite any block at that position.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">vec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># set blocks in default world</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">),</span> <span class="n">pos</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span> <span class="n">pos</span><span class="p">)</span>
+<span class="c1"># or set in specific world</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">nether</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to set many blocks of the <em>same type</em> use <a class="reference internal" href="#mcpq.world.World.setBlockList" title="mcpq.world.World.setBlockList"><code class="xref py py-func docutils literal notranslate"><span class="pre">setBlockList()</span></code></a> instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">vec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+   <span class="n">pos</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;gold_block&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+
+<span class="c1"># instead use setBlockList which is much more efficient:</span>
+
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlockList</span><span class="p">(</span><span class="s2">&quot;gold_block&quot;</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -231,6 +264,17 @@ This will overwrite any block at that position.</p>
 <dd><p>Change all blocks at <cite>positions</cite> to <cite>blocktype</cite> in world.
 This will overwrite all blocks at the given positions.
 This is more efficient that using <a class="reference internal" href="#mcpq.world.World.setBlock" title="mcpq.world.World.setBlock"><code class="xref py py-func docutils literal notranslate"><span class="pre">setBlock()</span></code></a> multiple times with the same <cite>blocktype</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">vec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">setBlockList</span><span class="p">(</span><span class="s2">&quot;gold_block&quot;</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+
+<span class="c1"># this is equivalent to but much more efficent and faster than:</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+   <span class="n">pos</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="n">mc</span><span class="o">.</span><span class="n">setBlock</span><span class="p">(</span><span class="s2">&quot;gold_block&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -252,7 +296,7 @@ a plane if one of their coordinates is the same or a line if two of their three 
 <span class="n">start</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">()</span>  <span class="c1"># this would be the lowest (most negative coordinates) corner of the cube we want to draw, here origin</span>
 <span class="n">world</span><span class="o">.</span><span class="n">setBlockCube</span><span class="p">(</span><span class="s2">&quot;diamond_block&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="n">xlen</span><span class="p">)</span><span class="o">.</span><span class="n">addY</span><span class="p">(</span><span class="n">ylen</span><span class="p">)</span><span class="o">.</span><span class="n">addZ</span><span class="p">(</span><span class="n">zlen</span><span class="p">))</span>
 
-<span class="c1"># this is equivalent to (but more efficent and faster than)</span>
+<span class="c1"># this is equivalent to but much more efficent and faster than:</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xlen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ylen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -389,6 +433,12 @@ Should be used in conjunction with <a class="reference internal" href="#mcpq.wor
 <span class="sig-name descname"><span class="pre">spawnEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="entity.html#mcpq.entity.Entity" title="mcpq.entity.Entity"><span class="pre">Entity</span></a></span></span><a class="headerlink" href="#mcpq.world.World.spawnEntity" title="Link to this definition">¶</a></dt>
 <dd><p>Spawn and return a new entitiy of given <cite>type</cite> at position <cite>pos</cite> in world.
 The entity has default settings and behavior.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cow</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;cow&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getHighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">up</span><span class="p">())</span>
+<span class="n">creeper</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">spawnEntity</span><span class="p">(</span><span class="s2">&quot;creeper&quot;</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">getHighestPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">up</span><span class="p">())</span>
+<span class="n">creeper</span><span class="o">.</span><span class="n">giveEffect</span><span class="p">(</span><span class="s2">&quot;invisibility&quot;</span><span class="p">)</span>  <span class="c1"># make creeper permanently invisible</span>
+<span class="n">creeper</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getPlayer</span><span class="p">()</span><span class="o">.</span><span class="n">pos</span>  <span class="c1"># teleport creeper a player</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -409,6 +459,14 @@ The entity has default settings and behavior.</p>
 <dt class="sig sig-object py" id="mcpq.world.World.spawnItems">
 <span class="sig-name descname"><span class="pre">spawnItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="block.html#mcpq.nbt.Block" title="mcpq.nbt._block.Block"><span class="pre">Block</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.world.World.spawnItems" title="Link to this definition">¶</a></dt>
 <dd><p>Spawn <cite>amount</cite> many collectable items of <cite>type</cite> at <cite>pos</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">vec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># position where to spawn the item (on the ground)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">spawnItems</span><span class="p">(</span><span class="s2">&quot;iron_sword&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>  <span class="c1"># spawn a dropped iron_sword at pos</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">spawnItems</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;iron_sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;enchantments&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sharpness&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}}),</span> <span class="n">pos</span><span class="p">)</span>  <span class="c1"># enchanted</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">spawnItems</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>  <span class="c1"># spawn a stack of dropped acacia_stairs at pos</span>
+<span class="c1"># for component data that should be set on blocks once placed, use asBlockStateForItem()</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">spawnItems</span><span class="p">(</span><span class="n">mc</span><span class="o">.</span><span class="n">Block</span><span class="p">(</span><span class="s2">&quot;acacia_stairs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">withData</span><span class="p">({</span><span class="s2">&quot;waterlogged&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span><span class="o">.</span><span class="n">asBlockStateForItem</span><span class="p">(),</span> <span class="n">pos</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -427,6 +485,11 @@ The entity has default settings and behavior.</p>
 If a <cite>type</cite> is provided, only entities of that type are returned.
 By default only entities of types that could be spawned using <a class="reference internal" href="#mcpq.world.World.spawnEntity" title="mcpq.world.World.spawnEntity"><code class="xref py py-func docutils literal notranslate"><span class="pre">spawnEntity()</span></code></a> are returned.
 To get all entities (except players) set <code class="docutils literal notranslate"><span class="pre">only_spawnable=False</span></code>, which will also return non-spawnable entities such as e.g. <code class="docutils literal notranslate"><span class="pre">&quot;falling_block&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;dropped_item&quot;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">entities</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getEntities</span><span class="p">()</span>  <span class="c1"># get all (loaded) entities in the world</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">getEntities</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)</span>  <span class="c1"># get only all (loaded) dropped items</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">removeEntities</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)</span>  <span class="c1"># remove all dropped items (is more efficient than iterating over items manually)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -475,6 +538,19 @@ If <cite>type</cite> is provided remove only entities of that type.</p>
 <dd class="field-odd"><p><strong>type</strong> (<em>str</em><em> | </em><em>EntityType</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – if provided removes only entities of that type, otherwise remove all entities, defaults to None</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.world.World.getNbt">
+<span class="sig-name descname"><span class="pre">getNbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="vec3.html#mcpq.Vec3" title="mcpq.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NBT</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="k"><span class="pre">False</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.world.World.getNbt" title="Link to this definition">¶</a></dt>
+<dd><p>Get the block entitiy’s NBT data at <cite>pos</cite> as <code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code>.
+Return <cite>None</cite> if the block is not loaded or <cite>False</cite> if the block is loaded but not a block entity.
+The data is not cached NBT data is always queried on call.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This function requires command output captuing.
+The plugin that is built against the <code class="docutils literal notranslate"><span class="pre">spigot-Bukkit</span> <span class="pre">API</span></code> does <em>not</em> fully support the return of command output.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -546,6 +622,7 @@ Instead it only supports the capturing of Bukkit commands, which can be seen wit
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.world.World.getEntities"><code class="docutils literal notranslate"><span class="pre">World.getEntities()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.world.World.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">World.getEntitiesAround()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.world.World.removeEntities"><code class="docutils literal notranslate"><span class="pre">World.removeEntities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.world.World.getNbt"><code class="docutils literal notranslate"><span class="pre">World.getNbt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.world.World.runCommandBlocking"><code class="docutils literal notranslate"><span class="pre">World.runCommandBlocking()</span></code></a></li>
 </ul>
 </li>

@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 2.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+          href="../index.html">MCPQ 2.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="filter.html" title="Materials and Entity-Types"
              accesskey="P">previous</a> |
@@ -41,22 +41,84 @@
             
   <dl class="py class">
 <dt class="sig sig-object py" id="mcpq.Vec3">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Vec3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.Vec3" title="Link to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="#mcpq.Vec3" title="mcpq.Vec3"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code></a> is a 3-dimensional vector for representing <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> coordinates.
-Each instance of this class is <strong>frozen</strong>, so calculations on it yield new instances of <a class="reference internal" href="#mcpq.Vec3" title="mcpq.Vec3"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code></a> instead of changing the x, y and z values directly.</p>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Vec3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mcpq.Vec3" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#mcpq.Vec3" title="mcpq.Vec3"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code></a> is an immutable 3-dimensional vector for representing <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> coordinates.
+As instances of this class are immutable, calculations yield new instances of <a class="reference internal" href="#mcpq.Vec3" title="mcpq.Vec3"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec3</span></code></a> instead of changing the x, y and z values directly.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">z</span> <span class="o">==</span> <span class="mi">8</span>
+<span class="c1"># do NOT assign to x, y and z directly, Vec3 is immutable!</span>
+<span class="c1"># instead use withX/withY/withZ or addX/east, addY/up and addZ/south or other methods to create new instances</span>
+<span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">east</span><span class="p">()</span><span class="o">.</span><span class="n">south</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="n">Vec3</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">addX</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">withY</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">Vec3</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="n">Vec3</span><span class="p">()</span>  <span class="c1"># Vec3() == Vec3(0, 0, 0)</span>
+</pre></div>
+</div>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.ZEROS">
+<span class="sig-name descname"><span class="pre">ZEROS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=0,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.ZEROS" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(0, 0, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.ONES">
+<span class="sig-name descname"><span class="pre">ONES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=1,</span> <span class="pre">y=1,</span> <span class="pre">z=1)</span></em><a class="headerlink" href="#mcpq.Vec3.ONES" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(1, 1, 1)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.ORIGIN">
+<span class="sig-name descname"><span class="pre">ORIGIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=0,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.ORIGIN" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(0, 0, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.EAST">
+<span class="sig-name descname"><span class="pre">EAST</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=1,</span> <span class="pre">y=0,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.EAST" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(1, 0, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.WEST">
+<span class="sig-name descname"><span class="pre">WEST</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=-1,</span> <span class="pre">y=0,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.WEST" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(-1, 0, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.UP">
+<span class="sig-name descname"><span class="pre">UP</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=1,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.UP" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(0, 1, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.DOWN">
+<span class="sig-name descname"><span class="pre">DOWN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=-1,</span> <span class="pre">z=0)</span></em><a class="headerlink" href="#mcpq.Vec3.DOWN" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(0, -1, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.SOUTH">
+<span class="sig-name descname"><span class="pre">SOUTH</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=0,</span> <span class="pre">z=1)</span></em><a class="headerlink" href="#mcpq.Vec3.SOUTH" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(1, 0, 0)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mcpq.Vec3.NORTH">
+<span class="sig-name descname"><span class="pre">NORTH</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Vec3(x=0,</span> <span class="pre">y=0,</span> <span class="pre">z=-1)</span></em><a class="headerlink" href="#mcpq.Vec3.NORTH" title="Link to this definition">¶</a></dt>
+<dd><p>Vec3(-1, 0, 0)</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="mcpq.Vec3.x">
-<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.Vec3.x" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#mcpq.Vec3.x" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="mcpq.Vec3.y">
-<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.Vec3.y" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#mcpq.Vec3.y" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="mcpq.Vec3.z">
-<span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#mcpq.Vec3.z" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#mcpq.Vec3.z" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -96,25 +158,43 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Vec3.__mul__">
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__mul__" title="Link to this definition">¶</a></dt>
-<dd><p>Scalar multiplication or equiavalent to <a class="reference internal" href="#mcpq.Vec3.multiply_elementwise" title="mcpq.Vec3.multiply_elementwise"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiply_elementwise()</span></code></a></p>
+<dd><p>Scalar multiplication if v is a number or equivalent to <a class="reference internal" href="#mcpq.Vec3.multiply_elementwise" title="mcpq.Vec3.multiply_elementwise"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiply_elementwise()</span></code></a> otherwise</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Vec3.__truediv__">
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.__truediv__" title="Link to this definition">¶</a></dt>
-<dd><p>Equivalent to multiplying x, y and z with 1.0 / <cite>v</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Vec3.length">
-<span class="sig-name descname"><span class="pre">length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mcpq.Vec3.length" title="Link to this definition">¶</a></dt>
-<dd><p>The (absolute) length of vector <cite>self</cite>, equivalent to <code class="docutils literal notranslate"><span class="pre">abs(self)</span></code></p>
+<dd><p>Equivalent to multiplying <cite>x</cite>, <cite>y</cite> and <cite>z</cite> with 1.0 / <cite>v</cite></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Vec3.distance">
 <span class="sig-name descname"><span class="pre">distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mcpq.Vec3.distance" title="Link to this definition">¶</a></dt>
 <dd><p>The distance between <cite>self</cite> and another point-vector <cite>v</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.length">
+<span class="sig-name descname"><span class="pre">length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mcpq.Vec3.length" title="Link to this definition">¶</a></dt>
+<dd><p>The length/magnitude of vector <cite>self</cite>, equivalent to <code class="docutils literal notranslate"><span class="pre">abs(self)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.norm">
+<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.norm" title="Link to this definition">¶</a></dt>
+<dd><p><cite>self</cite> as a normalized unit-vector with length 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.scale" title="Link to this definition">¶</a></dt>
+<dd><p><cite>self</cite> scaled by factor <cite>factor</cite>, equivalent to <code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">*</span> <span class="pre">factor</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.with_length">
+<span class="sig-name descname"><span class="pre">with_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.with_length" title="Link to this definition">¶</a></dt>
+<dd><p>A vector with the same direction as <cite>self</cite> scaled to length <cite>length</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -148,12 +228,6 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcpq.Vec3.norm">
-<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.norm" title="Link to this definition">¶</a></dt>
-<dd><p><cite>self</cite> as a normalized unit-vector with length 1</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Vec3.map">
 <span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.map" title="Link to this definition">¶</a></dt>
 <dd><p>A vector with <cite>func</cite> applied to <cite>x</cite>, <cite>y</cite> and <cite>z</cite> of <cite>self</cite> as arguments</p>
@@ -163,6 +237,24 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <dt class="sig sig-object py" id="mcpq.Vec3.map_pairwise">
 <span class="sig-name descname"><span class="pre">map_pairwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.map_pairwise" title="Link to this definition">¶</a></dt>
 <dd><p>A vector with <cite>func</cite> applied to each <cite>x</cite>, <cite>y</cite> and <cite>z</cite> of <em>both</em> <cite>self</cite> and <cite>v</cite> as arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.map_nwise">
+<span class="sig-name descname"><span class="pre">map_nwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.map_nwise" title="Link to this definition">¶</a></dt>
+<dd><p>A vector with <cite>func</cite> applied to each <cite>x</cite>, <cite>y</cite> and <cite>z</cite> of <cite>self</cite> and <em>all</em> other <cite>vectors</cite> as arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.max">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.max" title="Link to this definition">¶</a></dt>
+<dd><p>A vector that is the component-wise maximum of <cite>self</cite> and the other <cite>vectors</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.min">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.min" title="Link to this definition">¶</a></dt>
+<dd><p>A vector that is the component-wise minimum of <cite>self</cite> and the other <cite>vectors</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -204,7 +296,25 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcpq.Vec3.asdict">
 <span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Vec3.asdict" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated: Use <a class="reference internal" href="#mcpq.Vec3.to_dict" title="mcpq.Vec3.to_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_dict()</span></code></a> instead</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Vec3.to_dict" title="Link to this definition">¶</a></dt>
 <dd><p><cite>x</cite>, <cite>y</cite> and <cite>z</cite> in a dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.to_tuple">
+<span class="sig-name descname"><span class="pre">to_tuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Vec3.to_tuple" title="Link to this definition">¶</a></dt>
+<dd><p><cite>x</cite>, <cite>y</cite> and <cite>z</cite> in a tuple</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.is_close">
+<span class="sig-name descname"><span class="pre">is_close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mcpq.Vec3.is_close" title="Link to this definition">¶</a></dt>
+<dd><p>Whether all components of <cite>self</cite> and <cite>v</cite> are approximately equal</p>
 </dd></dl>
 
 <dl class="py method">
@@ -223,6 +333,18 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <dt class="sig sig-object py" id="mcpq.Vec3.cardinal_label">
 <span class="sig-name descname"><span class="pre">cardinal_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'east'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'south'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'west'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'north'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mcpq.Vec3.cardinal_label" title="Link to this definition">¶</a></dt>
 <dd><p>The direction of the longest (most significant) cardinal axis</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.clamp">
+<span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.clamp" title="Link to this definition">¶</a></dt>
+<dd><p>The vector <cite>self</cite> with clamped x, y and z between the corresponding components of <cite>min_val</cite> and <cite>max_val</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.in_box">
+<span class="sig-name descname"><span class="pre">in_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corner1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mcpq.Vec3.in_box" title="Link to this definition">¶</a></dt>
+<dd><p>Whether <cite>self</cite> is enclosed in the bounding box/cube spanned between <cite>corner1</cite> and <cite>corner2</cite>, both corners <em>inclusive</em></p>
 </dd></dl>
 
 <dl class="py method">
@@ -259,6 +381,26 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <dt class="sig sig-object py" id="mcpq.Vec3.north">
 <span class="sig-name descname"><span class="pre">north</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.north" title="Link to this definition">¶</a></dt>
 <dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">self.addZ(-n)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Vec3.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span><a class="headerlink" href="#mcpq.Vec3.add" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mcpq.Vec3" title="mcpq.vec3.Vec3"><span class="pre">Vec3</span></a></span></span></dt>
+<dd><p><cite>self</cite> with added scalar, another vector, or explicit component-wise values.
+Supports:
+* add() will add 1 to all components
+* add(scalar) will add scalar to all components
+* add(Vec3)
+* add(x, y, z)
+* add(x=1, y=2, z=3) with optional partials (missing parts default to 0)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -356,6 +498,15 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <li class="toctree-l1"><a class="reference internal" href="events.html">Events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter.html">Materials and Entity-Types</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.ZEROS"><code class="docutils literal notranslate"><span class="pre">Vec3.ZEROS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.ONES"><code class="docutils literal notranslate"><span class="pre">Vec3.ONES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.ORIGIN"><code class="docutils literal notranslate"><span class="pre">Vec3.ORIGIN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.EAST"><code class="docutils literal notranslate"><span class="pre">Vec3.EAST</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.WEST"><code class="docutils literal notranslate"><span class="pre">Vec3.WEST</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.UP"><code class="docutils literal notranslate"><span class="pre">Vec3.UP</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.DOWN"><code class="docutils literal notranslate"><span class="pre">Vec3.DOWN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.SOUTH"><code class="docutils literal notranslate"><span class="pre">Vec3.SOUTH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.NORTH"><code class="docutils literal notranslate"><span class="pre">Vec3.NORTH</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.x"><code class="docutils literal notranslate"><span class="pre">Vec3.x</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.y"><code class="docutils literal notranslate"><span class="pre">Vec3.y</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.z"><code class="docutils literal notranslate"><span class="pre">Vec3.z</span></code></a></li>
@@ -365,16 +516,21 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__sub__"><code class="docutils literal notranslate"><span class="pre">Vec3.__sub__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__mul__"><code class="docutils literal notranslate"><span class="pre">Vec3.__mul__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.__truediv__"><code class="docutils literal notranslate"><span class="pre">Vec3.__truediv__()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.length"><code class="docutils literal notranslate"><span class="pre">Vec3.length()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.distance"><code class="docutils literal notranslate"><span class="pre">Vec3.distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.length"><code class="docutils literal notranslate"><span class="pre">Vec3.length()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.norm"><code class="docutils literal notranslate"><span class="pre">Vec3.norm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.scale"><code class="docutils literal notranslate"><span class="pre">Vec3.scale()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.with_length"><code class="docutils literal notranslate"><span class="pre">Vec3.with_length()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.angle"><code class="docutils literal notranslate"><span class="pre">Vec3.angle()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.angle_rad"><code class="docutils literal notranslate"><span class="pre">Vec3.angle_rad()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.dot"><code class="docutils literal notranslate"><span class="pre">Vec3.dot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.cross"><code class="docutils literal notranslate"><span class="pre">Vec3.cross()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.multiply_elementwise"><code class="docutils literal notranslate"><span class="pre">Vec3.multiply_elementwise()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.norm"><code class="docutils literal notranslate"><span class="pre">Vec3.norm()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.map"><code class="docutils literal notranslate"><span class="pre">Vec3.map()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.map_pairwise"><code class="docutils literal notranslate"><span class="pre">Vec3.map_pairwise()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.map_nwise"><code class="docutils literal notranslate"><span class="pre">Vec3.map_nwise()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.max"><code class="docutils literal notranslate"><span class="pre">Vec3.max()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.min"><code class="docutils literal notranslate"><span class="pre">Vec3.min()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.rotate"><code class="docutils literal notranslate"><span class="pre">Vec3.rotate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.rotate_rad"><code class="docutils literal notranslate"><span class="pre">Vec3.rotate_rad()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.round"><code class="docutils literal notranslate"><span class="pre">Vec3.round()</span></code></a></li>
@@ -382,15 +538,21 @@ This translates directional unit-vectors into in-Minecraft yaw and pitch values 
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.ceil"><code class="docutils literal notranslate"><span class="pre">Vec3.ceil()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.trunc"><code class="docutils literal notranslate"><span class="pre">Vec3.trunc()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.asdict"><code class="docutils literal notranslate"><span class="pre">Vec3.asdict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.to_dict"><code class="docutils literal notranslate"><span class="pre">Vec3.to_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.to_tuple"><code class="docutils literal notranslate"><span class="pre">Vec3.to_tuple()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.is_close"><code class="docutils literal notranslate"><span class="pre">Vec3.is_close()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.closest_axis"><code class="docutils literal notranslate"><span class="pre">Vec3.closest_axis()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.direction_label"><code class="docutils literal notranslate"><span class="pre">Vec3.direction_label()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.cardinal_label"><code class="docutils literal notranslate"><span class="pre">Vec3.cardinal_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.clamp"><code class="docutils literal notranslate"><span class="pre">Vec3.clamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.in_box"><code class="docutils literal notranslate"><span class="pre">Vec3.in_box()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.east"><code class="docutils literal notranslate"><span class="pre">Vec3.east()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.west"><code class="docutils literal notranslate"><span class="pre">Vec3.west()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.up"><code class="docutils literal notranslate"><span class="pre">Vec3.up()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.down"><code class="docutils literal notranslate"><span class="pre">Vec3.down()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.south"><code class="docutils literal notranslate"><span class="pre">Vec3.south()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.north"><code class="docutils literal notranslate"><span class="pre">Vec3.north()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.add"><code class="docutils literal notranslate"><span class="pre">Vec3.add()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.addX"><code class="docutils literal notranslate"><span class="pre">Vec3.addX()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.addY"><code class="docutils literal notranslate"><span class="pre">Vec3.addY()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Vec3.addZ"><code class="docutils literal notranslate"><span class="pre">Vec3.addZ()</span></code></a></li>

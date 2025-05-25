@@ -13,7 +13,7 @@ import grpc
 import pytest
 
 import mcpq
-from mcpq import NBT, Minecraft, PlayerNotFound, Vec3, WorldNotFound
+from mcpq import NBT, Block, Minecraft, PlayerNotFound, Vec3, WorldNotFound
 
 
 @pytest.fixture
@@ -245,12 +245,10 @@ def test_entity(mc):
             # looks like: "type" has the following entity data: {...}
             # or like: no entity was found
             if "{" in res and "}" in res:
-                nbt_string = res[res.index("{") : res.rindex("}")]
+                nbt_string = res[res.index("{") : res.rindex("}") + 1]
+                print("Parsing NBT:", nbt_string)
                 return NBT.parse(nbt_string)
-            print("No entity (nbt data) found")
-            return NBT()
-        print("runCommandBlocking not impl. for vanilla commands")
-        return NBT()
+            assert False, "No entity (nbt data) found"
 
     # check if entity is even there
     check_execute("")
@@ -269,26 +267,41 @@ def test_entity(mc):
     check_execute(f"execute as @s[nbt={nbt1}] run")
 
     e_nbt = getNbtData(e)
-    if not e_nbt:
+    if e_nbt is None:
         print("runCommandBlocking not impl. for vanilla commands!")
     else:
-        assert e_nbt.get("NoAI", None) is None
-        effects = e_nbt["active_effects"]
-        assert effects and any(
-            ef["id"] == "minecraft:slow_falling" for ef in effects
-        ), f"{effects=}"
-        armor = e_nbt["ArmorItems"]
-        assert len(armor) == 4, f"{armor=}"
-        assert all(a == {} for a in armor), f"{armor=}"
-        e.replaceHelmet(
-            unbreakable=False, binding=False, vanishing=False, color=False
-        )  # TODO: test enchants and color
-        sleep(0.05)
-        e_nbt = getNbtData()
-        assert e_nbt
-        armor = e_nbt["ArmorItems"]
-        assert len(armor) == 4, f"{armor=}"
-        assert not all(a == {} for a in armor), f"{armor=}"
+        assert e_nbt.get("NoAI", None) == 1  # merged from the top
+        if mcversion and mcversion < (1, 20, 2):
+            effects = e_nbt["ActiveEffects"]
+            assert len(effects) == 1
+        else:
+            effects = e_nbt["active_effects"]
+            assert effects and any(
+                ef["id"] == "minecraft:slow_falling" for ef in effects
+            ), f"{effects=}"
+        if mcversion and mcversion < (1, 21, 5):
+            armor = e_nbt["ArmorItems"]
+            assert len(armor) == 4, f"{armor=}"
+            assert all(a == {} for a in armor), f"{armor=}"
+            e.replaceHelmet(
+                unbreakable=False, binding=False, vanishing=False, color=False
+            )  # TODO: test enchants and color
+            sleep(0.05)
+            e_nbt = getNbtData(e)
+            assert e_nbt
+            armor = e_nbt["ArmorItems"]
+            assert len(armor) == 4, f"{armor=}"
+            assert not all(a == {} for a in armor), f"{armor=}"
+        else:
+            assert "equipment" not in e_nbt.keys(), f"'equipment' in {e_nbt}"
+            e.replaceHelmet(
+                unbreakable=False, binding=False, vanishing=False, color=False
+            )  # TODO: test enchants and color
+            e_nbt = getNbtData(e)
+            assert "equipment" in e_nbt.keys(), f"'equipment' not in {e_nbt}"
+            armor = e_nbt["equipment"]
+            item = armor["head"]["id"]
+            assert Block(item) == "leather_helmet", f"Item was {item}: {armor}"
 
     old_pos = e.pos
     assert len((es := mc.getEntitiesAround(old_pos, 5, etype))) == 1, f"{es}"

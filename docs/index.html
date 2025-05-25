@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MCPQ documentation &#8212; MCPQ 2.0.0 documentation</title>
+    <title>MCPQ documentation &#8212; MCPQ 2.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=8513425a" />
-    <script src="_static/documentation_options.js?v=51b770b3"></script>
+    <script src="_static/documentation_options.js?v=f5cff4aa"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -17,7 +17,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="#">MCPQ 2.0.0 documentation</a></div>
+          href="#">MCPQ 2.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a>
@@ -50,6 +50,11 @@
 <li class="toctree-l1"><a class="reference internal" href="classes/minecraft.html"><code class="docutils literal notranslate"><span class="pre">Minecraft</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.host"><code class="docutils literal notranslate"><span class="pre">Minecraft.host</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.port"><code class="docutils literal notranslate"><span class="pre">Minecraft.port</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.Block"><code class="docutils literal notranslate"><span class="pre">Minecraft.Block</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.EntityType"><code class="docutils literal notranslate"><span class="pre">Minecraft.EntityType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.NBT"><code class="docutils literal notranslate"><span class="pre">Minecraft.NBT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.Vec3"><code class="docutils literal notranslate"><span class="pre">Minecraft.Vec3</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.vec"><code class="docutils literal notranslate"><span class="pre">Minecraft.vec</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.events"><code class="docutils literal notranslate"><span class="pre">Minecraft.events</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.blocks"><code class="docutils literal notranslate"><span class="pre">Minecraft.blocks</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.materials"><code class="docutils literal notranslate"><span class="pre">Minecraft.materials</span></code></a></li>
@@ -92,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.getEntities"><code class="docutils literal notranslate"><span class="pre">Minecraft.getEntities()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">Minecraft.getEntitiesAround()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.removeEntities"><code class="docutils literal notranslate"><span class="pre">Minecraft.removeEntities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/minecraft.html#mcpq.Minecraft.getNbt"><code class="docutils literal notranslate"><span class="pre">Minecraft.getNbt()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="classes/entity.html"><code class="docutils literal notranslate"><span class="pre">Entity</span></code></a><ul>
@@ -102,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.facing"><code class="docutils literal notranslate"><span class="pre">Entity.facing</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.world"><code class="docutils literal notranslate"><span class="pre">Entity.world</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">Entity.getEntitiesAround()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.getNbt"><code class="docutils literal notranslate"><span class="pre">Entity.getNbt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.giveEffect"><code class="docutils literal notranslate"><span class="pre">Entity.giveEffect()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.kill"><code class="docutils literal notranslate"><span class="pre">Entity.kill()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/entity.html#mcpq.entity.Entity.remove"><code class="docutils literal notranslate"><span class="pre">Entity.remove()</span></code></a></li>
@@ -137,6 +144,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.facing"><code class="docutils literal notranslate"><span class="pre">Player.facing</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.world"><code class="docutils literal notranslate"><span class="pre">Player.world</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">Player.getEntitiesAround()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.getNbt"><code class="docutils literal notranslate"><span class="pre">Player.getNbt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.giveEffect"><code class="docutils literal notranslate"><span class="pre">Player.giveEffect()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.kill"><code class="docutils literal notranslate"><span class="pre">Player.kill()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/player.html#mcpq.player.Player.replaceHelmet"><code class="docutils literal notranslate"><span class="pre">Player.replaceHelmet()</span></code></a></li>
@@ -167,6 +175,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/world.html#mcpq.world.World.getEntities"><code class="docutils literal notranslate"><span class="pre">World.getEntities()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/world.html#mcpq.world.World.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">World.getEntitiesAround()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/world.html#mcpq.world.World.removeEntities"><code class="docutils literal notranslate"><span class="pre">World.removeEntities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/world.html#mcpq.world.World.getNbt"><code class="docutils literal notranslate"><span class="pre">World.getNbt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/world.html#mcpq.world.World.runCommandBlocking"><code class="docutils literal notranslate"><span class="pre">World.runCommandBlocking()</span></code></a></li>
 </ul>
 </li>
@@ -187,6 +196,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="classes/vec3.html"><code class="docutils literal notranslate"><span class="pre">Vec3</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.ZEROS"><code class="docutils literal notranslate"><span class="pre">Vec3.ZEROS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.ONES"><code class="docutils literal notranslate"><span class="pre">Vec3.ONES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.ORIGIN"><code class="docutils literal notranslate"><span class="pre">Vec3.ORIGIN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.EAST"><code class="docutils literal notranslate"><span class="pre">Vec3.EAST</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.WEST"><code class="docutils literal notranslate"><span class="pre">Vec3.WEST</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.UP"><code class="docutils literal notranslate"><span class="pre">Vec3.UP</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.DOWN"><code class="docutils literal notranslate"><span class="pre">Vec3.DOWN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.SOUTH"><code class="docutils literal notranslate"><span class="pre">Vec3.SOUTH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.NORTH"><code class="docutils literal notranslate"><span class="pre">Vec3.NORTH</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.x"><code class="docutils literal notranslate"><span class="pre">Vec3.x</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.y"><code class="docutils literal notranslate"><span class="pre">Vec3.y</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.z"><code class="docutils literal notranslate"><span class="pre">Vec3.z</span></code></a></li>
@@ -196,16 +214,21 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.__sub__"><code class="docutils literal notranslate"><span class="pre">Vec3.__sub__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.__mul__"><code class="docutils literal notranslate"><span class="pre">Vec3.__mul__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.__truediv__"><code class="docutils literal notranslate"><span class="pre">Vec3.__truediv__()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.length"><code class="docutils literal notranslate"><span class="pre">Vec3.length()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.distance"><code class="docutils literal notranslate"><span class="pre">Vec3.distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.length"><code class="docutils literal notranslate"><span class="pre">Vec3.length()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.norm"><code class="docutils literal notranslate"><span class="pre">Vec3.norm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.scale"><code class="docutils literal notranslate"><span class="pre">Vec3.scale()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.with_length"><code class="docutils literal notranslate"><span class="pre">Vec3.with_length()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.angle"><code class="docutils literal notranslate"><span class="pre">Vec3.angle()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.angle_rad"><code class="docutils literal notranslate"><span class="pre">Vec3.angle_rad()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.dot"><code class="docutils literal notranslate"><span class="pre">Vec3.dot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.cross"><code class="docutils literal notranslate"><span class="pre">Vec3.cross()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.multiply_elementwise"><code class="docutils literal notranslate"><span class="pre">Vec3.multiply_elementwise()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.norm"><code class="docutils literal notranslate"><span class="pre">Vec3.norm()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.map"><code class="docutils literal notranslate"><span class="pre">Vec3.map()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.map_pairwise"><code class="docutils literal notranslate"><span class="pre">Vec3.map_pairwise()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.map_nwise"><code class="docutils literal notranslate"><span class="pre">Vec3.map_nwise()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.max"><code class="docutils literal notranslate"><span class="pre">Vec3.max()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.min"><code class="docutils literal notranslate"><span class="pre">Vec3.min()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.rotate"><code class="docutils literal notranslate"><span class="pre">Vec3.rotate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.rotate_rad"><code class="docutils literal notranslate"><span class="pre">Vec3.rotate_rad()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.round"><code class="docutils literal notranslate"><span class="pre">Vec3.round()</span></code></a></li>
@@ -213,15 +236,21 @@
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.ceil"><code class="docutils literal notranslate"><span class="pre">Vec3.ceil()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.trunc"><code class="docutils literal notranslate"><span class="pre">Vec3.trunc()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.asdict"><code class="docutils literal notranslate"><span class="pre">Vec3.asdict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.to_dict"><code class="docutils literal notranslate"><span class="pre">Vec3.to_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.to_tuple"><code class="docutils literal notranslate"><span class="pre">Vec3.to_tuple()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.is_close"><code class="docutils literal notranslate"><span class="pre">Vec3.is_close()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.closest_axis"><code class="docutils literal notranslate"><span class="pre">Vec3.closest_axis()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.direction_label"><code class="docutils literal notranslate"><span class="pre">Vec3.direction_label()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.cardinal_label"><code class="docutils literal notranslate"><span class="pre">Vec3.cardinal_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.clamp"><code class="docutils literal notranslate"><span class="pre">Vec3.clamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.in_box"><code class="docutils literal notranslate"><span class="pre">Vec3.in_box()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.east"><code class="docutils literal notranslate"><span class="pre">Vec3.east()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.west"><code class="docutils literal notranslate"><span class="pre">Vec3.west()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.up"><code class="docutils literal notranslate"><span class="pre">Vec3.up()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.down"><code class="docutils literal notranslate"><span class="pre">Vec3.down()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.south"><code class="docutils literal notranslate"><span class="pre">Vec3.south()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.north"><code class="docutils literal notranslate"><span class="pre">Vec3.north()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.add"><code class="docutils literal notranslate"><span class="pre">Vec3.add()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.addX"><code class="docutils literal notranslate"><span class="pre">Vec3.addX()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.addY"><code class="docutils literal notranslate"><span class="pre">Vec3.addY()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes/vec3.html#mcpq.Vec3.addZ"><code class="docutils literal notranslate"><span class="pre">Vec3.addZ()</span></code></a></li>
