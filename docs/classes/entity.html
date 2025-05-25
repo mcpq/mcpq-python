@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 2.0.0 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=51b770b3"></script>
+    <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 2.0.0 documentation</a></div>
+          href="../index.html">MCPQ 2.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="minecraft.html" title="&lt;no title&gt;"
              accesskey="P">previous</a> |
@@ -153,6 +153,17 @@ When assigned to is equivalent to <code class="docutils literal notranslate"><sp
 <dd class="field-odd"><p>list[<a class="reference internal" href="#mcpq.entity.Entity" title="mcpq.entity.Entity">Entity</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.entity.Entity.getNbt">
+<span class="sig-name descname"><span class="pre">getNbt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nbt.html#mcpq.nbt.NbtCompound" title="mcpq.nbt._types.NbtCompound"><span class="pre">NbtCompound</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.entity.Entity.getNbt" title="Link to this definition">¶</a></dt>
+<dd><p>Get the entity’s NBT data as <code class="xref py py-class docutils literal notranslate"><span class="pre">NBT</span></code> or None if the entity is not loaded. The data is not cached NBT data is always queried on call.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This function requires command output captuing.
+The plugin that is built against the <code class="docutils literal notranslate"><span class="pre">spigot-Bukkit</span> <span class="pre">API</span></code> does <em>not</em> fully support the return of command output.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -322,6 +333,7 @@ For example, it is possible to only change the world the entity is in without ch
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.facing"><code class="docutils literal notranslate"><span class="pre">Entity.facing</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.world"><code class="docutils literal notranslate"><span class="pre">Entity.world</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.getEntitiesAround"><code class="docutils literal notranslate"><span class="pre">Entity.getEntitiesAround()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.getNbt"><code class="docutils literal notranslate"><span class="pre">Entity.getNbt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.giveEffect"><code class="docutils literal notranslate"><span class="pre">Entity.giveEffect()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.kill"><code class="docutils literal notranslate"><span class="pre">Entity.kill()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.entity.Entity.remove"><code class="docutils literal notranslate"><span class="pre">Entity.remove()</span></code></a></li>

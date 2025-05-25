@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Minecraft Protobuf Queries (MCPQ) Python Client Library &#8212; MCPQ 2.0.0 documentation</title>
+    <title>Minecraft Protobuf Queries (MCPQ) Python Client Library &#8212; MCPQ 2.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=8513425a" />
-    <script src="_static/documentation_options.js?v=51b770b3"></script>
+    <script src="_static/documentation_options.js?v=f5cff4aa"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -18,7 +18,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="index.html">MCPQ 2.0.0 documentation</a></div>
+          href="index.html">MCPQ 2.0.1 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="classes/minecraft.html" title="&lt;no title&gt;"
              accesskey="N">next</a> |
@@ -38,17 +38,20 @@
             
   <section id="minecraft-protobuf-queries-mcpq-python-client-library">
 <h1>Minecraft Protobuf Queries (MCPQ) Python Client Library<a class="headerlink" href="#minecraft-protobuf-queries-mcpq-python-client-library" title="Link to this heading">¶</a></h1>
-<p>This library is designed to control a Minecraft Java Server, such as <a class="reference external" href="https://www.spigotmc.org/">Spigot</a> or <a class="reference external" href="https://papermc.io/">Paper</a> running the <strong><a class="reference external" href="https://github.com/mcpq/mcpq-plugin">mcpq plugin</a></strong>, with Python.</p>
+<p>This Python library is designed to control a Minecraft Java Server like <a class="reference external" href="https://papermc.io/">Paper</a>, or alternatively <a class="reference external" href="https://www.spigotmc.org/">Spigot</a>, running the <strong><a class="reference external" href="https://github.com/mcpq/mcpq-plugin">mcpq plugin</a></strong>.</p>
 <p>This library is heavily inspired by <a class="reference external" href="https://github.com/martinohanlon/mcpi">MCPI</a> (and its corresponding plugin <a class="reference external" href="https://github.com/zhuowei/RaspberryJuice">RaspberryJuice</a>) and attempts a more modern approach for communication between server and client that also works for more modern versions of Minecraft.</p>
 <p>This library uses <a class="reference external" href="https://github.com/mcpq/mcpq-proto">Protocol Buffers</a> and the <a class="reference external" href="https://grpc.io/">gRPC</a> library and protocols to communicate with the <a class="reference external" href="https://github.com/mcpq/mcpq-plugin">plugin</a> on the server.</p>
 <p>Due to the use of the new type annotations <strong>Python 3.10+</strong> is required!</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <p>After getting a <a class="reference external" href="https://papermc.io/">server</a> and <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">compatible plugin</a> setup and running, the only thing left to do is to install the python library:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>mcpq
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>mcpq
 </pre></div>
 </div>
-<p>Get coding!</p>
+<blockquote>
+<div><p>Some of the extra features in <code class="docutils literal notranslate"><span class="pre">mcpq.tools</span></code> need additional dependencies, if you want to use them install with: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mcpq[tools]</span></code></p>
+</div></blockquote>
+<p>Get coding and checkout <a class="reference external" href="https://mcpq.github.io/mcpq-python/">the docs</a> for more examples!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcpq</span> <span class="kn">import</span> <span class="n">Minecraft</span><span class="p">,</span> <span class="n">Vec3</span>
 
 <span class="n">mc</span> <span class="o">=</span> <span class="n">Minecraft</span><span class="p">()</span>  <span class="c1"># connect to server on localhost</span>
@@ -91,7 +94,7 @@ If you need to view older versions, you can use <code class="docutils literal no
 </ul>
 <p>In other words, the first two numbers (<code class="docutils literal notranslate"><span class="pre">major.minor</span></code>) refer to the <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">plugin</a> version the library was written against.</p>
 <blockquote>
-<div><p>E.g. the Python library version 1.0.X would require plugin version 1.0 or newer</p>
+<div><p>E.g. the Python library version 2.0.X would require plugin version 2.0 or newer</p>
 </div></blockquote>
 <p>This Python library <em>should</em> work for any newer versions of the plugin if everything works out and no breaking changes are introduced, at least across <em>minor</em> versions (see <a class="reference external" href="https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions">table</a>).
 On the other hand, the library will most likely not work for older versions of the plugin, especially not across <em>major</em> versions.</p>
@@ -99,7 +102,7 @@ On the other hand, the library will most likely not work for older versions of t
 </section>
 <section id="build-instructions">
 <h2>Build Instructions<a class="headerlink" href="#build-instructions" title="Link to this heading">¶</a></h2>
-<p>The library is currently <a class="reference external" href="https://pypi.org/project/mcpq/">published on PyPI</a>. The package can be downloaded from there with <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">mcpq</span></code>.</p>
+<p>The library is currently <a class="reference external" href="https://pypi.org/project/mcpq/">published on PyPI</a>. The package can be downloaded from there with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mcpq</span></code>.</p>
 <p>You can also install this package directly by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/mcpq/mcpq-python.git&#64;&lt;tag/branch&gt;</span></code> to install it directly from Github (<code class="docutils literal notranslate"><span class="pre">git</span></code> is required for this).
 If you cloned the repository already then <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> can be used.</p>
 <p>Building the library locally can be done by using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span></code>, which will build the wheel and dist packages in <code class="docutils literal notranslate"><span class="pre">dist/*</span></code>.
