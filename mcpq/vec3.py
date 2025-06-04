@@ -23,7 +23,7 @@ class Vec3:
        v = Vec3(1, 4, 8)
        assert v.x == 1 and v.y == 4 and v.z == 8
        # do NOT assign to x, y and z directly, Vec3 is immutable!
-       # instead use withX/withY/withZ or addX/east, addY/up and addZ/south or other methods to create new instances
+       # instead use withX/withY/withZ or addX/east, addY/up and addZ/south or other methods
        assert v.east().south(5) == Vec3(2, 4, 13)
        assert v.addX(-1).withY(0) - Vec3(z=8) == Vec3()  # Vec3() == Vec3(0, 0, 0)
     """
@@ -383,7 +383,10 @@ class Vec3:
 
     def in_box(self, corner1: Vec3, corner2: Vec3) -> bool:
         "Whether `self` is enclosed in the bounding box/cube spanned between `corner1` and `corner2`, both corners *inclusive*"
-        minc, maxc = corner1.map_pairwise(min, corner2), corner1.map_pairwise(max, corner2)
+        minc, maxc = (
+            corner1.map_pairwise(min, corner2),
+            corner1.map_pairwise(max, corner2),
+        )
         return (
             minc._x <= self._x <= maxc._x
             and minc._y <= self._y <= maxc._y
@@ -432,7 +435,11 @@ class Vec3:
 
     @overload
     def add(
-        self, *, x: _NumType | None = None, y: _NumType | None = None, z: _NumType | None = None
+        self,
+        *,
+        x: _NumType | None = None,
+        y: _NumType | None = None,
+        z: _NumType | None = None,
     ) -> Vec3:
         ...
 
@@ -440,11 +447,12 @@ class Vec3:
         """
         `self` with added scalar, another vector, or explicit component-wise values.
         Supports:
-        * add() will add 1 to all components
-        * add(scalar) will add scalar to all components
-        * add(Vec3)
-        * add(x, y, z)
-        * add(x=1, y=2, z=3) with optional partials (missing parts default to 0)
+
+        - ``add()`` will add 1 to all components
+        - ``add(scalar)`` will add scalar to all components
+        - ``add(Vec3(...))`` will do standard vector addition
+        - ``add(x, y, z)`` will add the components to their respective component
+        - ``add(x=1, y=2, z=3)`` with optional partials (missing parts default to 0)
         """
         if args and kwargs:
             raise TypeError("Cannot use both positional and keyword arguments")
