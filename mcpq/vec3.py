@@ -36,8 +36,8 @@ class Vec3:
     WEST: Vec3  #: Vec3(-1, 0, 0)
     UP: Vec3  #: Vec3(0, 1, 0)
     DOWN: Vec3  #: Vec3(0, -1, 0)
-    SOUTH: Vec3  #: Vec3(1, 0, 0)
-    NORTH: Vec3  #: Vec3(-1, 0, 0)
+    SOUTH: Vec3  #: Vec3(0, 0, 1)
+    NORTH: Vec3  #: Vec3(0, 0, -1)
 
     __slots__ = ("_x", "_y", "_z")
 
@@ -327,7 +327,7 @@ class Vec3:
         "`x`, `y` and `z` in a dictionary"
         return {"x": self._x, "y": self._y, "z": self._z}
 
-    def to_tuple(self) -> tuple[_NumType]:
+    def to_tuple(self) -> tuple[_NumType, _NumType, _NumType]:
         "`x`, `y` and `z` in a tuple"
         return (self._x, self._y, self._z)
 
@@ -374,7 +374,7 @@ class Vec3:
         return self.withY(0).direction_label()  # type: ignore
 
     def clamp(self, min_v: Vec3, max_v: Vec3) -> Vec3:
-        "The vector `self` with clamped x, y and z between the corresponding components of `min_val` and `max_val`"
+        "The vector `self` with clamped `x`, `y` and `z` between the corresponding components of `min_val` and `max_val`"
         return Vec3(
             max(min_v._x, min(self._x, max_v._x)),
             max(min_v._y, min(self._y, max_v._y)),
@@ -533,10 +533,8 @@ Vec3.DOWN = Vec3(0, -1, 0)
 Vec3.SOUTH = Vec3(0, 0, 1)
 Vec3.NORTH = Vec3(0, 0, -1)
 
-# TODO: clamp, scale?, from_tuple?, normalize?, test for missing and cls.constants
-
 if __name__ == "__main__":
-    # run some performance benchmarks for dataclass Vec3
+    # run some performance benchmarks for (dataclass) Vec3
     import sys
     import timeit
     from dataclasses import FrozenInstanceError
