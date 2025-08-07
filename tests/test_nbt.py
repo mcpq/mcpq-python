@@ -467,11 +467,14 @@ def test_compound():
     assert type(b["wow"]) is NbtCompound
 
     valids = [
+        # (view, set, get, text, dtype)
         (n.byte, 1, 1, "1b", NbtByte),
         (n.short, 1, 1, "1s", NbtShort),
         (n.int, 1, 1, "1", NbtInt),
         (n.long, 1, 1, "1l", NbtLong),
         (n.float, 1, 1, "1.0f", NbtFloat),
+        (n.float, "-2.213E-18", -2.213e-18, "-2.213e-18f", NbtFloat),
+        (n.double, "-2.213E-18", -2.213e-18, "-2.213e-18", NbtDouble),
         (n.float, 1.23, 1.23, "1.23f", NbtFloat),
         (n.double, 1, 1, "1.0", NbtDouble),
         (n.double, 1.23, 1.23, "1.23", NbtDouble),
@@ -504,6 +507,9 @@ def test_compound():
         (n, 1, 1, "1", NbtInt),
         (n, "1l", 1, "1l", NbtLong),
         (n, "1.0f", 1, "1.0f", NbtFloat),
+        (n, "1f", 1, "1.0f", NbtFloat),
+        (n, "1.0", 1, "1.0", NbtDouble),
+        (n, "-2.213E-18", -2.213e-18, "-2.213e-18", NbtDouble),
         (n, 1.0, 1, "1.0", NbtDouble),
         (n, "1.0d", 1, "1.0", NbtDouble),
         (n, [], [], "[]", NbtList),
@@ -522,19 +528,29 @@ def test_compound():
         ),
         (n, "text", "text", '"text"', str),
         (n, "1.0.0", "1.0.0", '"1.0.0"', str),
-        (n, "1f", "1f", '"1f"', str),
+        (n, "1_", "1_", '"1_"', str),
         (n, "[]", "[]", '"[]"', str),
         (n, "{}", "{}", '"{}"', str),
         (n, """"'\\-+!""", """"'\\-+!""", '''"\\"'\\\\-+!"''', str),
     ]
 
     loc = "test"
-    for index, (view, set, get, text, t) in enumerate(valids):
+    for index, valid_tuple in enumerate(valids):
+        view, set, get, text, dtype = valid_tuple
         view[loc] = set
-        assert n[loc] == get, f"{index}: {valids[index]}"
-        assert type(n[loc]) is t, f"{index}: {valids[index]}"
-        assert len(n) == 1, f"{index}: {valids[index]}"
-        assert str(n) == f"{{{loc}:{text}}}", f"{index}: {valids[index]}"
+        assert (
+            type(n[loc]) is dtype
+        ), f"Incorrect dtype `{type(n[loc]).__name__}` expected `{dtype.__name__}` at {index=}: {valid_tuple}"
+        assert (
+            n[loc] == get
+        ), f"Incorrect get value `{n[loc]}` expected `{get}` at {index=}: {valid_tuple}"
+        assert (
+            len(n) == 1
+        ), f"Incorrect compound length `{len(n)}` expected `1` at {index=}: {valid_tuple}"
+        str_form = f"{{{loc}:{text}}}"
+        assert (
+            str(n) == str_form
+        ), f"Incorrect string text `{str(n)}` expected `{str_form}` at {index=}: {valid_tuple}"
     del n[loc]
     assert not n
     assert len(n) == 0

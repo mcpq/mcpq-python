@@ -721,7 +721,9 @@ def default_nbt(
     elif isinstance(value, float):
         value = NbtDouble(value)
     elif isinstance(value, str):
-        nbt_number = parse_snbt_number(value)
+        from ._parser_wrapper import try_parse_number
+
+        nbt_number = try_parse_number(value)
         if nbt_number is not None:
             value = nbt_number
         # don't parse other compound types/str here, prob. not wanted implicitly
@@ -731,36 +733,9 @@ def default_nbt(
         value = NbtList(value)
     else:
         raise ValueError(
-            f"{value} (type: {type(value)}) cannot automatically be converted to nbt type"
+            f"{value} of type '{type(value).__name__}' cannot automatically be converted to nbt type"
         )
     return value
-
-
-# TODO: replace this function with _parser parsing
-def parse_snbt_number(value: str) -> NbtNumberType | None:
-    if not value:
-        return None
-    if value in ["true", "false"]:
-        return value == "true"
-    if value.isdigit():
-        return NbtInt(value)
-    dots = value.count(".")
-    if dots == 1 and value.replace(".", "", 1).isdigit():
-        return NbtDouble(value)
-    if len(value) > 1:
-        front, back = value[:-1], value[-1]
-        if front.isdigit():
-            if back.lower() == "b":
-                return NbtByte(value)
-            if back.lower() == "s":
-                return NbtShort(value)
-            if back.lower() == "l":
-                return NbtLong(value)
-        elif dots == 1 and front.replace(".", "", 1).isdigit():
-            if back.lower() == "f":
-                return NbtFloat(value)
-            if back.lower() == "d":
-                return NbtDouble(value)
 
 
 NbtNumberType: TypeAlias = bool | NbtByte | NbtShort | NbtInt | NbtLong | NbtFloat | NbtDouble
