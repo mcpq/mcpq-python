@@ -5,6 +5,7 @@ from typing import Literal
 
 from ._base import _HasServer, _SharedBase
 from ._proto import minecraft_pb2 as pb
+from ._types import COLOR
 from .entity import Entity
 from .exception import raise_on_error
 from .nbt import NBT, Block, EntityType
@@ -218,6 +219,13 @@ class Player(Entity, _SharedBase, _HasServer):
         )
         if not ALLOW_OFFLINE_PLAYER_OPS or response.code != pb.PLAYER_NOT_FOUND:
             raise_on_error(response)
+
+    def showTitle(self, text: str, typ: Literal["actionbar", "subtitle", "title"] = "title", color: COLOR = "gray", bold: bool = False, italic: bool = False, strikethrough: bool = False, underlined: bool = False, obfuscated: bool = False, duration: int = 5, fade_in: int = 1, fade_out: int = 1) -> None:
+        self.runCommand(f'title @s times {fade_in}s {duration}s {fade_out}s')
+        self.runCommand(f'title @s {typ} {{"text":"{text}","color":"{color}","bold":{bold},"italic":{italic},"strikethrough":{strikethrough},"underlined":{underlined},"obfuscated":{obfuscated}}}')
+
+    def clearTitle(self):
+        self.runCommand("title @s clear")
 
     # server access commands cannot be executed via 'execute as ...'
     def kick(self) -> None:

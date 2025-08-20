@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Literal
 import grpc
 
 from . import logger
@@ -7,6 +8,7 @@ from ._base import _HasServer, _SharedBase
 from ._proto import MinecraftStub
 from ._proto import minecraft_pb2 as pb
 from ._server import _Server
+from ._types import COLOR
 from ._util import deprecated
 from .entity import Entity
 from .entitytype import EntityTypeFilter
@@ -238,6 +240,15 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
             pb.ChatPostRequest(message=sep.join(map(str, objects)))
         )
         raise_on_error(response)
+
+    def showTitle(self, text: str, typ: Literal["actionbar", "subtitle", "title"] = "title", color: COLOR = "white",
+                  bold: bool = False, italic: bool = False, strikethrough: bool = False, underlined: bool = False,
+                  obfuscated: bool = False, duration: int = 5, fade_in: int = 1, fade_out: int = 1) -> None:
+        self.runCommand(f'title @a times {fade_in}s {duration}s {fade_out}s')
+        self.runCommand(f'title @a {typ} {{"text":"{text}","color":"{color}","bold":{bold},"italic":{italic},"strikethrough":{strikethrough},"underlined":{underlined},"obfuscated":{obfuscated}}}')
+
+    def clearTitle(self):
+        self.runCommand('title @a clear')
 
     def getEntityById(self, entity_id: str) -> Entity:
         """Get an entity with a certain `entity_id`, even if it is not loaded.
