@@ -242,68 +242,68 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         )
         raise_on_error(response)
 
-        def showTitle(self, text: str, typ: Literal["actionbar", "subtitle", "title"] = "title", color: COLOR = "white",
-                      bold: bool = False, italic: bool = False, strikethrough: bool = False, underlined: bool = False,
-                      obfuscated: bool = False, duration: int = 5, fade_in: int = 1, fade_out: int = 1) -> None:
-            self.runCommand(f'title @a times {fade_in}s {duration}s {fade_out}s')
-            self.runCommand(
-                f'title @a {typ} {{"text":"{text}","color":"{color}","bold":{bold},"italic":{italic},"strikethrough":{strikethrough},"underlined":{underlined},"obfuscated":{obfuscated}}}')
-            """
-               Display a Minecraft title to all players and control
-               fade-in, display time, fade-out, and text styling (color, bold, italic, etc.).
+    def showTitle(self, text: str, typ: Literal["actionbar", "subtitle", "title"] = "title", color: COLOR = "white",
+                  bold: bool = False, italic: bool = False, strikethrough: bool = False, underlined: bool = False,
+                  obfuscated: bool = False, duration: int = 5, fade_in: int = 1, fade_out: int = 1) -> None:
+        """
+           Display a Minecraft title to all players and control
+           fade-in, display time, fade-out, and text styling (color, bold, italic, etc.).
 
-               .. code-block:: python
+           .. code-block:: python
 
-                  # simple title for 5 seconds with 1s fade-in/out
-                  mc.showTitle("Welcome to the server!")
+              # simple title for 5 seconds with 1s fade-in/out
+              mc.showTitle("Welcome to the server!")
 
-                  # subtitle in blue and bold, duration 3s
-                  mc.showTitle(
-                      "Events starting soon...",
-                      typ="subtitle",
-                      color="blue",
-                      bold=True,
-                      duration=3
-                  )
+              # subtitle in blue and bold, duration 3s
+              mc.showTitle(
+                  "Events starting soon...",
+                  typ="subtitle",
+                  color="blue",
+                  bold=True,
+                  duration=3
+              )
 
-               :param text: The text to display.
-               :type text: str
-               :param typ: Display target: ``"title"``, ``"subtitle"``, or ``"actionbar"``.
-               :type typ: Literal["actionbar", "subtitle", "title"], optional
-               :param color: Text color (Minecraft color name), defaults to ``"white"``.
-               :type color: COLOR, optional
-               :param bold: Render text in bold.
-               :type bold: bool, optional
-               :param italic: Render text in italics.
-               :type italic: bool, optional
-               :param strikethrough: Render text with strikethrough.
-               :type strikethrough: bool, optional
-               :param underlined: Render text underlined.
-               :type underlined: bool, optional
-               :param obfuscated: Render text obfuscated (“magic” text).
-               :type obfuscated: bool, optional
-               :param duration: Display duration in seconds (not including fades), default ``5``.
-               :type duration: int, optional
-               :param fade_in: Fade-in time in seconds, default ``1``.
-               :type fade_in: int, optional
-               :param fade_out: Fade-out time in seconds, default ``1``.
-               :type fade_out: int, optional
-            """
+           :param text: The text to display.
+           :type text: str
+           :param typ: Display target: ``"title"``, ``"subtitle"``, or ``"actionbar"``.
+           :type typ: Literal["actionbar", "subtitle", "title"], optional
+           :param color: Text color (Minecraft color name), defaults to ``"white"``.
+           :type color: COLOR, optional
+           :param bold: Render text in bold.
+           :type bold: bool, optional
+           :param italic: Render text in italics.
+           :type italic: bool, optional
+           :param strikethrough: Render text with strikethrough.
+           :type strikethrough: bool, optional
+           :param underlined: Render text underlined.
+           :type underlined: bool, optional
+           :param obfuscated: Render text obfuscated (“magic” text).
+           :type obfuscated: bool, optional
+           :param duration: Display duration in seconds (not including fades), default ``5``.
+           :type duration: int, optional
+           :param fade_in: Fade-in time in seconds, default ``1``.
+           :type fade_in: int, optional
+           :param fade_out: Fade-out time in seconds, default ``1``.
+           :type fade_out: int, optional
+        """
+        self.runCommand(f'title @a times {fade_in}s {duration}s {fade_out}s')
+        self.runCommand(
+            f'title @a {typ} {{"text":"{text}","color":"{color}","bold":{bold},"italic":{italic},"strikethrough":{strikethrough},"underlined":{underlined},"obfuscated":{obfuscated}}}')
 
-        def clearTitle(self):
-            self.runCommand('title @a clear')
-            """
-            Clear all currently displayed titles/subtitles/actionbars
-            from all players.
+    def clearTitle(self):
+        """
+        Clear all currently displayed titles/subtitles/actionbars
+        from all players.
 
-            Useful to remove text early or to "reset" the screen before showing new titles.
+        Useful to remove text early or to "reset" the screen before showing new titles.
 
-            .. code-block:: python
+        .. code-block:: python
 
-               # clear everything before a new announcement
-               mc.clearTitle()
-               mc.showTitle("New Event at 8 PM!", typ="title", color="gold", bold=True)
-            """
+           # clear everything before a new announcement
+           mc.clearTitle()
+           mc.showTitle("New Event at 8 PM!", typ="title", color="gold", bold=True)
+        """
+        self.runCommand('title @a clear')
 
     def getEntityById(self, entity_id: str) -> Entity:
         """Get an entity with a certain `entity_id`, even if it is not loaded.
