@@ -1,5 +1,13 @@
 # Minecraft Protobuf Queries (MCPQ) Python Client Library
 
+[![pypi](https://img.shields.io/pypi/v/mcpq)](https://pypi.org/project/mcpq/)
+[![license: lgpl](https://img.shields.io/badge/license-LGPL-purple)](https://github.com/mcpq/mcpq-python?tab=License-1-ov-file#readme)
+[![docs](https://img.shields.io/badge/docs-online-brightgreen)](https://mcpq.github.io/mcpq-python)
+[![plugin](https://img.shields.io/github/v/release/mcpq/mcpq-plugin?label=plugin&color=%2300b9c6)](https://github.com/mcpq/mcpq-plugin/releases)
+[![minecraft](https://img.shields.io/badge/minecraft-v1%2E20%2E1%2B-blue?color=%2300b9c6)](https://github.com/mcpq/mcpq-plugin?tab=readme-ov-file#versions)
+[![downloads](https://img.shields.io/pypi/dm/mcpq)](https://pypi.org/project/mcpq/)
+[![stars](https://img.shields.io/github/stars/mcpq/mcpq-python?style=social)](https://github.com/mcpq/mcpq-python)
+
 This Python library is designed to control a Minecraft Java Server like [Paper](https://papermc.io/), or alternatively [Spigot](https://www.spigotmc.org/), running the **[mcpq plugin](https://github.com/mcpq/mcpq-plugin)**.
 
 This library is heavily inspired by [MCPI](https://github.com/martinohanlon/mcpi) (and its corresponding plugin [RaspberryJuice](https://github.com/zhuowei/RaspberryJuice)) and attempts a more modern approach for communication between server and client that also works for more modern versions of Minecraft.

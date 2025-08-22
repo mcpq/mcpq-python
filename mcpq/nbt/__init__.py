@@ -1,5 +1,5 @@
 from ._block import Block
-from ._parser_wrapper import parse_snbt
+from ._parser_wrapper import parse_snbt, try_parse_snbt
 from ._types import (
     ComponentData,
     NbtByte,
@@ -39,6 +39,7 @@ __all__ = [
     "NbtType",
     "NbtNumberType",
     "parse_snbt",
+    "try_parse_snbt",
     "EntityType",
     "Block",
     "NBT",

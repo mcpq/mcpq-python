@@ -104,7 +104,8 @@ class MaterialFilter(_HasServer, Sequence):
        # binary operators (short form)
        (mc.materials.contains("wool", "concrete") & ~mc.materials.contains("yellow")).block()
        # binary operators (explicit form)
-       wool_concrete = mc.materials.block().contains("wool") | mc.materials.block().contains("concrete")
+       # note: mc.blocks is an alias for mc.materials.block()
+       wool_concrete = mc.blocks.contains("wool") | mc.blocks.contains("concrete")
        wool_concrete & ~mc.materials.contains("yellow")
 
     Plus there are many more filters:
