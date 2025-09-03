@@ -73,49 +73,9 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         self._channel = grpc.insecure_channel(f"{host}:{port}")
         server = _Server(MinecraftStub(self._channel))
         super().__init__(server)
-        self._event_handler = EventHandler(server)
+        self._event_handler: EventHandler | None = None
 
         # deprecated functions
-        self.stopEventPollingAndClearCallbacks = deprecated(
-            "Call to deprecated function stopEventPollingAndClearCallbacks. Use events.stopEventPollingAndClearCallbacks instead."
-        )(self.events.stopEventPollingAndClearCallbacks)
-        self.pollPlayerJoinEvents = deprecated(
-            "Call to deprecated function pollPlayerJoinEvents. Use events.player_join.poll instead."
-        )(self.events.player_join.poll)
-        self.pollPlayerLeaveEvents = deprecated(
-            "Call to deprecated function pollPlayerLeaveEvents. Use events.player_leave.poll instead."
-        )(self.events.player_leave.poll)
-        self.pollPlayerDeathEvents = deprecated(
-            "Call to deprecated function pollPlayerDeathEvents. Use events.player_death.poll instead."
-        )(self.events.player_death.poll)
-        self.pollChatEvents = deprecated(
-            "Call to deprecated function pollChatEvents. Use events.chat.poll instead."
-        )(self.events.chat.poll)
-        self.pollBlockHitEvents = deprecated(
-            "Call to deprecated function pollBlockHitEvents. Use events.block_hit.poll instead."
-        )(self.events.block_hit.poll)
-        self.pollProjectileHitEvents = deprecated(
-            "Call to deprecated function pollProjectileHitEvents. Use events.projectile_hit.poll instead."
-        )(self.events.projectile_hit.poll)
-        self.registerCallbackPlayerJoinEvent = deprecated(
-            "Call to deprecated function registerCallbackPlayerJoinEvent. Use events.player_join.register instead."
-        )(self.events.player_join.register)
-        self.registerCallbackPlayerLeaveEvent = deprecated(
-            "Call to deprecated function registerCallbackPlayerLeaveEvent. Use events.player_leave.register instead."
-        )(self.events.player_leave.register)
-        self.registerCallbackPlayerDeathEvents = deprecated(
-            "Call to deprecated function registerCallbackPlayerDeathEvents. Use events.player_death.register instead."
-        )(self.events.player_death.register)
-        self.registerCallbackChatEvent = deprecated(
-            "Call to deprecated function registerCallbackChatEvent. Use events.chat.register instead."
-        )(self.events.chat.register)
-        self.registerCallbackBlockHitEvent = deprecated(
-            "Call to deprecated function registerCallbackBlockHitEvent. Use events.block_hit.register instead."
-        )(self.events.block_hit.register)
-        self.registerCallbackProjectileHitEvent = deprecated(
-            "Call to deprecated function registerCallbackProjectileHitEvent. Use events.projectile_hit.register instead."
-        )(self.events.projectile_hit.register)
-
         self.getPlayers = deprecated(
             "Call to deprecated function getPlayers. Use getPlayerList instead."
         )(self.getPlayerList)
@@ -130,7 +90,8 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def _cleanup(self) -> None:
         logger.debug("Minecraft: _cleanup: called, closing channel...")
         old_handler, self._event_handler = self._event_handler, None
-        old_handler._cleanup()
+        if old_handler is not None:
+            old_handler._cleanup()
         self._channel.close()
         logger.debug("Minecraft: _cleanup: done")
 
@@ -177,6 +138,8 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def events(self) -> EventHandler:
         """The :class:`~mcpq.events.EventHandler` for receiving events from the server.
         Checkout the :class:`~mcpq.events.EventHandler` class for examples for receiving events."""
+        if self._event_handler is None:
+            self._event_handler = EventHandler(self._server)
         return self._event_handler
 
     @property
