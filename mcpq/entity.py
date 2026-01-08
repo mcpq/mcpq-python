@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import inspect
 import time
+from abc import ABC, abstractmethod
+from typing import Generic, TypeVar, overload
 
 from ._abc import _ServerInterface
 from ._base import _HasServer, _SharedBase
@@ -17,6 +20,58 @@ __all__ = ["Entity"]
 
 CACHE_ENTITY_TIME = 0.2
 ALLOW_UNLOADED_ENTITY_OPS = True
+
+
+class EntityAPI(ABC):
+    @abstractmethod
+    def giveEffect(
+        self, effect: str, seconds: int = 0, amplifier: int = 0, particles: bool = True
+    ) -> None:
+        ...
+
+    @abstractmethod
+    def kill(self) -> None:
+        ...
+
+    @abstractmethod
+    def remove(self) -> None:
+        ...
+
+    @abstractmethod
+    def replaceHelmet(
+        self,
+        armortype: Block | str = "leather_helmet",
+        unbreakable: bool = True,
+        binding: bool = True,
+        vanishing: bool = False,
+        color: COLOR | int | None = None,
+        *,
+        nbt: NBT | None = None,
+    ) -> None:
+        ...
+
+    @abstractmethod
+    def replaceItem(
+        self, where: str, item: Block | str, amount: int = 1, *, nbt: NBT | None = None
+    ) -> None:
+        ...
+
+    @abstractmethod
+    def runCommand(self, command: str) -> None:
+        ...
+
+    @abstractmethod
+    def runCommandBlocking(self, command: str) -> None:
+        ...
+
+    @abstractmethod
+    def teleport(
+        self,
+        pos: Vec3 | None = None,
+        facing: Vec3 | None = None,
+        world: World | str | None = None,
+    ) -> None:
+        ...
 
 
 class Entity(_SharedBase, _HasServer):
@@ -487,3 +542,71 @@ class Entity(_SharedBase, _HasServer):
             self._yaw, self._pitch = orientation
         if world is not None:
             self._world = world
+
+
+T = TypeVar("T", bound=Entity)
+
+
+class AllEntitiesFacade(_HasServer, Generic[T]):
+    def __init__(self, server) -> None:
+        super().__init__(server)
+
+    def __getattr__(self, name: str):
+        print("GET ATTR", name)
+        return super().__getattr__(name)
+
+    @overload
+    def giveEffect(
+        self, effect: str, seconds: int = 0, amplifier: int = 0, particles: bool = True
+    ) -> None:
+        ...
+
+    @overload
+    def kill(self) -> None:
+        ...
+
+    @overload
+    def remove(self) -> None:
+        ...
+
+    @overload
+    def replaceHelmet(
+        self,
+        armortype: Block | str = "leather_helmet",
+        unbreakable: bool = True,
+        binding: bool = True,
+        vanishing: bool = False,
+        color: COLOR | int | None = None,
+        *,
+        nbt: NBT | None = None,
+    ) -> None:
+        ...
+
+    @overload
+    def replaceItem(
+        self, where: str, item: Block | str, amount: int = 1, *, nbt: NBT | None = None
+    ) -> None:
+        ...
+
+    @overload
+    def runCommand(self, command: str) -> None:
+        ...
+
+    @overload
+    def runCommandBlocking(self, command: str) -> None:
+        ...
+
+    @overload
+    def teleport(
+        self,
+        pos: Vec3 | None = None,
+        facing: Vec3 | None = None,
+        world: World | str | None = None,
+    ) -> None:
+        raise NotImplementedError
+
+    _exposed = {
+        name
+        for name, obj in vars().items()
+        if inspect.isfunction(obj) and getattr(obj, "__is_overload__", False)
+    }
