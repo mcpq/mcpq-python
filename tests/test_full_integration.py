@@ -29,6 +29,7 @@ def mc():
 
 @pytest.mark.integration_test
 def test_player(mc):
+    mcversion = mc.getMinecraftVersionTuple()
     ps = mc.getPlayerList()
     if len(ps) == 0:
         pytest.skip("No players on Server, cannot run player test")
@@ -88,7 +89,10 @@ def test_player(mc):
     # and more...
 
     # testable events
-    mc.runCommandBlocking("gamerule doImmediateRespawn true")
+    if mcversion >= (1, 21, 11):
+        mc.runCommandBlocking("gamerule immediate_respawn true")
+    else:
+        mc.runCommandBlocking("gamerule doImmediateRespawn true")
     mc.events.player_death.poll(None)  # clear
     p.kill()
     res = mc.events.player_death.get(1)
@@ -199,7 +203,7 @@ def test_entity(mc):
     mc.removeEntities(etype)
     spawn = Vec3().up(1000)
     mc.getBlock(spawn)
-    mc.runCommandBlocking("setworldspawn 0 0 0 150")  # to load chunks there
+    mc.runCommandBlocking("forceload add -16 -16 16 16")  # to load chunks there
     e = mc.spawnEntity(etype, spawn)
     e.giveEffect("slow_falling", 9999, 5)
     assert e.type == etype, f"Not a {etype}, but {e}"
@@ -209,7 +213,7 @@ def test_entity(mc):
     assert (
         last_dist := e.pos.distance(spawn)
     ) < 300, f"{etype} was at {e.pos}, far away from spawn at {spawn}"
-    sleep(mcpq.entity.CACHE_ENTITY_TIME + 0.3)
+    sleep(mcpq.entity.CACHE_ENTITY_TIME + 0.1)
     new_dist = e.pos.distance(spawn)
     if new_dist == last_dist and (1, 20) < mcversion <= (1, 21):
         # It seems like (on paper) versions 1.21 and older the entity

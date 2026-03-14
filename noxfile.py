@@ -34,6 +34,7 @@ SERVER_VERSIONS_FOLDER = Path(__file__).parent / ".nox_servers"
 # VERSIONS (always sort from newest to oldest!)
 
 PY_VERSIONS = [
+    "3.14",
     "3.13",
     "3.12",
     "3.11",
@@ -41,6 +42,12 @@ PY_VERSIONS = [
 ]
 MC_VERSIONS = [
     # 1.21
+    "1.21.11",
+    "1.21.10",
+    "1.21.9",
+    "1.21.8",
+    "1.21.7",
+    "1.21.6",
     "1.21.5",
     "1.21.4",
     "1.21.3",
@@ -55,7 +62,7 @@ MC_VERSIONS = [
 ]
 PLUGIN_VERSIONS = [
     # note: if not explicitly specified will use local before latest
-    "2.1",
+    "2.2",
     "2.0",
 ]
 PROTOBUF_VERSIONS = [

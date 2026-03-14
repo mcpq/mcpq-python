@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 import grpc
 
 from . import logger
@@ -71,49 +73,9 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
         self._channel = grpc.insecure_channel(f"{host}:{port}")
         server = _Server(MinecraftStub(self._channel))
         super().__init__(server)
-        self._event_handler = EventHandler(server)
+        self._event_handler: EventHandler | None = None
 
         # deprecated functions
-        self.stopEventPollingAndClearCallbacks = deprecated(
-            "Call to deprecated function stopEventPollingAndClearCallbacks. Use events.stopEventPollingAndClearCallbacks instead."
-        )(self.events.stopEventPollingAndClearCallbacks)
-        self.pollPlayerJoinEvents = deprecated(
-            "Call to deprecated function pollPlayerJoinEvents. Use events.player_join.poll instead."
-        )(self.events.player_join.poll)
-        self.pollPlayerLeaveEvents = deprecated(
-            "Call to deprecated function pollPlayerLeaveEvents. Use events.player_leave.poll instead."
-        )(self.events.player_leave.poll)
-        self.pollPlayerDeathEvents = deprecated(
-            "Call to deprecated function pollPlayerDeathEvents. Use events.player_death.poll instead."
-        )(self.events.player_death.poll)
-        self.pollChatEvents = deprecated(
-            "Call to deprecated function pollChatEvents. Use events.chat.poll instead."
-        )(self.events.chat.poll)
-        self.pollBlockHitEvents = deprecated(
-            "Call to deprecated function pollBlockHitEvents. Use events.block_hit.poll instead."
-        )(self.events.block_hit.poll)
-        self.pollProjectileHitEvents = deprecated(
-            "Call to deprecated function pollProjectileHitEvents. Use events.projectile_hit.poll instead."
-        )(self.events.projectile_hit.poll)
-        self.registerCallbackPlayerJoinEvent = deprecated(
-            "Call to deprecated function registerCallbackPlayerJoinEvent. Use events.player_join.register instead."
-        )(self.events.player_join.register)
-        self.registerCallbackPlayerLeaveEvent = deprecated(
-            "Call to deprecated function registerCallbackPlayerLeaveEvent. Use events.player_leave.register instead."
-        )(self.events.player_leave.register)
-        self.registerCallbackPlayerDeathEvents = deprecated(
-            "Call to deprecated function registerCallbackPlayerDeathEvents. Use events.player_death.register instead."
-        )(self.events.player_death.register)
-        self.registerCallbackChatEvent = deprecated(
-            "Call to deprecated function registerCallbackChatEvent. Use events.chat.register instead."
-        )(self.events.chat.register)
-        self.registerCallbackBlockHitEvent = deprecated(
-            "Call to deprecated function registerCallbackBlockHitEvent. Use events.block_hit.register instead."
-        )(self.events.block_hit.register)
-        self.registerCallbackProjectileHitEvent = deprecated(
-            "Call to deprecated function registerCallbackProjectileHitEvent. Use events.projectile_hit.register instead."
-        )(self.events.projectile_hit.register)
-
         self.getPlayers = deprecated(
             "Call to deprecated function getPlayers. Use getPlayerList instead."
         )(self.getPlayerList)
@@ -128,7 +90,8 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def _cleanup(self) -> None:
         logger.debug("Minecraft: _cleanup: called, closing channel...")
         old_handler, self._event_handler = self._event_handler, None
-        old_handler._cleanup()
+        if old_handler is not None:
+            old_handler._cleanup()
         self._channel.close()
         logger.debug("Minecraft: _cleanup: done")
 
@@ -175,6 +138,8 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
     def events(self) -> EventHandler:
         """The :class:`~mcpq.events.EventHandler` for receiving events from the server.
         Checkout the :class:`~mcpq.events.EventHandler` class for examples for receiving events."""
+        if self._event_handler is None:
+            self._event_handler = EventHandler(self._server)
         return self._event_handler
 
     @property
@@ -238,6 +203,97 @@ class Minecraft(_DefaultWorld, _SharedBase, _HasServer):
             pb.ChatPostRequest(message=sep.join(map(str, objects)))
         )
         raise_on_error(response)
+
+    def showTitle(
+        self,
+        text: str,
+        *,
+        mode: Literal["actionbar", "subtitle", "title"] = "title",
+        color: Literal[
+            "white",
+            "black",
+            "dark_blue",
+            "dark_green",
+            "dark_aqua",
+            "dark_red",
+            "dark_purple",
+            "gold",
+            "gray",
+            "dark_gray",
+            "blue",
+            "green",
+            "aqua",
+            "red",
+            "light_purple",
+            "yellow",
+        ] = "white",
+        bold: bool = False,
+        italic: bool = False,
+        strikethrough: bool = False,
+        underlined: bool = False,
+        obfuscated: bool = False,
+        duration: int = 5,
+        fade_in: int = 1,
+        fade_out: int = 1,
+    ) -> None:
+        """Display a Minecraft title to all players and control
+        fade-in, display time, fade-out, and text styling (color, bold, italic, etc.).
+
+        .. code-block:: python
+
+           # simple title for 5 seconds with 1s fade-in/out
+           mc.showTitle("Welcome to the server!")
+
+           # subtitle in blue and bold, duration 3s
+           mc.showTitle(
+               "Events starting soon...",
+               mode="subtitle",
+               color="blue",
+               bold=True,
+               duration=3
+           )
+
+        :param text: The text to display.
+        :type text: str
+        :param mode: Display target: ``"title"``, ``"subtitle"``, or ``"actionbar"``.
+        :type mode: Literal["actionbar", "subtitle", "title"], optional
+        :param color: Text color (Minecraft color name), defaults to ``"white"``.
+        :type color: Literal[ "white", "black", "dark_blue", "dark_green", "dark_aqua", "dark_red", "dark_purple", "gold", "gray", "dark_gray", "blue", "green", "aqua", "red", "light_purple", "yellow"], optional
+        :param bold: Render text in bold.
+        :type bold: bool, optional
+        :param italic: Render text in italics.
+        :type italic: bool, optional
+        :param strikethrough: Render text with strikethrough.
+        :type strikethrough: bool, optional
+        :param underlined: Render text underlined.
+        :type underlined: bool, optional
+        :param obfuscated: Render text obfuscated (“magic” text).
+        :type obfuscated: bool, optional
+        :param duration: Display duration in seconds (not including fades), default ``5``.
+        :type duration: int, optional
+        :param fade_in: Fade-in time in seconds, default ``1``.
+        :type fade_in: int, optional
+        :param fade_out: Fade-out time in seconds, default ``1``.
+        :type fade_out: int, optional
+        """
+        self.runCommand(f"title @a times {fade_in}s {duration}s {fade_out}s")
+        self.runCommand(
+            f'title @a {mode} {{"text":"{text}","color":"{color}","bold":{bold},"italic":{italic},"strikethrough":{strikethrough},"underlined":{underlined},"obfuscated":{obfuscated}}}'
+        )
+
+    def clearTitle(self) -> None:
+        """Clear all currently displayed titles/subtitles/actionbars
+        from all players.
+
+        Useful to remove text early or to "reset" the screen before showing new titles.
+
+        .. code-block:: python
+
+           # clear everything before a new announcement
+           mc.clearTitle()
+           mc.showTitle("New Event at 8 PM!", mode="title", color="gold", bold=True)
+        """
+        self.runCommand("title @a clear")
 
     def getEntityById(self, entity_id: str) -> Entity:
         """Get an entity with a certain `entity_id`, even if it is not loaded.

@@ -1,4 +1,4 @@
-from ._snbt_and_component import GrammarError, Lark_StandAlone, Transformer
+from ._snbt_and_component import GrammarError, Lark_StandAlone, LexError, ParseError, Transformer
 from ._types import (
     ComponentData,
     NbtByte,
@@ -13,7 +13,6 @@ from ._types import (
     NbtLongArray,
     NbtShort,
     NbtType,
-    TypedListView,
 )
 
 
@@ -111,6 +110,22 @@ def parse_component(text: str) -> ComponentData:
     raise TypeError(  # GrammarError
         f"Expected data component, but found SNBT type {d.__class__.__name__} instead"
     )
+
+
+def try_parse_snbt(text: str) -> NbtType | None:
+    try:
+        return parse_snbt(text)
+    except (LexError, ParseError, GrammarError, TypeError, ValueError):
+        pass
+    return None
+
+
+def try_parse_component(text: str) -> ComponentData | None:
+    try:
+        return parse_component(text)
+    except (LexError, ParseError, GrammarError, TypeError, ValueError):
+        pass
+    return None
 
 
 #! python3 -m lark.tools.standalone --maybe_placeholders mcpq/_nbt/snbt_and_component.lark -o mcpq/_nbt/_snbt_and_component.py
