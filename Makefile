@@ -45,8 +45,7 @@ dist:
 upload:
 	@test -f ~/.pypirc || echo "~/.pypirc does not exist, add PyPi and TestPyPi tokens!"
 	@test -f ~/.pypirc
-	@test -f /tmp/mcpq_warnup || echo "Do NOT forget to first 'git tag vX.Y.Z', then 'make all', then 'git commit' (to commit docs)!"
-	@test -f /tmp/mcpq_warnup || echo "Also, check if the version was bumped! (Has to be done manually)"
+	@test -f /tmp/mcpq_warnup || echo "Do NOT forget to first bump the version (manually), then 'make all', then 'git commit' (to commit docs)!"
 	@test -f /tmp/mcpq_warnup || (touch /tmp/mcpq_warnup && test)
 	python3 -m twine check dist/*
 	@test ! -f /tmp/mcpq_testup || echo "Package will now be uploaded to REAL PyPi!"
@@ -56,5 +55,5 @@ upload:
 	@sleep 10
 	@test ! -f /tmp/mcpq_testup || python3 -m twine upload dist/*
 	@test -f /tmp/mcpq_testup || python3 -m twine upload --repository testpypi dist/*
-	@test -f /tmp/mcpq_testup || echo "remember to try to install the package with: pip install --index-url https://pypi.org/simple --extra-index-url https://test.pypi.org/simple mcpq"
+	@test -f /tmp/mcpq_testup || echo "remember to try to install the package with: (uv) pip install (--index-strategy unsafe-best-match) --index-url https://pypi.org/simple --extra-index-url https://test.pypi.org/simple mcpq(==NEW_VERSION)"
 	@rm /tmp/mcpq_testup 2> /dev/null || touch /tmp/mcpq_testup

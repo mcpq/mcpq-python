@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; MCPQ 2.0.1 documentation</title>
+    <title>&lt;no title&gt; &#8212; MCPQ 2.0.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=8513425a" />
-    <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
+    <script src="../_static/documentation_options.js?v=c2377ec0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -19,7 +19,7 @@
     <div class="header-wrapper" role="banner">
       <div class="header">
         <div class="headertitle"><a
-          href="../index.html">MCPQ 2.0.1 documentation</a></div>
+          href="../index.html">MCPQ 2.0.2 documentation</a></div>
         <div class="rel" role="navigation" aria-label="Related">
           <a href="../readme_link.html" title="Minecraft Protobuf Queries (MCPQ) Python Client Library"
              accesskey="P">previous</a> |
@@ -184,6 +184,56 @@ All objects are converted to strings using <code class="xref py py-func docutils
 <dd class="field-odd"><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – the separator between each object, defaults to “ “</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.showTitle">
+<span class="sig-name descname"><span class="pre">showTitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'actionbar'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'subtitle'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'title'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'title'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'white'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'black'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_green'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_aqua'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_red'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_purple'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gold'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dark_gray'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'blue'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'green'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'aqua'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'red'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'light_purple'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yellow'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underlined</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obfuscated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.showTitle" title="Link to this definition">¶</a></dt>
+<dd><p>Display a Minecraft title to all players and control
+fade-in, display time, fade-out, and text styling (color, bold, italic, etc.).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># simple title for 5 seconds with 1s fade-in/out</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">showTitle</span><span class="p">(</span><span class="s2">&quot;Welcome to the server!&quot;</span><span class="p">)</span>
+
+<span class="c1"># subtitle in blue and bold, duration 3s</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">showTitle</span><span class="p">(</span>
+    <span class="s2">&quot;Events starting soon...&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;subtitle&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="n">bold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text to display.</p></li>
+<li><p><strong>mode</strong> (<em>Literal</em><em>[</em><em>&quot;actionbar&quot;</em><em>, </em><em>&quot;subtitle&quot;</em><em>, </em><em>&quot;title&quot;</em><em>]</em><em>, </em><em>optional</em>) – Display target: <code class="docutils literal notranslate"><span class="pre">&quot;title&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;subtitle&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;actionbar&quot;</span></code>.</p></li>
+<li><p><strong>color</strong> (<em>Literal</em><em>[ </em><em>&quot;white&quot;</em><em>, </em><em>&quot;black&quot;</em><em>, </em><em>&quot;dark_blue&quot;</em><em>, </em><em>&quot;dark_green&quot;</em><em>, </em><em>&quot;dark_aqua&quot;</em><em>, </em><em>&quot;dark_red&quot;</em><em>, </em><em>&quot;dark_purple&quot;</em><em>, </em><em>&quot;gold&quot;</em><em>, </em><em>&quot;gray&quot;</em><em>, </em><em>&quot;dark_gray&quot;</em><em>, </em><em>&quot;blue&quot;</em><em>, </em><em>&quot;green&quot;</em><em>, </em><em>&quot;aqua&quot;</em><em>, </em><em>&quot;red&quot;</em><em>, </em><em>&quot;light_purple&quot;</em><em>, </em><em>&quot;yellow&quot;</em><em>]</em><em>, </em><em>optional</em>) – Text color (Minecraft color name), defaults to <code class="docutils literal notranslate"><span class="pre">&quot;white&quot;</span></code>.</p></li>
+<li><p><strong>bold</strong> (<em>bool</em><em>, </em><em>optional</em>) – Render text in bold.</p></li>
+<li><p><strong>italic</strong> (<em>bool</em><em>, </em><em>optional</em>) – Render text in italics.</p></li>
+<li><p><strong>strikethrough</strong> (<em>bool</em><em>, </em><em>optional</em>) – Render text with strikethrough.</p></li>
+<li><p><strong>underlined</strong> (<em>bool</em><em>, </em><em>optional</em>) – Render text underlined.</p></li>
+<li><p><strong>obfuscated</strong> (<em>bool</em><em>, </em><em>optional</em>) – Render text obfuscated (“magic” text).</p></li>
+<li><p><strong>duration</strong> (<em>int</em><em>, </em><em>optional</em>) – Display duration in seconds (not including fades), default <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p></li>
+<li><p><strong>fade_in</strong> (<em>int</em><em>, </em><em>optional</em>) – Fade-in time in seconds, default <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>fade_out</strong> (<em>int</em><em>, </em><em>optional</em>) – Fade-out time in seconds, default <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcpq.Minecraft.clearTitle">
+<span class="sig-name descname"><span class="pre">clearTitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mcpq.Minecraft.clearTitle" title="Link to this definition">¶</a></dt>
+<dd><p>Clear all currently displayed titles/subtitles/actionbars
+from all players.</p>
+<p>Useful to remove text early or to “reset” the screen before showing new titles.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># clear everything before a new announcement</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">clearTitle</span><span class="p">()</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">showTitle</span><span class="p">(</span><span class="s2">&quot;New Event at 8 PM!&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -927,6 +977,8 @@ The plugin that is built against the <code class="docutils literal notranslate">
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.entity_types"><code class="docutils literal notranslate"><span class="pre">Minecraft.entity_types</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.spawnables"><code class="docutils literal notranslate"><span class="pre">Minecraft.spawnables</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.postToChat"><code class="docutils literal notranslate"><span class="pre">Minecraft.postToChat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.showTitle"><code class="docutils literal notranslate"><span class="pre">Minecraft.showTitle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.clearTitle"><code class="docutils literal notranslate"><span class="pre">Minecraft.clearTitle()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getEntityById"><code class="docutils literal notranslate"><span class="pre">Minecraft.getEntityById()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getOfflinePlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getOfflinePlayer()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mcpq.Minecraft.getPlayer"><code class="docutils literal notranslate"><span class="pre">Minecraft.getPlayer()</span></code></a></li>
